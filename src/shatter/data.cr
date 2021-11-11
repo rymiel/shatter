@@ -1,5 +1,5 @@
 require "uuid"
-require "../nbt"
+require "nbt"
 
 module Shatter
   def self.var_int(value : UInt32) : Bytes
