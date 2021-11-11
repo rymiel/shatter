@@ -75,7 +75,7 @@ window.addEventListener('load', (_event) => {
     ws.onmessage = function(message) {
       let data = JSON.parse(message.data);
       if (data.error) {
-        reportError("Denied", data.error);
+        reportError(data.errortype || "Denied", data.error);
         document.getElementById("middle").hidden = true;
       } else if (data.emulate === "Chat") {
         let position = data.proxy.position;

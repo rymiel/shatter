@@ -5,7 +5,8 @@ module Shatter
         PktId::Cb::Login::CryptRequest,
         PktId::Cb::Login::LoginSuccess,
         PktId::Cb::Login::SetCompression,
-        PktId::Cb::Play::KeepAlive
+        PktId::Cb::Play::KeepAlive,
+        PktId::Cb::Play::JoinGame
       }
 
       property ws : HTTP::WebSocket
@@ -25,9 +26,18 @@ module Shatter
       def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile, @ws, @id, @listening, @proxied, @packet_callback = nil)
       end
 
-      private def close_from(ioex : IO::Error)
-        puts "Failed to read packet due to IO error #{ioex.message}, disconnecting"
-        @ws.close message: "Server forced connection to close"
+      private def logged_error(s)
+        STDERR << connection_name << " !ERR! ".colorize.red << s.colorize.dark_gray << "\n"
+        @ws.send(s)
+        @ws.close message: "Closed due to above error"
+      end
+
+      private def close_from(ex : Exception)
+        if ex.is_a? IO::Error
+          logged_error({"errortype" => "IO error. Kicked?", "error" => "#{ex.class}. #{ex.message}"}.to_json)
+        elsif ex.is_a? MSA::MojangAuthError
+          logged_error({"errortype" => "Failed to authenticate", "error" => "#{ex.class}. #{ex.message}"}.to_json)
+        end
         @sock.try &.close
       end
 
