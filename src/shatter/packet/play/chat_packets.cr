@@ -15,4 +15,12 @@ module Shatter::Packet::Play
     field position : UInt8
     field sender : UUID
   end
+
+  @[Shatter::Packet::Describe(level: 3)]
+  class PluginMessage
+    include Packet::Handler
+
+    field identifier : String
+    field data : Bytes = pkt.gets_to_end.to_slice
+  end
 end

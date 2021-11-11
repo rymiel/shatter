@@ -32,8 +32,10 @@ module Shatter::PktId
     end
 
     enum Play
-      Chat      = 0x03
-      KeepAlive = 0x0F
+      Chat           = 0x03
+      ClientSettings = 0x05
+      PluginMessage  = 0x0A
+      KeepAlive      = 0x0F
     end
   end
 
@@ -86,6 +88,15 @@ module Shatter::PktId
           "serverId": hash
         }.to_json
       puts "Posted session for #{con.profile.try &.name} to #{con.ip}:#{con.port} => #{r.status}"
+      unless r.status.no_content?
+        pp! r
+        begin
+          error_reason = JSON.parse(r.body).as_h?.try &.["error"]?.try &.as_s? || "Unknown"
+        rescue ex : JSON::ParseException
+          error_reason = nil
+        end
+        raise MSA::MojangAuthError.new(error_reason)
+      end
 
       encoded_secret = rsa_pkey.public_encrypt shared_secret
       encoded_nonce = rsa_pkey.public_encrypt nonce

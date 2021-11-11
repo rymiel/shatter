@@ -38,6 +38,20 @@ module Shatter::Packet::Play
       my_uuid = UUID.new(con.profile.id)
       con.entities[my_eid] = Data::Entity.new my_eid, UUID.new(con.profile.id), "minecraft:player"
       con.players[my_uuid].name = con.profile.name
+      con.packet PktId::Sb::Play::PluginMessage do |o|
+        o.write_var_string "minecraft:brand"
+        o.write "Shatter/#{Shatter::VERSION}".to_slice
+      end
+
+      con.packet PktId::Sb::Play::ClientSettings do |o|
+        o.write_var_string "SHATTER"
+        o.write_i8 2i8
+        o.write_var_int 0u32
+        o.write_i8 1i8
+        o.write_u8 0b01111111u8
+        o.write_i8 1i8
+        o.write_i8 1i8
+      end
     end
   end
 end
