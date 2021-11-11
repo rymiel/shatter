@@ -117,6 +117,20 @@ module Shatter
       @sock.try &.close
     end
 
+    def inspect(io : IO) : Nil
+      io << {{@type.name.id.stringify}} << '('
+      {% for ivar, i in @type.instance_vars %}
+        {% if ivar.name != "registry" && ivar.name != "block_states" %}
+          {% if i > 0 %}
+            io << ", "
+          {% end %}
+          io << "@{{ivar.id}}="
+          @{{ivar.id}}.inspect(io)
+        {% end %}
+      {% end %}
+      io << ')'
+    end
+
     def run
       spawn do
         TCPSocket.open(@ip, @port) do |sock|
@@ -124,8 +138,8 @@ module Shatter
           spawn do
             loop do
               read_packet
-            rescue ioex : IO::Error
-              close_from ioex
+            rescue ex : Exception
+              close_from ex
               break
             end
           end

@@ -124,5 +124,19 @@ module Shatter
       s = s.colorize.dark_gray if trace
       STDOUT << " " << s << "\n"
     end
+
+    def inspect(io : IO) : Nil
+      io << {{@type.name.id.stringify}} << '('
+      {% for ivar, i in @type.instance_vars %}
+        {% if ivar.name != "registries" %}
+          {% if i > 0 %}
+            io << ", "
+          {% end %}
+          io << "@{{ivar.id}}="
+          @{{ivar.id}}.inspect(io)
+        {% end %}
+      {% end %}
+      io << ')'
+    end
   end
 end

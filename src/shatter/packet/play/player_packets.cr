@@ -11,7 +11,7 @@ module Shatter::Packet::Play
   end
 
   @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2, transform: {codec: @codec.pretty_inspect, dimensions: @dimensions.pretty_inspect})]
+  @[Shatter::Packet::Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope", dimension: "#{@dimension.inspect.size} chars of nope"})]
   class JoinGame
     include Packet::Handler
 
