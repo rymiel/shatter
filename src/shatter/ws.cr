@@ -37,7 +37,7 @@ module Shatter
           @mc_token, @profile = wsp_auth frame
           next if reject request_offer: true
           local_log "Auth as #{profile.name} successful"
-          @ws.send({"ready" => profile.name, "id" => profile.id}.to_json)
+          logged_send({"ready" => profile.name, "id" => profile.id}.to_json)
         elsif !@mc_token.nil? && @con.nil?
           frame = Frame::Connect.from_json raw_message
           next if reject host: frame[:host]
@@ -76,7 +76,7 @@ module Shatter
           end
         end
       rescue ex
-        @ws.send({"error" => "Your connection to the server has been closed because of #{ex.class}"}.to_json)
+        logged_send({"error" => "Your connection to the server has been closed because of #{ex.class}"}.to_json)
         @ws.close
         raise ex
       end
@@ -97,15 +97,15 @@ module Shatter
       user_permit = permits[profile.id]?
       if user_permit.nil?
         local_log "Dropping #{profile.id} (#{profile.name}) because they aren't whitelisted"
-        @ws.send({"error" => "You are not whitelisted to access this service"}.to_json)
-        @ws.send({"offer" => "/rq/#{profile.name}/#{profile.id}"}.to_json) if request_offer
+        logged_send({"error" => "You are not whitelisted to access this service"}.to_json)
+        logged_send({"offer" => "/rq/#{profile.name}/#{profile.id}"}.to_json) if request_offer
         @ws.close
         return true
       end
       if host
         unless user_permit.includes?(host) || user_permit.includes?("*")
           local_log "Dropping #{profile.name} because they tried to access #{host}, but wasn't permitted"
-          @ws.send({"error" => "You are not permitted to access that server using this service"}.to_json)
+          logged_send({"error" => "You are not permitted to access that server using this service"}.to_json)
           @ws.close
           return true
         end
@@ -137,7 +137,9 @@ module Shatter
     def local_log(s : String, trace = false, passthrough = false)
       STDOUT << id.to_s.rjust(3).colorize.yellow.bold << " "
       STDOUT << ((@profile.try &.name) || "[unknown]").rjust(16).colorize.light_cyan << " "
-      STDOUT << if trace
+      STDOUT << if trace && passthrough
+        "]LOG[".colorize.blue
+      elsif trace
         "(LOG)".colorize.blue
       elsif passthrough
         ">LOG>".colorize.red
