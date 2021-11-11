@@ -1,0 +1,22 @@
+version: 2.0
+shards:
+  crsfml:
+    git: https://github.com/oprypin/crsfml.git
+    version: 2.5.2
+
+  imgui:
+    git: https://github.com/oprypin/crystal-imgui.git
+    version: 0.1.0+git.commit.cf5bd97891e2a0d924d9ec284c6eefba90ea3920
+
+  imgui-sfml:
+    git: https://github.com/oprypin/crystal-imgui-sfml.git
+    version: 2.1.0+git.commit.0e9662bf5e2b4373d32048b07df0daf53180274e
+
+  openssl_ext:
+    git: https://github.com/spider-gazelle/openssl_ext.git
+    version: 2.1.5+git.commit.a6d023921da7cdc15c04c4dc835f6c92ee15b0c3
+
+  shatter-chat:
+    git: https://gitlab.com/rymiel/shatter-chat.git
+    version: 0.3.0+git.commit.18f7c66190422ac14666ec90cc2f165694c11081
+

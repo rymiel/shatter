@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shatter-WS Web</title>
+    <script src="shatter.js"></script>
+    <style>
+        @keyframes condemned_blink_effect {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        body {
+          background-color: black;
+          color: white;
+          font-family: monospace;
+          font-size: 1rem;
+        }
+        input { font-size: 1rem; }
+        blink { animation: 500ms linear alternate infinite condemned_blink_effect; }
+        #chatInput { flex: 1; }
+        #chatBox p { margin: 0; }
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h1, h2, h3, .err { 
+          text-align: center;
+          margin-top: 1px;
+          margin-bottom: 0.4em;
+        }
+        .err {
+          color: #ff6a6a;
+          font-weight: bold;
+        }
+        #chatLine {
+          margin: 1em;
+          display: flex;
+        }
+        #chatBox {
+          margin-left: 1em;
+          margin-right: 1em;
+          height: 60vh;
+          overflow: scroll;
+        }
+        #controlBox {
+          bottom: 0;
+          left: 0;
+          width: 100vw;
+          position: absolute;
+          border-top: white 1px solid;
+          display: flex;
+          flex-direction: column;
+        }
+        @media (max-width: 800px) {
+          #chatBox {
+            height: 75vh;
+          }
+        }
+        #middle:not([hidden]) {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          margin: 2em;
+        }
+        #spinner:not([hidden]) {
+          display: flex;
+          margin-bottom: 1em;
+        }
+        #spinner::after {
+          content: "";
+          width: 80px;
+          height: 80px;
+          border: 8px solid #f3f3f3;
+          border-top: 8px solid #ce21c8;
+          border-radius: 100%;
+          will-change: transform;
+          animation: spin 1s infinite linear
+        }
+        #auth { display: flex; }
+        #authSubmit { margin: auto; }
+        #connectBox {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shatter Web</h1>
+    <div id="auth">
+        <input id="authSubmit" type="button" value="Authenticate with Microsoft">
+    </div>
+    <div hidden id="middle">
+        <div id="spinner"></div>
+        <span id="progress">???</span>
+    </div>
+    <div id="connectBox" style="display: none;">
+        <input id="hostInput" placeholder="play.vanillarite.com">
+        <input id="portInput" type="number" value="25565" size="5">
+        <input id="connect" type="button" value="Connect">
+    </div>
+    <div id="controlBox" style="display: none;">
+        <div id="chatBox"></div>
+        <div id="chatLine">
+            <input id="chatInput">
+            <input id="chatSubmit" type="button" value="Chat">
+        </div>
+    </div>
+</body>
+</html>

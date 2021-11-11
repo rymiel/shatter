@@ -1,0 +1,26 @@
+name: shatter
+version: 0.1.0
+
+authors:
+  - Emilia Dreamer <emilia@rymiel.space>
+
+targets:
+  shatter:
+    main: src/shatter.cr
+
+dependencies:
+  openssl_ext:
+    github: spider-gazelle/openssl_ext
+    branch: master
+  shatter-chat:
+    gitlab: rymiel/shatter-chat
+  crsfml:
+    github: oprypin/crsfml
+  imgui:
+    github: oprypin/crystal-imgui
+  imgui-sfml:
+    github: oprypin/crystal-imgui-sfml
+
+crystal: 1.2.1
+
+license: GPL3

@@ -1,0 +1,18 @@
+/docs/
+/lib/
+/bin/
+/.shards/
+*.dwarf
+.vscode/
+
+# still a wip, not public
+src/visual/
+visual.json
+imgui.ini
+iosevka.ttf
+
+# personalized, these will be generated in a better way later
+permits.json
+registries.json
+blocks.json
+1.17.1.json
