@@ -26,6 +26,9 @@ class Shatter::MSA
     include JSON::Serializable
   end
 
+  class MojangAuthError < Exception
+  end
+
   class XBLToken
     include JSON::Serializable
 
