@@ -6,6 +6,8 @@ module Shatter
     end
     alias Permits = Hash(String, Array(String))
 
+    class_getter active = [] of WS
+
     getter! con : WSProxy
     getter! mc_token : String
     getter! profile : MSA::MinecraftProfile
@@ -13,10 +15,18 @@ module Shatter
     getter id : UInt32
     getter registries : {Shatter::Registry, Array(String)}
     getter ws : HTTP::WebSocket
+    getter opened : Time
     @authenticating = false
+
+    private def logged_send(s)
+      local_log s, trace: true, passthrough: true
+      @ws.send(s)
+    end
 
     def initialize(@ws, @id, @registries)
       local_log "New connection"
+      @opened = Time.utc
+      @@active << self
       # ws.on_ping { ws.pong ctx.request.path }
       @ws.on_message do |raw_message|
         local_log raw_message, trace: true
@@ -41,7 +51,19 @@ module Shatter
           con.run unless abort_connection
         elsif !@con.nil?
           json = JSON.parse(raw_message).as_h?
-          if json && json.has_key?("emulate") && json["emulate"].as_s?
+          next unless json
+          if json.has_key?("list")
+            user_permit = permits[profile.id]?
+            next if user_permit.nil?
+            next unless user_permit.includes? "*"
+            logged_send({"list" => @@active.map { |i| {
+              "Shatter::WS" => {
+                "opened" => i.opened,
+                "id" => i.id,
+                "profile" => i.profile,
+                "connection" => i.con?.try { |c| {"host" => "#{c.ip}:#{c.port}", "state" => c.state, "listening" => c.listening, "proxying" => c.proxied} } || "[No connection]"
+              } } } }.to_json)
+          elsif json.has_key?("emulate") && json["emulate"].as_s?
             emulate = json["emulate"].as_s
             local_log "Emulate #{emulate}"
             case emulate
@@ -63,6 +85,7 @@ module Shatter
         abort_connection = true
         @mc_token = nil
         @con.try &.sock.try &.close
+        @@active.delete self
       }
     end
 
