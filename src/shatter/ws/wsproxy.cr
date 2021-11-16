@@ -47,7 +47,7 @@ module Shatter
           raise "No route back to client"
         end
         size = io.read_var_int
-        raise IO::EOFError.new if size == 0
+        raise IO::EOFError.new("Packet size 0?") if size == 0
         buffer = Bytes.new size
         io.read_fully buffer
         pkt = IO::Memory.new buffer
@@ -65,15 +65,20 @@ module Shatter
         packet_id = matching_cb raw_packet_id
         if AUTO_HANDLED_PACKETS.includes? packet_id
           # puts "Incoming auto-handled packet: #{@state}/#{packet_id} #{size} -> #{real_size}"
-          pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id) }
+          # pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id) }
           @ws.send({"keepalive" => @id}.to_json) if packet_id.is_a? PktId::Cb::Play && packet_id.keep_alive?
-          PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
+          r = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
+          STDERR << connection_name
+          r.describe
+          r.run
         elsif @proxied.includes? packet_id
           raise "Unknown proxy capability" unless packet_id.is_a? PktId::Cb::Play
           is_silent = PktId::SILENT[packet_id]?
           pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id, auto: false, silent: is_silent) }
           STDERR << connection_name
           packet = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
+          packet.describe
+          packet.run
           json_out = case packet_id
             when .chat? then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(packet.as Packet::Play::ChatMessage)}.to_json
             when .disconnect? then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(packet.as Packet::Play::Disconnect)}.to_json
@@ -82,7 +87,7 @@ module Shatter
           @ws.send json_out
         elsif @listening.includes? packet_id
           pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id, auto: false) }
-          @ws.send pkt.to_slice
+          # @ws.send pkt.to_slice
         end
       end
 

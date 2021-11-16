@@ -130,19 +130,23 @@ module Shatter::Packet
         ::Shatter::PktId::SILENT[{{e}}] = true
       {% end %}
       ::Shatter::PktId::PACKET_HANDLERS[{{e}}] = ->(pkt : ::IO, con : ::Shatter::Connection) {
-        r = self.new(pkt: pkt, con: con)
-        {% if @type.annotation(::Shatter::Packet::Describe) %}
-        r.describe
-        {% end %}
-        r.as Packet::Handler
+        self.new(pkt, con).as Packet::Handler
       }
       @__con : ::Shatter::Connection
       def con : ::Shatter::Connection
         @__con
       end
+      {% if @type.annotation(::Shatter::Packet::Describe) %}
+      def describe(io : IO = STDERR)
+        _describe(io)
+      end
+      {% else %}
+      def describe(io : IO = STDERR)
+      end
+      {% end %}
     end
 
-    def initialize(*, pkt : ::IO, con : ::Shatter::Connection)
+    def initialize(pkt : ::IO, con : ::Shatter::Connection)
       @__pkt = pkt
       @__con = con
       {% begin %}
@@ -191,14 +195,13 @@ module Shatter::Packet
           {% end %}
         {% end %}
       {% end %}
-      self.run
       {% end %}
     end
 
     protected def run
     end
 
-    def describe(io : IO = STDOUT)
+    private def _describe(io : IO)
       {% begin %}
       {% ann = @type.annotation(::Shatter::Packet::Describe) %}
       {% transform = ann && ann[:transform] %}

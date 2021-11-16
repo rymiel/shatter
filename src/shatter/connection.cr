@@ -99,7 +99,7 @@ module Shatter
       handler = PktId::PACKET_HANDLERS[packet_id]?
       return if is_ignored
       pkt.read_at(pkt_body_start, pkt.size - pkt_body_start) { |b| wide_dump(b, packet_id, unknown: handler.nil?) } unless is_silent
-      handler.try &.call(pkt, self)
+      handler.try &.call(pkt, self).describe
     end
 
     private def wide_dump(b : IO, packet_id, out_pkt = false, unknown = false)
