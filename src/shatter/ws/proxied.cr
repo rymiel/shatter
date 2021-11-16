@@ -15,5 +15,13 @@ module Shatter
         pkt.write_var_string s[:chat]
       end
     end
+
+    module DisconnectProxy
+      alias CbStructure = {html: String}
+
+      def self.convert_cb(pkt : Packet::Play::Disconnect) : CbStructure
+        {html: Shatter::Chat::HtmlBuilder.new.read JSON.parse(pkt.message).as_h}
+      end
+    end
   end
 end

@@ -76,6 +76,7 @@ module Shatter
           PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
           json_out = case packet_id
             when .chat? then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(@last_packet.not_nil!.as Packet::Play::ChatMessage)}.to_json
+            when .disconnect? then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(@last_packet.not_nil!.as Packet::Play::Disconnect)}.to_json
             else raise "Unknown proxy capability"
           end
           @ws.send json_out

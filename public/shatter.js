@@ -55,7 +55,7 @@ window.addEventListener('load', (_event) => {
       host: hostInput.value || "play.vanillarite.com",
       port: parseInt(portInput.value),
       listening: [],
-      proxied: ["Chat"]
+      proxied: ["Chat", "Disconnect"]
     }));
     connectBox.style = "display: none;";
     controlBox.style = "";
@@ -84,6 +84,8 @@ window.addEventListener('load', (_event) => {
           chatBox.innerHTML += "<p>" + data.proxy.html + "</p>";
           if (preserveScroll) chatBox.scrollTop = chatBox.scrollHeight
         }
+      } else if (data.emulate === "Disconnect") {
+        reportError("Forced Disconnect", data.proxy.html);
       } else if (data.offer) {
         let offer = document.createElement("input");
         offer.setAttribute("type", "button");

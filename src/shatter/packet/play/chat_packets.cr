@@ -23,4 +23,12 @@ module Shatter::Packet::Play
     field identifier : String
     field data : Bytes = pkt.gets_to_end.to_slice
   end
+
+  @[Shatter::Packet::Silent]
+  @[Shatter::Packet::Describe(level: 5, transform: {message: Shatter::Chat::AnsiBuilder.new.read(JSON.parse(@message).as_h)})]
+  class Disconnect
+    include Packet::Handler
+
+    field message : String
+  end
 end
