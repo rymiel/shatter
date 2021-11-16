@@ -66,7 +66,7 @@ window.addEventListener('load', (_event) => {
   if (callback.has("code")) {
     document.getElementById("auth").hidden = true;
     document.getElementById("authSubmit").hidden = true;
-    ws = new WebSocket(`${document.location.host === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
+    ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
     ws.onopen = function() {
       document.getElementById("middle").hidden = false;
       wsSend({token: callback.get("code")});
