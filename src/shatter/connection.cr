@@ -134,7 +134,8 @@ module Shatter
     def run
       spawn do
         TCPSocket.open(@ip, @port) do |sock|
-          @io = @sock = sock
+          @sock = sock
+          @io = @sock
           spawn do
             loop do
               read_packet

@@ -76,7 +76,8 @@ module Shatter
           end
         end
       rescue ex
-        logged_send({"error" => "Your connection to the server has been closed because of #{ex.class}"}.to_json)
+        puts ex.inspect_with_backtrace
+        logged_send({"error" => "Your connection to the server has been closed because of #{ex.class}. #{ex.message}"}.to_json)
         @ws.close
         raise ex
       end
