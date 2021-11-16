@@ -21,6 +21,8 @@ module Shatter
     getter profile : MSA::MinecraftProfile
     getter minecraft_token : String
 
+    @mutex = Mutex.new
+
     def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile)
     end
 
@@ -42,26 +44,28 @@ module Shatter
       wide_dump(mem, packet_id, true)
 
       real_size = mem.size + var_p_id.size
-      if @using_compression > 0
-        if real_size > @using_compression
-          compressed_body = IO::Memory.new
-          Compress::Zlib::Writer.open compressed_body do |w|
-            w.write var_p_id
-            w.write slice
+      @mutex.synchronize do
+        if @using_compression > 0
+          if real_size > @using_compression
+            compressed_body = IO::Memory.new
+            Compress::Zlib::Writer.open compressed_body do |w|
+              w.write var_p_id
+              w.write slice
+            end
+            io.write_var_int compressed_body.size
+            io.write_var_int real_size
+            io.write compressed_body.to_slice
+          else
+            io.write_var_int real_size + 1
+            io.write_var_int 0
+            io.write var_p_id
+            io.write slice
           end
-          io.write_var_int compressed_body.size
-          io.write_var_int real_size
-          io.write compressed_body.to_slice
         else
-          io.write_var_int real_size + 1
-          io.write_var_int 0
+          io.write_var_int real_size
           io.write var_p_id
           io.write slice
         end
-      else
-        io.write_var_int real_size
-        io.write var_p_id
-        io.write slice
       end
     end
 

@@ -2,15 +2,6 @@ require "uri"
 require "json"
 require "openssl"
 
-# class HTTP::Client
-#   def_around_exec do |request|
-#     pp! request
-#     res = yield
-#     # do something after exec
-#     res
-#   end
-# end
-
 class Shatter::MSA
   APPLICATION_ID = "618fb7d2-7ac4-4925-b5b8-989d407f00d5"
   CLIENT_SECRET = "RpO7Q~lNFV3j9w8YAqZnj6Z5fH2r0b-7yZiya"
