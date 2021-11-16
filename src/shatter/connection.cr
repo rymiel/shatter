@@ -133,15 +133,19 @@ module Shatter
     end
 
     def run
-      spawn do
+      spawn name: "conwrapper main #{@profile.name}" do
         TCPSocket.open(@ip, @port) do |sock|
           @sock = sock
           @io = @sock
-          spawn do
+          channel = Channel(Bool).new
+
+          spawn name: "conwrapper inbound #{@profile.name}" do
+            channel.receive
             loop do
               read_packet
             rescue ex : Exception
               close_from ex
+              ex.inspect_with_backtrace STDERR
               break
             end
           end
@@ -158,6 +162,7 @@ module Shatter
           packet PktId::Sb::Login::LoginStart do |pkt|
             pkt.write_var_string @profile.try &.name || "Steve"
           end
+          channel.send true
           sleep
         end
       end
