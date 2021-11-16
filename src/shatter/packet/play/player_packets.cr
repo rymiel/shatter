@@ -33,7 +33,7 @@ module Shatter::Packet::Play
     field has_respawn : Bool
     field is_debug : Bool
     field is_flat : Bool
-    
+
     def run
       my_uuid = UUID.new(con.profile.id)
       con.entities[my_eid] = Data::Entity.new my_eid, UUID.new(con.profile.id), "minecraft:player"
@@ -51,6 +51,20 @@ module Shatter::Packet::Play
         o.write_u8 0b01111111u8
         o.write_i8 1i8
         o.write_i8 1i8
+      end
+    end
+  end
+
+  @[Shatter::Packet::Silent]
+  @[Shatter::Packet::Describe]
+  class KeepAlive
+    include Packet::Handler
+
+    field ping_id : Int64
+
+    def run
+      con.packet PktId::Sb::Play::KeepAlive do |o|
+        o.write_i64 @ping_id
       end
     end
   end

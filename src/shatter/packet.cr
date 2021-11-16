@@ -2,6 +2,7 @@ require "./data/entity"
 require "./data/player"
 require "./data/sound"
 require "./packet/handler"
+require "./packet/login/*"
 require "./packet/play/*"
 require "shatter-chat"
 require "json"
@@ -40,84 +41,11 @@ module Shatter::PktId
   end
 
   module Cb
-    def self.packet_handler(p : Enum, &block : (IO, Connection) ->)
-      PACKET_HANDLERS[p] = block
-    end
-
-    def self.silent_packet_handler(p : Enum, &block : (IO, Connection) ->)
-      SILENT[p] = true
-      PACKET_HANDLERS[p] = block
-    end
-
-    def self.ignore_packets(*p : Enum)
-      p.each do |i|
-        silent_packet_handler i do |pkt, con|
-        end
-      end
-    end
-
     enum Login
       Disconnect     = 0x00
       CryptRequest   = 0x01
       LoginSuccess   = 0x02
       SetCompression = 0x03
-    end
-
-    packet_handler Login::CryptRequest do |pkt, con|
-      server_id = pkt.read_var_string
-      pkey_asn = pkt.read_n_bytes pkt.read_var_int
-      nonce = pkt.read_n_bytes pkt.read_var_int
-      
-      rsa_pkey = Crypto.key_for pkey_asn
-      shared_secret = Random::Secure.random_bytes(16)
-
-      hash = Shatter::Crypto.digest do |d|
-        d << server_id
-        d << shared_secret
-        d << pkey_asn
-      end
-
-      r = HTTP::Client.post "https://sessionserver.mojang.com/session/minecraft/join",
-        headers: HTTP::Headers{
-          "Content-Type" => "application/json",
-          "User-Agent" => "ShatterCrystal/#{Shatter::VERSION} IG"
-        },
-        body: {
-          "accessToken": con.minecraft_token.to_s,
-          "selectedProfile": con.profile.try &.id,
-          "serverId": hash
-        }.to_json
-      puts "Posted session for #{con.profile.try &.name} to #{con.ip}:#{con.port} => #{r.status}"
-      unless r.status.no_content?
-        pp! r
-        begin
-          error_reason = JSON.parse(r.body).as_h?.try &.["error"]?.try &.as_s? || "Unknown"
-        rescue ex : JSON::ParseException
-          error_reason = nil
-        end
-        raise MSA::MojangAuthError.new(error_reason)
-      end
-
-      encoded_secret = rsa_pkey.public_encrypt shared_secret
-      encoded_nonce = rsa_pkey.public_encrypt nonce
-
-      con.packet Sb::Login::CryptResponse do |pkt|
-        pkt.write_var_int encoded_secret.size
-        pkt.write encoded_secret
-        pkt.write_var_int encoded_nonce.size
-        pkt.write encoded_nonce
-      end
-
-      con.using_crypto = true
-      con.io = Crypto::CipherStreamIO.new con.io, "aes-128-cfb8", shared_secret, shared_secret
-    end
-
-    packet_handler Login::SetCompression do |pkt, con|
-      con.using_compression = pkt.read_var_int
-    end
-
-    packet_handler Login::LoginSuccess do |pkt, con|
-      con.transition :play
     end
 
     enum Play
@@ -226,109 +154,60 @@ module Shatter::PktId
       Tags            = 0x66
     end
 
-    macro describe_packet(packet_name, *fields, level = 1)
-      STDOUT << " IN-PKT<".colorize.light_red
-      %color = {% if level == 0 %} :dark_gray
-               {% elsif level == 1 %} :red
-               {% elsif level == 2 %} :yellow
-               {% elsif level == 3 %} :light_yellow
-               {% elsif level == 4 %} :magenta
-               {% elsif level == 5 %} :light_magenta
-               {% end %}
-      STDOUT << "{{ packet_name.id }}".rjust(16).colorize %color
-      STDOUT << "|"
-      {% for f in fields %}
-        STDOUT << "{{ f.id.split(".").last.id }}=".colorize.dark_gray
-        %field = {{f.id}}
-        if %field.is_a? Float
-          STDOUT << %field.format(decimal_places: 2, only_significant: true)
-        else
-          %field.to_s STDOUT
-        end
-        STDOUT << " "
-      {% end %}
-      STDOUT.puts
-    end
+    IGNORE = [
+      Play::Light, Play::Commands, Play::Recipes, Play::Map, Play::Advancements, Play::Tags, Play::UnlockRecipes, Play::HeaderFooter, Play::EntityMeta, Play::PlayInfo, Play::EntityProp
+    ]
 
-    packet_handler Play::KeepAlive do |pkt, con|
-      ping_id = pkt.read_i64
-      con.packet Sb::Play::KeepAlive do |o|
-        o.write_i64 ping_id
-      end
-    end
+    # silent_packet_handler Play::EntityProp do |pkt, con|
+    #   entity = con.entities[pkt.read_var_int]
+    #   properties = [] of Data::Entity::Property
+    #   property_count = pkt.read_var_int
+    #   property_count.times do
+    #     properties << Data::Entity::Property.from_io pkt
+    #   end
+    #   # describe_packet EntityProp, entity, properties
+    # end
 
-    ignore_packets Play::Light, Play::Commands, Play::Recipes, Play::Map, Play::Advancements, Play::Tags, Play::UnlockRecipes
-
-    silent_packet_handler Play::EntityMeta do |pkt, con|
-      eid = pkt.read_var_int
-      # fuck this
-    end
-
-    silent_packet_handler Play::EntityProp do |pkt, con|
-      entity = con.entities[pkt.read_var_int]
-      properties = [] of Data::Entity::Property
-      property_count = pkt.read_var_int
-      property_count.times do
-        properties << Data::Entity::Property.from_io pkt
-      end
-      # describe_packet EntityProp, entity, properties
-    end
-
-    silent_packet_handler Play::HeaderFooter do |pkt, con|
-      # not yet
-    end
-
-    silent_packet_handler Play::PlayInfo do |pkt, con|
-      action_id = pkt.read_var_int
-      action = ["Add", "Gamemode", "Ping", "Display name", "Remove"][action_id]
-      description = {} of UUID => String?
-      (pkt.read_var_int).times do
-        uuid = pkt.read_uuid
-        case action_id
-        when 0
-          name = pkt.read_var_string
-          props = Hash(String, {String, String?}).new
-          (pkt.read_var_int).times do
-            key = pkt.read_var_string
-            value = pkt.read_var_string
-            is_signed = pkt.read_bool
-            signature = is_signed ? pkt.read_var_string : nil
-            props[key] = {value, signature}
-          end
-          gamemode = Data::Player::Gamemode.new(pkt.read_var_int.to_i32)
-          ping = pkt.read_var_int
-          display_name = pkt.read_bool ? Chat::AnsiBuilder.new.read(JSON.parse(pkt.read_var_string).as_h) : nil
-          con.players[uuid] = Data::Player.new(uuid, name, props, gamemode, ping, display_name)
-          description[uuid] = "#{uuid}#{display_name.nil? ? "" : " as #{display_name}"};#{gamemode};#{ping} ms;props[#{props.keys.join ", "}]"
-        when 1
-          new_gamemode = pkt.read_var_int.to_i32
-          con.players[uuid].gamemode = Data::Player::Gamemode.new(new_gamemode)
-          description[uuid] = new_gamemode.to_s
-        when 2
-          new_ping = pkt.read_var_int
-          con.players[uuid].ping = new_ping
-          description[uuid] = "#{new_ping}ms"
-        when 3
-          new_display_name = pkt.read_bool ? Chat::AnsiBuilder.new.read(JSON.parse(pkt.read_var_string).as_h) : nil
-          con.players[uuid].display_name = new_display_name
-          description[uuid] = new_display_name
-        when 4 then description[uuid] = nil
-        end
-      end
-      description_map = description.map { |k, v| v.nil? ? con.players[k].name : "#{con.players[k].name} => #{v}" }.join ", "
-      action = "#{action}{#{description_map}}"
-      describe_packet PlayInfo, action
-    end
-
-    silent_packet_handler Play::Sound do |pkt, con|
-      id = con.registry.sound.reverse[pkt.read_var_int]
-      category = Data::Sound::Category.new pkt.read_var_int.to_i32
-      x = pkt.read_i32 / 8
-      y = pkt.read_i32 / 8
-      z = pkt.read_i32 / 8
-      volume = pkt.read_f32 * 100
-      pitch = pkt.read_f32 * 100
-      # describe_packet Sound, id, category, x, y, z, volume, pitch, level: 0
-    end
+    # silent_packet_handler Play::PlayInfo do |pkt, con|
+    #   action_id = pkt.read_var_int
+    #   action = ["Add", "Gamemode", "Ping", "Display name", "Remove"][action_id]
+    #   description = {} of UUID => String?
+    #   (pkt.read_var_int).times do
+    #     uuid = pkt.read_uuid
+    #     case action_id
+    #     when 0
+    #       name = pkt.read_var_string
+    #       props = Hash(String, {String, String?}).new
+    #       (pkt.read_var_int).times do
+    #         key = pkt.read_var_string
+    #         value = pkt.read_var_string
+    #         is_signed = pkt.read_bool
+    #         signature = is_signed ? pkt.read_var_string : nil
+    #         props[key] = {value, signature}
+    #       end
+    #       gamemode = Data::Player::Gamemode.new(pkt.read_var_int.to_i32)
+    #       ping = pkt.read_var_int
+    #       display_name = pkt.read_bool ? Chat::AnsiBuilder.new.read(JSON.parse(pkt.read_var_string).as_h) : nil
+    #       con.players[uuid] = Data::Player.new(uuid, name, props, gamemode, ping, display_name)
+    #       description[uuid] = "#{uuid}#{display_name.nil? ? "" : " as #{display_name}"};#{gamemode};#{ping} ms;props[#{props.keys.join ", "}]"
+    #     when 1
+    #       new_gamemode = pkt.read_var_int.to_i32
+    #       con.players[uuid].gamemode = Data::Player::Gamemode.new(new_gamemode)
+    #       description[uuid] = new_gamemode.to_s
+    #     when 2
+    #       new_ping = pkt.read_var_int
+    #       con.players[uuid].ping = new_ping
+    #       description[uuid] = "#{new_ping}ms"
+    #     when 3
+    #       new_display_name = pkt.read_bool ? Chat::AnsiBuilder.new.read(JSON.parse(pkt.read_var_string).as_h) : nil
+    #       con.players[uuid].display_name = new_display_name
+    #       description[uuid] = new_display_name
+    #     when 4 then description[uuid] = nil
+    #     end
+    #   end
+    #   description_map = description.map { |k, v| v.nil? ? con.players[k].name : "#{con.players[k].name} => #{v}" }.join ", "
+    #   action = "#{action}{#{description_map}}"
+    #   describe_packet PlayInfo, action
+    # end
   end
 end

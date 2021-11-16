@@ -47,6 +47,9 @@ module Shatter::Packet
   type_reader EntityType, String do |pkt, con|
     con.registry.entity.reverse[pkt.read_var_int]
   end
+  type_reader Sound, String do |pkt, con|
+    con.registry.sound.reverse[pkt.read_var_int]
+  end
   type_reader Data::Slot?, Data::Slot? do |pkt, con|
     ::Shatter::Data::Slot.from_io pkt, con
   end
@@ -54,7 +57,7 @@ module Shatter::Packet
   type_reader NBT, ::NBT::Tag do |pkt|
     ::NBT::Reader.new(pkt).read_named[:tag]
   end
-  
+
   type_reader Chat, String do |pkt|
     raw_message = pkt.read_var_string
     message_json = JSON.parse(raw_message).as_h
@@ -64,7 +67,7 @@ module Shatter::Packet
       Shatter::Chat::AnsiBuilder.new.read message_json
     {% end %}
   end
-  
+
   type_reader UUID, UUID, &.read_uuid
   type_reader Bool, Bool, &.read_bool
   type_reader String, String, &.read_var_string
@@ -92,7 +95,7 @@ module Shatter::Packet
         @[::Shatter::Packet::Handler::Field(self_defining: {{ val }})]
         @{{t.var.id}} : {{t.type}}
       {% end %}
-  
+
       def {{t.var.id}} : {{t.type}}
         @{{t.var.id}}
       end
@@ -109,7 +112,7 @@ module Shatter::Packet
         @[::Shatter::Packet::Handler::Field(real_type: {{t.type}}, quantifier: {{count}}, array_type: {{array_type}})]
       {% end %}
       @{{t.var.id}} : {{array_type}}({{t.type}})
-  
+
       def {{t.var.id}} : {{array_type}}({{t.type}})
         @{{t.var.id}}
       end
@@ -229,6 +232,8 @@ module Shatter::Packet
             io << {{ transform[ivar.id.symbolize] }}
           {% elsif ivar.type < Float %}
             io << %field.format(decimal_places: 2, only_significant: true)
+          {% elsif ivar.type == Bytes %}
+            io << "Bytes(" << %field.size << ")[" << %field.hexstring << "]"
           {% else %}
             %field.to_s io
           {% end %}

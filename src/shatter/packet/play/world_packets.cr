@@ -14,7 +14,7 @@ module Shatter::Packet::Play
   # @[Shatter::Packet::Describe]
   class GameState
     include Packet::Handler
-    
+
     field reason : UInt8
     field value : Float32
   end
@@ -33,5 +33,20 @@ module Shatter::Packet::Play
     array_field _data : UInt8, count: VarInt, array_type: Slice
     field data : Chunk = Chunk.new(con, @p_bitmask, @_data)
     array_field tiles : NBT, count: VarInt
+  end
+
+  @[Shatter::Packet::Silent]
+  # @[Shatter::Packet::Describe]
+  @[Shatter::Packet::Alias(Sound)]
+  class SoundPacket
+    include Packet::Handler
+
+    field id : Sound
+    field category : Data::Sound::Category = Data::Sound::Category.new pkt.read_var_int.to_i32
+    field x : Float64 = pkt.read_i32 / 8
+    field y : Float64 = pkt.read_i32 / 8
+    field z : Float64 = pkt.read_i32 / 8
+    field volume : Float32 = pkt.read_f32 * 100
+    field pitch : Float32 = pkt.read_f32 * 100
   end
 end
