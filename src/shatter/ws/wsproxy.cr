@@ -23,7 +23,7 @@ module Shatter
         @id = ws_handler.id
       end
 
-      def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile, @ws, @id, @listening, @proxied, @packet_callback = nil)
+      def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile, @ws, @id, @listening, @proxied)
       end
 
       private def logged_error(s)
@@ -73,10 +73,10 @@ module Shatter
           is_silent = PktId::SILENT[packet_id]?
           pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id, auto: false, silent: is_silent) }
           STDERR << connection_name
-          PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
+          packet = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
           json_out = case packet_id
-            when .chat? then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(@last_packet.not_nil!.as Packet::Play::ChatMessage)}.to_json
-            when .disconnect? then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(@last_packet.not_nil!.as Packet::Play::Disconnect)}.to_json
+            when .chat? then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(packet.as Packet::Play::ChatMessage)}.to_json
+            when .disconnect? then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(packet.as Packet::Play::Disconnect)}.to_json
             else raise "Unknown proxy capability"
           end
           @ws.send json_out
@@ -89,7 +89,7 @@ module Shatter
       private def connection_name
         "#{@id.to_s.rjust(3).colorize.yellow.bold} #{@profile.name.rjust(16).colorize.light_cyan}"
       end
-      
+
       # mostly stubbed
       private def wide_dump(b : IO, packet_id, out_pkt = false, unknown = false, auto = true, silent = false)
         io = b.as IO::Memory

@@ -132,10 +132,9 @@ module Shatter::Packet
       ::Shatter::PktId::PACKET_HANDLERS[{{e}}] = ->(pkt : ::IO, con : ::Shatter::Connection) {
         r = self.new(pkt: pkt, con: con)
         {% if @type.annotation(::Shatter::Packet::Describe) %}
-        con.packet_callback.try &.call(r, con)
         r.describe
         {% end %}
-        r
+        r.as Packet::Handler
       }
       @__con : ::Shatter::Connection
       @__pkt : ::IO
@@ -197,7 +196,6 @@ module Shatter::Packet
         {% end %}
       {% end %}
       self.run
-      con.last_packet = self
       {% end %}
     end
 

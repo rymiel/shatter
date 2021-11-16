@@ -20,10 +20,8 @@ module Shatter
     getter block_states : Array(String)
     getter profile : MSA::MinecraftProfile
     getter minecraft_token : String
-    getter packet_callback : ((Packet::Handler, Connection) ->)?
-    setter last_packet : Packet::Handler? = nil
 
-    def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile, @packet_callback = nil)
+    def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile)
     end
 
     def transition(s : PktId::State)

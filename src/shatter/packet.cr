@@ -19,7 +19,7 @@ module Shatter::PktId
     State::Play  => Cb::Play,
   }
 
-  PACKET_HANDLERS = {} of (Cb::Login | Cb::Play) => (IO, Connection) ->
+  PACKET_HANDLERS = {} of (Cb::Login | Cb::Play) => ((IO, Connection) -> Packet::Handler)
   SILENT = {} of (Cb::Login | Cb::Play) => Bool
 
   module Sb
