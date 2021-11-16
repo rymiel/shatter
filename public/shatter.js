@@ -106,7 +106,7 @@ window.addEventListener('load', (_event) => {
     
     ws.onclose = function(closeEvent) {
       closeReason = `Lost connection. (${closeEvent.code}; ${closeEvent.reason})`
-      reportError("Disconnected", closeReason);
+      if (!closeEvent.reason.includes("Closed due to above error")) reportError("Disconnected", closeReason);
       chatSubmit.disabled = true;
       chatInput.disabled = true;
     }
