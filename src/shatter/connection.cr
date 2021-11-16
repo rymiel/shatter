@@ -66,6 +66,7 @@ module Shatter
           io.write var_p_id
           io.write slice
         end
+        io.flush
       end
     end
 

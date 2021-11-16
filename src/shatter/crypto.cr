@@ -34,18 +34,22 @@ module Shatter::Crypto
     end
 
     def read(slice : Bytes)
-      @mutex.synchronize do
-        upstream_size = @io.read slice
-        upstream = slice[0, upstream_size]
-        o = @read_cipher.update upstream
-        slice.copy_from o
-        upstream_size
-      end
+      upstream_size = @io.read slice
+      upstream = slice[0, upstream_size]
+      o = @read_cipher.update upstream
+      slice.copy_from o
+      upstream_size
     end
 
     def write(slice : Bytes) : Nil
       @mutex.synchronize do
         @io.write @write_cipher.update(slice)
+      end
+    end
+
+    def flush
+      @mutex.synchronize do
+        @io.flush
       end
     end
   end
