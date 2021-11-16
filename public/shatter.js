@@ -1,4 +1,8 @@
-var ws, chatBox, hostInput, portInput, chatInput, connectBox, controlBox, chatSubmit;
+var ws;
+
+function el(id) {
+  return document.getElementById(id);
+}
 
 function isScrolledToBottom(out) {
   return out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
@@ -22,9 +26,9 @@ function wsSend(jsonPayload) {
 }
 
 function sendChat() {
-  if (chatInput.value.length > 0)
-    wsSend({emulate: "Chat", proxy: {chat: chatInput.value}});
-  chatInput.value = "";
+  if (el`chatInput`.value.length > 0)
+    wsSend({emulate: "Chat", proxy: {chat: el`chatInput`.value}});
+  el`chatInput`.value = "";
 }
 
 function submit(el, closure) {
@@ -39,36 +43,29 @@ function submit(el, closure) {
 window.addEventListener('load', (_event) => {
   let callback = new URLSearchParams(window.location.hash.substr(1));
   window.location.hash = "";
-  chatBox = document.getElementById("chatBox");
-  hostInput = document.getElementById("hostInput");
-  portInput = document.getElementById("portInput");
-  chatInput = document.getElementById("chatInput");
-  connectBox = document.getElementById("connectBox");
-  controlBox = document.getElementById("controlBox");
-  chatSubmit = document.getElementById("chatSubmit");
 
   if (callback.has("error"))
     reportError(callback.get("error"), callback.get("error_description"));
 
   function connect(_event) {
     ws.send(JSON.stringify({
-      host: hostInput.value || "play.vanillarite.com",
-      port: parseInt(portInput.value),
+      host: el`hostInput`.value || "play.vanillarite.com",
+      port: parseInt(el`portInput`.value),
       listening: [],
       proxied: ["Chat", "Disconnect"]
     }));
-    connectBox.style = "display: none;";
-    controlBox.style = "";
-    chatSubmit.onclick = sendChat;
-    submit(chatInput, sendChat);
+    el`connectBox`.style = "display: none;";
+    el`controlBox`.style = "";
+    el`chatSubmit`.onclick = sendChat;
+    submit(el`chatInput`, sendChat);
   }
 
   if (callback.has("code")) {
-    document.getElementById("auth").hidden = true;
-    document.getElementById("authSubmit").hidden = true;
+    el`auth`.hidden = true;
+    el`authSubmit`.hidden = true;
     ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
     ws.onopen = function() {
-      document.getElementById("middle").hidden = false;
+      el`middle`.hidden = false;
       wsSend({token: callback.get("code")});
     }
 
@@ -76,13 +73,13 @@ window.addEventListener('load', (_event) => {
       let data = JSON.parse(message.data);
       if (data.error) {
         reportError(data.errortype || "Denied", data.error);
-        document.getElementById("middle").hidden = true;
+        el`middle`.hidden = true;
       } else if (data.emulate === "Chat") {
         let position = data.proxy.position;
         if (position !== 2) {
-          let preserveScroll = isScrolledToBottom(chatBox);
-          chatBox.innerHTML += "<p>" + data.proxy.html + "</p>";
-          if (preserveScroll) chatBox.scrollTop = chatBox.scrollHeight
+          let preserveScroll = isScrolledToBottom(el`chatBox`);
+          el`chatBox`.innerHTML += "<p>" + data.proxy.html + "</p>";
+          if (preserveScroll) el`chatBox`.scrollTop = el`chatBox`.scrollHeight
         }
       } else if (data.emulate === "Disconnect") {
         reportError("Forced Disconnect", data.proxy.html);
@@ -94,25 +91,25 @@ window.addEventListener('load', (_event) => {
         document.body.appendChild(offer);
         console.log(offer.onclick);
       } else if (data.ready) {
-        connectBox.style = "";
-        document.getElementById("middle").hidden = true;
-        submit(hostInput, connect);
-        submit(portInput, connect);
-        document.getElementById("connect").onclick = connect;
+        el`connectBox`.style = "";
+        el`middle`.hidden = true;
+        submit(el`hostInput`, connect);
+        submit(el`portInput`, connect);
+        el`connect`.onclick = connect;
       } else if (data.log) {
-        document.getElementById("progress").innerText = data.log;
+        el`progress`.innerText = data.log;
       }
     }
     
     ws.onclose = function(closeEvent) {
       closeReason = `Lost connection. (${closeEvent.code}; ${closeEvent.reason})`
       if (!closeEvent.reason.includes("Closed due to above error")) reportError("Disconnected", closeReason);
-      chatSubmit.disabled = true;
-      chatInput.disabled = true;
+      el`chatSubmit`.disabled = true;
+      el`chatInput`.disabled = true;
     }
   }
 
-  document.getElementById("authSubmit").onclick = function() {
+  el`authSubmit`.onclick = function() {
     let nonce = Math.floor(Math.random() * 1000000000).toString(16);
     window.location.href = "https://login.live.com/oauth20_authorize.srf" +
       "?client_id=618fb7d2-7ac4-4925-b5b8-989d407f00d5" +
