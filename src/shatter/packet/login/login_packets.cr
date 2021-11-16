@@ -62,7 +62,7 @@ module Shatter::Packet::Login
     field threshold : VarInt
 
     def run
-      con.using_compression = pkt.read_var_int
+      con.using_compression = @threshold
     end
   end
 

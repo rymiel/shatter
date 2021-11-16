@@ -137,12 +137,8 @@ module Shatter::Packet
         r.as Packet::Handler
       }
       @__con : ::Shatter::Connection
-      @__pkt : ::IO
       def con : ::Shatter::Connection
         @__con
-      end
-      def pkt : ::IO
-        @__pkt
       end
     end
 
