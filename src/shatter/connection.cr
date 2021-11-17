@@ -22,7 +22,8 @@ module Shatter
     getter minecraft_token : String
 
     alias OutboundContainer = {pid: Bytes, body: Bytes}
-    @outbound = Channel(OutboundContainer).new
+    getter outbound = Channel(OutboundContainer | Crypto::CipherStreamIO).new
+    @startup_channel = Channel(Bool).new
 
     def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile)
     end
@@ -43,8 +44,8 @@ module Shatter
       yield mem
       slice = mem.to_slice
       wide_dump(mem, packet_id, true)
-
       @outbound.send({pid: var_p_id, body: slice})
+      sleep 0
     end
 
     def io : IO
@@ -114,11 +115,10 @@ module Shatter
         TCPSocket.open(@ip, @port) do |sock|
           @sock = sock
           @io = @sock
-          channel = Channel(Bool).new
 
           spawn name: "conwrapper inbound #{@profile.name}" do
-            channel.receive
             loop do
+              @startup_channel.receive unless @startup_channel.closed?
               read_packet
             rescue ex : Exception
               close_from ex
@@ -129,33 +129,42 @@ module Shatter
 
           spawn name: "conwrapper outbound #{@profile.name}" do
             loop do
-              outbound = @outbound.receive
-              break if outbound.nil?
-              var_p_id = outbound[:pid]
-              mem = outbound[:body]
-              real_size = mem.size + var_p_id.size
-              if @using_compression > 0
-                if real_size > @using_compression
-                  compressed_body = IO::Memory.new
-                  Compress::Zlib::Writer.open compressed_body do |w|
-                    w.write var_p_id
-                    w.write mem
-                  end
-                  io.write_var_int compressed_body.size
-                  io.write_var_int real_size
-                  io.write compressed_body.to_slice
-                else
-                  io.write_var_int real_size + 1
-                  io.write_var_int 0
-                  io.write var_p_id
-                  io.write mem
-                end
+              x = @outbound.receive
+              break if x.nil?
+              case x
+              when Crypto::CipherStreamIO
+                @using_crypto = true
+                @io = x
+                @startup_channel.send true
+                @startup_channel.close
               else
-                io.write_var_int real_size
-                io.write var_p_id
-                io.write mem
+                iio = io
+                var_p_id = x[:pid]
+                mem = x[:body]
+                real_size = mem.size + var_p_id.size
+                if @using_compression > 0
+                  if real_size > @using_compression
+                    compressed_body = IO::Memory.new
+                    Compress::Zlib::Writer.open compressed_body do |w|
+                      w.write var_p_id
+                      w.write mem
+                    end
+                    iio.write_var_int compressed_body.size
+                    iio.write_var_int real_size
+                    iio.write compressed_body.to_slice
+                  else
+                    iio.write_var_int real_size + 1
+                    iio.write_var_int 0
+                    iio.write var_p_id
+                    iio.write mem
+                  end
+                else
+                  iio.write_var_int real_size
+                  iio.write var_p_id
+                  iio.write mem
+                end
+                iio.flush
               end
-              io.flush
             end
           end
 
@@ -171,7 +180,7 @@ module Shatter
           packet PktId::Sb::Login::LoginStart do |pkt|
             pkt.write_var_string @profile.try &.name || "Steve"
           end
-          channel.send true
+          @startup_channel.send true
           sleep
         end
       end
