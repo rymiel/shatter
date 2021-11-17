@@ -20,7 +20,7 @@ module Shatter::PktId
   }
 
   PACKET_HANDLERS = {} of (Cb::Login | Cb::Play) => ((IO, Connection) -> Packet::Handler)
-  SILENT = {} of (Cb::Login | Cb::Play) => Bool
+  SILENT          = {} of (Cb::Login | Cb::Play) => Bool
 
   module Sb
     enum Handshake
@@ -155,7 +155,7 @@ module Shatter::PktId
     end
 
     IGNORE = [
-      Play::Light, Play::Commands, Play::Recipes, Play::Map, Play::Advancements, Play::Tags, Play::UnlockRecipes, Play::HeaderFooter, Play::EntityMeta, Play::PlayInfo, Play::EntityProp
+      Play::Light, Play::Commands, Play::Recipes, Play::Map, Play::Advancements, Play::Tags, Play::UnlockRecipes, Play::HeaderFooter, Play::EntityMeta, Play::PlayInfo, Play::EntityProp,
     ]
 
     # silent_packet_handler Play::EntityProp do |pkt, con|

@@ -23,7 +23,7 @@ module Shatter::Data
 
     # def initialize(@eid, @uuid, @type, @x0, @y, @z, @yaw, @pitch, @head, @vx, @vy, @vz = 0.0)
     # end
-    
+
     def initialize(@eid, @uuid, @type, @data : Int32?, @x = 0.0, @y = 0.0, @z = 0.0, @yaw = 0.0, @pitch = 0.0, @vx = 0.0, @vy = 0.0, @vz = 0.0)
     end
 
@@ -63,67 +63,67 @@ end
 
 class Shatter::Data::Entity
   enum Status
-    TippedArrowColorParticle = 0
-    RabbitRotatedJump = 1
-    LivingHurt = 2
-    LivingDeath = 3
-    Attack = 4
-    Unknown5 = 5
-    TamingFailed = 6
-    TamingSuccess = 7
-    WolfShakingWater = 8
-    PlayerItemUseFinished = 9
-    SheepEat = 10
-    IronGolemPoppy = 11
-    VillagerBreed = 12
-    VillagerAngry = 13
-    VillagerHappy = 14
-    WitchMagic = 15
-    ZombieVillagerCured = 16
-    FireworkExplosion = 17
-    AnimalHearts = 18
-    SquidResetRotation = 19
-    SilverfishBlockParticle = 20
-    GuardianAttack = 21
-    PlayerReducedDebug = 22
-    PlayerIncreasedDebug = 23
-    PlayerOp0 = 24
-    PlayerOp1 = 25
-    PlayerOp2 = 26
-    PlayerOp3 = 27
-    PlayerOp4 = 28
-    ShieldBlock = 29
-    ShieldBreak = 30
-    FishingHookPull = 31
-    ArmorStandHit = 32
-    Thorns = 33
-    IronGolemStopPoppy = 34
-    TotemOfUndying = 35
-    DrownHurt = 36
-    BurnHurt = 37
-    DolphinHappy = 38
-    RavagerStunned = 39
-    OcelotTamingFailed = 40
-    OcelotTamingSuccess = 41
-    VillagerSweat = 42
-    PlayerBadOmenTrigger = 43
-    BerryHurt = 44
-    FoxEat = 45
-    Teleport = 46
-    MainHandBreak = 47
-    OffHandBreak = 48
-    HelmetBreak = 49
-    ChestplateBreak = 50
-    LeggingsBreak = 51
-    BootsBreak = 52
-    HoneySlide = 53
-    LivingHoneySlide = 54
-    SwapHands = 55
-    WolfStopShake = 56
-    FreezingHurt = 57
-    GoatLowerHead = 58
-    GoatRaiseHead = 59
-    DeathSmoke = 60
+    TippedArrowColorParticle =  0
+    RabbitRotatedJump        =  1
+    LivingHurt               =  2
+    LivingDeath              =  3
+    Attack                   =  4
+    Unknown5                 =  5
+    TamingFailed             =  6
+    TamingSuccess            =  7
+    WolfShakingWater         =  8
+    PlayerItemUseFinished    =  9
+    SheepEat                 = 10
+    IronGolemPoppy           = 11
+    VillagerBreed            = 12
+    VillagerAngry            = 13
+    VillagerHappy            = 14
+    WitchMagic               = 15
+    ZombieVillagerCured      = 16
+    FireworkExplosion        = 17
+    AnimalHearts             = 18
+    SquidResetRotation       = 19
+    SilverfishBlockParticle  = 20
+    GuardianAttack           = 21
+    PlayerReducedDebug       = 22
+    PlayerIncreasedDebug     = 23
+    PlayerOp0                = 24
+    PlayerOp1                = 25
+    PlayerOp2                = 26
+    PlayerOp3                = 27
+    PlayerOp4                = 28
+    ShieldBlock              = 29
+    ShieldBreak              = 30
+    FishingHookPull          = 31
+    ArmorStandHit            = 32
+    Thorns                   = 33
+    IronGolemStopPoppy       = 34
+    TotemOfUndying           = 35
+    DrownHurt                = 36
+    BurnHurt                 = 37
+    DolphinHappy             = 38
+    RavagerStunned           = 39
+    OcelotTamingFailed       = 40
+    OcelotTamingSuccess      = 41
+    VillagerSweat            = 42
+    PlayerBadOmenTrigger     = 43
+    BerryHurt                = 44
+    FoxEat                   = 45
+    Teleport                 = 46
+    MainHandBreak            = 47
+    OffHandBreak             = 48
+    HelmetBreak              = 49
+    ChestplateBreak          = 50
+    LeggingsBreak            = 51
+    BootsBreak               = 52
+    HoneySlide               = 53
+    LivingHoneySlide         = 54
+    SwapHands                = 55
+    WolfStopShake            = 56
+    FreezingHurt             = 57
+    GoatLowerHead            = 58
+    GoatRaiseHead            = 59
+    DeathSmoke               = 60
   end
 
   enum ModifierOperation

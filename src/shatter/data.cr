@@ -22,7 +22,7 @@ module Shatter
   def self.var_int(value : Int32) : Bytes
     var_int(value.to_u32!)
   end
-  
+
   module Data
     enum InvIdx
       CraftResult
@@ -179,7 +179,7 @@ class IO
       write_bytes i, IO::ByteFormat::BigEndian
     end
   {% end %}
-  
+
   def read_bool : Bool
     read_u8 != 0_u8
   end
@@ -201,21 +201,21 @@ class IO
   class WideHexdump < IO
     def initialize(@io : IO, @output : IO = STDERR, @read = false, @write = false)
     end
-  
+
     def read(buf : Bytes) : Int32
       @io.read(buf).to_i32.tap do |read_bytes|
         buf[0, read_bytes].wide_hexdump(@output) if @read && read_bytes
       end
     end
-  
+
     def write(buf : Bytes) : Nil
       return if buf.empty?
-  
+
       @io.write(buf).tap do
         buf.wide_hexdump(@output) if @write
       end
     end
-  
+
     delegate :peek, :close, :closed?, :flush, :tty?, :pos, :pos=, :seek, to: @io
   end
 end
@@ -243,7 +243,7 @@ struct Slice(T)
       while pos < size
         # Ensure we don't write outside the buffer:
         # slower, but safer (speed is not very important when hexdump is used)
-        prefix.to_slice.copy_to Slice.new(buf + offset, { {line_size, str_size - offset}.min, prefix.size}.max)
+        prefix.to_slice.copy_to Slice.new(buf + offset, { {line_size, str_size - offset}.min, prefix.size }.max)
         offset += prefix.size
         wide_hexdump_line(Slice.new(buf + offset, {line_size, str_size - offset}.min), pos, address: address, sections: sections)
         pos += descriptor_size

@@ -21,12 +21,12 @@ module Shatter::Packet::Login
       r = HTTP::Client.post "https://sessionserver.mojang.com/session/minecraft/join",
         headers: HTTP::Headers{
           "Content-Type" => "application/json",
-          "User-Agent" => "ShatterCrystal/#{Shatter::VERSION} IG"
+          "User-Agent"   => "ShatterCrystal/#{Shatter::VERSION} IG",
         },
         body: {
-          "accessToken": con.minecraft_token.to_s,
+          "accessToken":     con.minecraft_token.to_s,
           "selectedProfile": con.profile.try &.id,
-          "serverId": hash
+          "serverId":        hash,
         }.to_json
       puts "Posted session for #{con.profile.try &.name} to #{con.ip}:#{con.port} => #{r.status}"
       unless r.status.no_content?

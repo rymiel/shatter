@@ -158,7 +158,7 @@ module Shatter::Packet
               self_def:   ann && ann[:self_defining],
               quantifier: ann && ann[:quantifier],
               reader:     ann && ann[:reader],
-              array_type: (ann && ann[:array_type]) || "Array"
+              array_type: (ann && ann[:array_type]) || "Array",
             }
           %}
         {% end %}
@@ -214,7 +214,7 @@ module Shatter::Packet
       io << "{{ @type.id.split("::").last.id }}".rjust(16).colorize %color
       io << "|"
       {% if ann && ann[:order] %}
-        {% order = ann[:order].map {|i| @type.instance_vars.find {|j| j.id == i.id} } %}
+        {% order = ann[:order].map { |i| @type.instance_vars.find { |j| j.id == i.id } } %}
       {% else %}
         {% order = @type.instance_vars %}
       {% end %}

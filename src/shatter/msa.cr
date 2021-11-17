@@ -4,8 +4,8 @@ require "openssl"
 
 class Shatter::MSA
   APPLICATION_ID = "618fb7d2-7ac4-4925-b5b8-989d407f00d5"
-  CLIENT_SECRET = "RpO7Q~lNFV3j9w8YAqZnj6Z5fH2r0b-7yZiya"
-  REDIRECT_URI = "https://shatter.rymiel.space/"
+  CLIENT_SECRET  = "RpO7Q~lNFV3j9w8YAqZnj6Z5fH2r0b-7yZiya"
+  REDIRECT_URI   = "https://shatter.rymiel.space/"
 
   record AuthorizationToken, token_type : String, expires_in : Int32, scope : String, access_token : String do
     include JSON::Serializable
@@ -57,7 +57,7 @@ class Shatter::MSA
         "redirect_uri"  => REDIRECT_URI,
         "scope"         => "xboxlive.signin",
       } do |r|
-        AuthorizationToken.from_json r.body_io.gets_to_end
+      AuthorizationToken.from_json r.body_io.gets_to_end
     end
   end
 

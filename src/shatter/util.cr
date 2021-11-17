@@ -10,10 +10,10 @@ module Shatter
     output[0] = 0_u8
     output[1] = 1_u8
     pad_block_len.times do |i|
-      output[i+2] = 0xFF_u8
+      output[i + 2] = 0xFF_u8
     end
-    output[pad_block_len+2] = 0_u8
-    message.copy_to output[pad_block_len+3, message.size]
+    output[pad_block_len + 2] = 0_u8
+    message.copy_to output[pad_block_len + 3, message.size]
     output
   end
 end

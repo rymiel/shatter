@@ -4,6 +4,7 @@ module Shatter
       alias Auth = {token: String}
       alias Connect = {host: String, port: Int32?, listening: Array(PktId::Cb::Play), proxied: Array(PktId::Cb::Play)}
     end
+
     alias Permits = Hash(String, Array(String))
 
     class_getter active = [] of WS
@@ -58,11 +59,12 @@ module Shatter
             next unless user_permit.includes? "*"
             logged_send({"list" => @@active.map { |i| {
               "Shatter::WS" => {
-                "opened" => i.opened,
-                "id" => i.id,
-                "profile" => i.profile,
-                "connection" => i.con?.try { |c| {"host" => "#{c.ip}:#{c.port}", "state" => c.state, "listening" => c.listening, "proxying" => c.proxied} } || "[No connection]"
-              } } } }.to_json)
+                "opened"     => i.opened,
+                "id"         => i.id,
+                "profile"    => i.profile,
+                "connection" => i.con?.try { |c| {"host" => "#{c.ip}:#{c.port}", "state" => c.state, "listening" => c.listening, "proxying" => c.proxied} } || "[No connection]",
+              },
+            } }}.to_json)
           elsif json.has_key?("emulate") && json["emulate"].as_s?
             emulate = json["emulate"].as_s
             local_log "Emulate #{emulate}"

@@ -26,7 +26,7 @@ end
 server = HTTP::Server.new [
   ws_handler,
   RootHandler.new,
-  HTTP::StaticFileHandler.new("public", directory_listing: false)
+  HTTP::StaticFileHandler.new("public", directory_listing: false),
 ]
 address = server.bind_tcp "0.0.0.0", 10110
 puts "Listening on http://#{address}"

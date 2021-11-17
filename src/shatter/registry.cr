@@ -58,7 +58,7 @@ module Shatter
     known_blocks = Array(String).new(max_block_state + 1, "")
     blocks.each do |k, v|
       v.states.each do |s|
-        prop = s.properties.nil? ? "" : "[#{ s.properties.not_nil!.map { |k, v| "#{k}=#{v}" }.join(",") }]"
+        prop = s.properties.nil? ? "" : "[#{s.properties.not_nil!.map { |k, v| "#{k}=#{v}" }.join(",")}]"
         known_blocks[s.id] = k + prop
       end
     end

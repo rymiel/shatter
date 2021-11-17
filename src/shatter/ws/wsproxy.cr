@@ -6,7 +6,7 @@ module Shatter
         PktId::Cb::Login::LoginSuccess,
         PktId::Cb::Login::SetCompression,
         PktId::Cb::Play::KeepAlive,
-        PktId::Cb::Play::JoinGame
+        PktId::Cb::Play::JoinGame,
       }
 
       property ws : HTTP::WebSocket
@@ -80,10 +80,10 @@ module Shatter
           packet.describe
           packet.run
           json_out = case packet_id
-            when .chat? then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(packet.as Packet::Play::ChatMessage)}.to_json
-            when .disconnect? then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(packet.as Packet::Play::Disconnect)}.to_json
-            else raise "Unknown proxy capability"
-          end
+                     when .chat?       then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(packet.as Packet::Play::ChatMessage)}.to_json
+                     when .disconnect? then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(packet.as Packet::Play::Disconnect)}.to_json
+                     else                   raise "Unknown proxy capability"
+                     end
           @ws.send json_out
         elsif @listening.includes? packet_id
           pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id, auto: false) }
@@ -98,8 +98,7 @@ module Shatter
       # mostly stubbed
       private def wide_dump(b : IO, packet_id, out_pkt = false, unknown = false, auto = true, silent = false)
         io = b.as IO::Memory
-        marker = out_pkt ? (auto ? "AToOUT>" : "WSkOUT>").colorize.green
-                        : (auto ? "ATo IN<" : "WSk IN<").colorize.red
+        marker = out_pkt ? (auto ? "AToOUT>" : "WSkOUT>").colorize.green : (auto ? "ATo IN<" : "WSk IN<").colorize.red
         packet_name = packet_id.to_s.rjust(16).colorize(out_pkt ? :light_green : :red)
         marker = marker.bold if unknown
         packet_name = packet_name.bold if unknown

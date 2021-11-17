@@ -18,14 +18,14 @@ module Shatter::Packet::Play
     include Packet::Handler
 
     KNOWN_ACTION = {
-      /minecraft:note_block/ => ["Play note"],
-      /minecraft:\w*piston/ => ["Extend", "Retract"],
-      /minecraft:\w*chest/ => [nil, "Update viewers"],
+      /minecraft:note_block/     => ["Play note"],
+      /minecraft:\w*piston/      => ["Extend", "Retract"],
+      /minecraft:\w*chest/       => [nil, "Update viewers"],
       /minecraft:\w*shulker_box/ => [nil, "Update viewers"],
-      /minecraft:bell/ => [nil, "Ring"]
+      /minecraft:bell/           => [nil, "Ring"],
     }
     KNOWN_PARAM = {
-      /minecraft:(\w*piston|bell)/ => ["Down", "Up", "South", "West", "North", "East"]
+      /minecraft:(\w*piston|bell)/ => ["Down", "Up", "South", "West", "North", "East"],
     }
 
     field _val : UInt64
@@ -43,7 +43,7 @@ module Shatter::Packet::Play
   # @[Shatter::Packet::Describe(level: 2, transform: {blocks: @blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", "})]
   class MultiBlocks
     include Packet::Handler
-    
+
     field _val : UInt64
     field _sect_x : Int64 = (@_val >> 42).as_signed_bit_width(22)
     field _sect_y : Int64 = (@_val << 44 >> 44).as_signed_bit_width(20)

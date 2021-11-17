@@ -1,6 +1,6 @@
 module Shatter::Packet::Play
   @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index{|i, j| {Data::InvIdx.new(j), i}}.to_h.compact.pretty_inspect + "\n"})]
+  @[Shatter::Packet::Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n"})]
   class WindowItems
     include Packet::Handler
 

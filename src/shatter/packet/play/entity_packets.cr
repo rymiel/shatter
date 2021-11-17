@@ -1,4 +1,3 @@
-
 module Shatter::Packet::Play
   @[Shatter::Packet::Silent]
   # @[Shatter::Packet::Describe(level: 0)]
@@ -35,12 +34,12 @@ module Shatter::Packet::Play
   # @[Shatter::Packet::Describe(level: 0)]
   class EntityVelocity
     include Packet::Handler
-    
+
     field ent : Entity
     field vx : Velocity
     field vy : Velocity
     field vz : Velocity
-    
+
     def run
       @ent.vx = @vx
       @ent.vy = @vy
@@ -60,7 +59,7 @@ module Shatter::Packet::Play
     field yaw : Angle
     field pitch : Angle
     field on_ground : Bool
-    
+
     def run
       @ent.x += @dx
       @ent.y += @dy
