@@ -21,7 +21,8 @@ module Shatter
     getter profile : MSA::MinecraftProfile
     getter minecraft_token : String
 
-    @mutex = Mutex.new
+    alias OutboundContainer = {pid: Bytes, body: Bytes}
+    @outbound = Channel(OutboundContainer).new
 
     def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile)
     end
@@ -40,34 +41,9 @@ module Shatter
       var_p_id = Shatter.var_int raw_packet_id
 
       yield mem
-      slice = mem.to_slice
       wide_dump(mem, packet_id, true)
 
-      real_size = mem.size + var_p_id.size
-      @mutex.synchronize do
-        if @using_compression > 0
-          if real_size > @using_compression
-            compressed_body = IO::Memory.new
-            Compress::Zlib::Writer.open compressed_body do |w|
-              w.write var_p_id
-              w.write slice
-            end
-            io.write_var_int compressed_body.size
-            io.write_var_int real_size
-            io.write compressed_body.to_slice
-          else
-            io.write_var_int real_size + 1
-            io.write_var_int 0
-            io.write var_p_id
-            io.write slice
-          end
-        else
-          io.write_var_int real_size
-          io.write var_p_id
-          io.write slice
-        end
-        io.flush
-      end
+      @outbound.send({pid: var_p_id, body: mem.to_slice})
     end
 
     def io : IO
@@ -147,6 +123,38 @@ module Shatter
               close_from ex
               ex.inspect_with_backtrace STDERR
               break
+            end
+          end
+
+          spawn name: "conwrapper outbound #{@profile.name}" do
+            loop do
+              outbound = @outbound.receive
+              break if outbound.nil?
+              var_p_id = outbound[:pid]
+              mem = outbound[:body]
+              real_size = mem.size + var_p_id.size
+              if @using_compression > 0
+                if real_size > @using_compression
+                  compressed_body = IO::Memory.new
+                  Compress::Zlib::Writer.open compressed_body do |w|
+                    w.write var_p_id
+                    w.write mem
+                  end
+                  io.write_var_int compressed_body.size
+                  io.write_var_int real_size
+                  io.write compressed_body.to_slice
+                else
+                  io.write_var_int real_size + 1
+                  io.write_var_int 0
+                  io.write var_p_id
+                  io.write mem
+                end
+              else
+                io.write_var_int real_size
+                io.write var_p_id
+                io.write mem
+              end
+              io.flush
             end
           end
 

@@ -20,7 +20,6 @@ module Shatter::Crypto
   class CipherStreamIO < IO
     getter read_cipher : OpenSSL::Cipher
     getter write_cipher : OpenSSL::Cipher
-    @mutex = Mutex.new
 
     def initialize(@io : IO, cipher_method : String, iv : Bytes, key : Bytes)
       @read_cipher = OpenSSL::Cipher.new cipher_method
@@ -42,15 +41,11 @@ module Shatter::Crypto
     end
 
     def write(slice : Bytes) : Nil
-      @mutex.synchronize do
-        @io.write @write_cipher.update(slice)
-      end
+      @io.write @write_cipher.update(slice)
     end
 
     def flush
-      @mutex.synchronize do
-        @io.flush
-      end
+      @io.flush
     end
   end
 end
