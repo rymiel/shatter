@@ -5,8 +5,8 @@ authors:
   - Emilia Dreamer <emilia@rymiel.space>
 
 targets:
-  shatter:
-    main: src/shatter.cr
+  shatter-wsp:
+    main: src/wsp.cr
 
 dependencies:
   openssl_ext:

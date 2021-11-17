@@ -55,7 +55,6 @@ module Shatter
       Hash(String, Shatter::RegistryBlock).from_json f
     end
     max_block_state = blocks.map { |k, v| v.states.map &.id }.flatten.max
-    p! max_block_state
     known_blocks = Array(String).new(max_block_state + 1, "")
     blocks.each do |k, v|
       v.states.each do |s|
