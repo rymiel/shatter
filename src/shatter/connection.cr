@@ -20,12 +20,13 @@ module Shatter
     getter block_states : Array(String)
     getter profile : MSA::MinecraftProfile
     getter minecraft_token : String
+    getter packet_callback : ((Packet::Handler, Connection) ->)? = nil
 
     alias OutboundContainer = {pid: Bytes, body: Bytes}
     getter outbound = Channel(OutboundContainer | Crypto::CipherStreamIO).new
     @startup_channel = Channel(Bool).new
 
-    def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile)
+    def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile, @packet_callback = nil)
     end
 
     def transition(s : PktId::State)
@@ -72,12 +73,17 @@ module Shatter
       packet_id = matching_cb raw_packet_id
       # puts "Incoming packet: #{@state}/#{packet_id} #{size} -> #{real_size}"
       pkt_body_start = pkt.pos
-      is_ignored = PktId::Cb::IGNORE[packet_id]?
+      is_ignored = PktId::Cb::IGNORE.includes? packet_id
       is_silent = PktId::SILENT[packet_id]?
       handler = PktId::PACKET_HANDLERS[packet_id]?
       return if is_ignored
       pkt.read_at(pkt_body_start, pkt.size - pkt_body_start) { |b| wide_dump(b, packet_id, unknown: handler.nil?) } unless is_silent
-      handler.try &.call(pkt, self).describe
+      handler.try { |h|
+        p = h.call(pkt, self)
+        p.describe
+        p.run
+        @packet_callback.try &.call(p, self)
+      }
     end
 
     private def wide_dump(b : IO, packet_id, out_pkt = false, unknown = false)
