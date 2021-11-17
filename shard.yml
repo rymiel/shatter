@@ -24,6 +24,8 @@ dependencies:
     github: oprypin/crystal-imgui
   imgui-sfml:
     github: oprypin/crystal-imgui-sfml
+  envy:
+    github: GrottoPress/envy
 
 crystal: 1.2.1
 

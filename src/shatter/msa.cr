@@ -3,9 +3,9 @@ require "json"
 require "openssl"
 
 class Shatter::MSA
-  APPLICATION_ID = "618fb7d2-7ac4-4925-b5b8-989d407f00d5"
-  CLIENT_SECRET  = "RpO7Q~lNFV3j9w8YAqZnj6Z5fH2r0b-7yZiya"
-  REDIRECT_URI   = "https://shatter.rymiel.space/"
+  APPLICATION_ID = ENV["MSA_APPLICATION_ID"]
+  CLIENT_SECRET  = ENV["MSA_SECRET"]
+  REDIRECT_URI   = ENV["MSA_REDIRECT"]
 
   record AuthorizationToken, token_type : String, expires_in : Int32, scope : String, access_token : String do
     include JSON::Serializable

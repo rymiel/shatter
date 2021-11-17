@@ -4,6 +4,10 @@ shards:
     git: https://github.com/oprypin/crsfml.git
     version: 2.5.2
 
+  envy:
+    git: https://github.com/grottopress/envy.git
+    version: 0.3.0
+
   imgui:
     git: https://github.com/oprypin/crystal-imgui.git
     version: 0.1.0+git.commit.caddaba8bb93d16aa76dfe0212aea290e8126f8c

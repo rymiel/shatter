@@ -1,3 +1,6 @@
+require "envy"
+Envy.from_file ".env.yaml", perm: 0o400
+
 require "socket"
 require "io/hexdump"
 require "openssl"
