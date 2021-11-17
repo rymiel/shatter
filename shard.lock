@@ -6,15 +6,15 @@ shards:
 
   imgui:
     git: https://github.com/oprypin/crystal-imgui.git
-    version: 0.1.0+git.commit.cf5bd97891e2a0d924d9ec284c6eefba90ea3920
+    version: 0.1.0+git.commit.caddaba8bb93d16aa76dfe0212aea290e8126f8c
 
   imgui-sfml:
     git: https://github.com/oprypin/crystal-imgui-sfml.git
-    version: 2.1.0+git.commit.0e9662bf5e2b4373d32048b07df0daf53180274e
+    version: 2.1.0+git.commit.3b46a09ff099116115820f011e5b399745d28eba
 
   nbt:
     git: https://gitlab.com/rymiel/nbt.git
-    version: 0.1.0+git.commit.d04fcad5bed252fae9b1d9f6a4feb3a970a70054
+    version: 0.1.0+git.commit.03fcb7bb0f5382ace88e5309a1f1a99e7cd617c0
 
   openssl_ext:
     git: https://github.com/spider-gazelle/openssl_ext.git
@@ -22,5 +22,5 @@ shards:
 
   shatter-chat:
     git: https://gitlab.com/rymiel/shatter-chat.git
-    version: 0.3.0+git.commit.1406798ffdaa5196622b5abaceb02892c4337155
+    version: 0.4.1+git.commit.462c6a251ee311921a5d45c5b9caa2f075ae7990
 
