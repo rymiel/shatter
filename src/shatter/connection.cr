@@ -41,9 +41,10 @@ module Shatter
       var_p_id = Shatter.var_int raw_packet_id
 
       yield mem
+      slice = mem.to_slice
       wide_dump(mem, packet_id, true)
 
-      @outbound.send({pid: var_p_id, body: mem.to_slice})
+      @outbound.send({pid: var_p_id, body: slice})
     end
 
     def io : IO
