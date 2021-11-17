@@ -136,14 +136,11 @@ module Shatter::Packet
       def con : ::Shatter::Connection
         @__con
       end
-      {% if @type.annotation(::Shatter::Packet::Describe) %}
       def describe(io : IO = STDERR)
+        {% if @type.annotation(::Shatter::Packet::Describe) %}
         _describe(io)
+        {% end %}
       end
-      {% else %}
-      def describe(io : IO = STDERR)
-      end
-      {% end %}
     end
 
     def initialize(pkt : ::IO, con : ::Shatter::Connection)
