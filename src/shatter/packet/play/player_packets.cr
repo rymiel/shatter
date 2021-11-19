@@ -81,10 +81,7 @@ module Shatter::Packet::Play
         props = Hash(String, {String, String?}).new
         (pkt.read_var_int).times do
           key = pkt.read_var_string
-          value = pkt.read_var_string
-          is_signed = pkt.read_bool
-          signature = is_signed ? pkt.read_var_string : nil
-          props[key] = {value, signature}
+          props[key] = {pkt.read_var_string, pkt.read_bool ? pkt.read_var_string : nil}
         end
         props
       end},

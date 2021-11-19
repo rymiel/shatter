@@ -18,11 +18,14 @@ module Shatter::Packet::Play
     include Packet::Handler
 
     KNOWN_ACTION = {
-      /minecraft:note_block/     => ["Play note"],
+      "minecraft:note_block"     => ["Play note"],
       /minecraft:\w*piston/      => ["Extend", "Retract"],
       /minecraft:\w*chest/       => [nil, "Update viewers"],
       /minecraft:\w*shulker_box/ => [nil, "Update viewers"],
-      /minecraft:bell/           => [nil, "Ring"],
+      "minecraft:beacon"         => [nil, "Recalculate beam"],
+      "minecraft:mob_spawner"    => [nil, "Reset delay"],
+      "minecraft:end_gateway"    => [nil, "Fire beam"],
+      "minecraft:bell"           => [nil, "Ring"],
     }
     KNOWN_PARAM = {
       /minecraft:(\w*piston|bell)/ => ["Down", "Up", "South", "West", "North", "East"],
@@ -35,8 +38,8 @@ module Shatter::Packet::Play
     field _action : UInt8
     field _param : UInt8
     field block : BlockID
-    field action : String = Play::BlockAction::KNOWN_ACTION.find { |k, _| k.matches? @block }.try &.[1][@_action] || @_action.to_s
-    field param : String = Play::BlockAction::KNOWN_PARAM.find { |k, _| k.matches? @block }.try &.[1][@_param] || @_param.to_s
+    field action : String = Play::BlockAction::KNOWN_ACTION.find { |k, _| k === @block }.try &.[1][@_action] || @_action.to_s
+    field param : String = Play::BlockAction::KNOWN_PARAM.find { |k, _| k === @block }.try &.[1][@_param] || @_param.to_s
   end
 
   @[Shatter::Packet::Silent]
