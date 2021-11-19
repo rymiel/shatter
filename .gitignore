@@ -9,7 +9,7 @@
 src/visual/
 visual.json
 imgui.ini
-iosevka.ttf
+iosevka*.ttf
 
 # personalized, these will be generated in a better way later
 permits.json
