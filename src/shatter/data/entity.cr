@@ -62,7 +62,7 @@ module Shatter::Data
 end
 
 class Shatter::Data::Entity
-  enum Status
+  enum Status : Int8
     TippedArrowColorParticle =  0
     RabbitRotatedJump        =  1
     LivingHurt               =  2
@@ -126,7 +126,7 @@ class Shatter::Data::Entity
     DeathSmoke               = 60
   end
 
-  enum ModifierOperation
+  enum ModifierOperation : Int8
     Add
     AddPercent
     MulPercent
@@ -136,7 +136,7 @@ class Shatter::Data::Entity
     def self.from_io(io : IO) : Modifier
       uuid = io.read_uuid
       amount = io.read_f64
-      operation = ModifierOperation.new (io.read_bytes UInt8, IO::ByteFormat::BigEndian).to_i32
+      operation = ModifierOperation.new io.read_i8
       Modifier.new(uuid, amount, operation)
     end
 

@@ -113,7 +113,7 @@ module Shatter::Packet::Play
     include Packet::Handler
 
     field ent : Entity = con.entities[pkt.read_u32]
-    field status : Data::Entity::Status = Data::Entity::Status.new pkt.read_u8.to_i32
+    field status : Data::Entity::Status = Data::Entity::Status.new pkt.read_i8
   end
 
   @[Shatter::Packet::Silent]

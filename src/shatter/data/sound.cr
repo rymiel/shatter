@@ -1,5 +1,5 @@
 module Shatter::Data::Sound
-  enum Category
+  enum Category : UInt32
     Master
     Music
     Records

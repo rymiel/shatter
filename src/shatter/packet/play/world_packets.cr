@@ -42,7 +42,7 @@ module Shatter::Packet::Play
     include Packet::Handler
 
     field id : Sound
-    field category : Data::Sound::Category = Data::Sound::Category.new pkt.read_var_int.to_i32
+    field category : Data::Sound::Category = Data::Sound::Category.new pkt.read_var_int
     field x : Float64 = pkt.read_i32 / 8
     field y : Float64 = pkt.read_i32 / 8
     field z : Float64 = pkt.read_i32 / 8

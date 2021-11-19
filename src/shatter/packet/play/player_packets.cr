@@ -17,9 +17,9 @@ module Shatter::Packet::Play
 
     field my_eid : UInt32
     field hardcore : Bool
-    field gamemode : Data::Player::Gamemode = Data::Player::Gamemode.new(pkt.read_u8.to_i32)
+    field gamemode : Data::Player::Gamemode = Data::Player::Gamemode.new(pkt.read_i8)
     field prev_gamemode : Data::Player::Gamemode? do
-      x = pkt.read_i8.to_i32
+      x = pkt.read_i8
       x < 0 ? nil : Data::Player::Gamemode.new(x)
     end
     field worlds : String[VarInt]

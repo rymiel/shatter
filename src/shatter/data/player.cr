@@ -1,6 +1,6 @@
 module Shatter::Data
   class Player
-    enum Gamemode
+    enum Gamemode : Int8
       Survival
       Creative
       Adventure
