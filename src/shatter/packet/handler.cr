@@ -81,39 +81,48 @@ module Shatter::Packet
 
     macro field(t, &block)
       {% val = t.value %}
+      {% return_type = t.type %}
       {% if val.is_a?(Nop) %}
+        {%
+          is_array = false
+          array_type = "Array".id
+          has_reader = false
+          real_type = t.type
+
+          if t.type.is_a? ProcNotation && t.type.inputs[0].name.resolve == StaticArray
+            is_array = t.type.inputs[0]
+            array_type = t.type.output.resolve.name(generic_args: false)
+          elsif t.type.is_a? Generic && t.type.name.resolve == StaticArray
+            is_array = t.type
+          end
+
+          if is_array
+            real_type = is_array.type_vars[0]
+            quantifier = is_array.type_vars[1]
+            return_type = (array_type.stringify + "(" + real_type.stringify + ")").id
+          end
+
+          if real_type.is_a? Union
+            real_type = ("::Union(" + real_type.types.splat.stringify + ")").id
+          end
+        %}
+
         {% if block %}
+          {% has_reader = true %}
           def self.%read(pkt : ::IO, con : ::Shatter::Connection)
             {{ yield }}
           end
-          @[::Shatter::Packet::Handler::Field(reader: %read, real_type: {% if t.type.is_a? Union %}::Union({{t.type.types.splat}}){%else%}{{t.type}}{%end%})]
-        {% elsif t.type.id != t.type.resolve.id %}
-          @[::Shatter::Packet::Handler::Field(real_type: {% if t.type.is_a? Union %}::Union({{t.type.types.splat}}){% else %}{{t.type}}{% end %})]
         {% end %}
-        @{{t.var.id}} : {{t.type}}
+
+        {% if is_array || t.type.id != t.type.resolve.id %}
+          @[::Shatter::Packet::Handler::Field({% if has_reader %}reader: %read, {% end %}{% if is_array %}quantifier: {{quantifier}}, array_type: {{array_type}}, {% end %} real_type: {{real_type}})]
+        {% end %}
       {% else %}
         @[::Shatter::Packet::Handler::Field(self_defining: {{ val }})]
-        @{{t.var.id}} : {{t.type}}
       {% end %}
+      @{{t.var.id}} : {{return_type}}
 
-      def {{t.var.id}} : {{t.type}}
-        @{{t.var.id}}
-      end
-    end
-
-    macro array_field(t, *, count, array_type = Array, &block)
-      {% val = t.value %}
-      {% if block %}
-        def self.%read(pkt : ::IO, con : ::Shatter::Connection)
-          {{ yield }}
-        end
-        @[::Shatter::Packet::Handler::Field(reader: %read, real_type: {{t.type}}, quantifier: {{count}}, array_type: {{array_type}})]
-      {% else %}
-        @[::Shatter::Packet::Handler::Field(real_type: {% if t.type.is_a? Union %}::Union({{t.type.types.splat}}){% else %}{{t.type}}{% end %}, quantifier: {{count}}, array_type: {{array_type}})]
-      {% end %}
-      @{{t.var.id}} : {{array_type}}({{t.type}})
-
-      def {{t.var.id}} : {{array_type}}({{t.type}})
+      def {{t.var.id}} : {{return_type}}
         @{{t.var.id}}
       end
     end

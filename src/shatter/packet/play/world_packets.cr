@@ -27,12 +27,12 @@ module Shatter::Packet::Play
 
     field chunk_x : Int32
     field chunk_z : Int32
-    array_field p_bitmask : UInt64, count: VarInt
+    field p_bitmask : UInt64[VarInt]
     field heightmap : NBT
-    array_field biomes : VarInt, count: VarInt
-    array_field _data : UInt8, count: VarInt, array_type: Slice
+    field biomes : VarInt[VarInt]
+    field _data : UInt8[VarInt] -> Slice
     field data : Chunk = Chunk.new(con, @p_bitmask, @_data)
-    array_field tiles : NBT, count: VarInt
+    field tiles : NBT[VarInt]
   end
 
   @[Shatter::Packet::Silent]

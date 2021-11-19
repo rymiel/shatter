@@ -121,7 +121,7 @@ module Shatter::Packet::Play
   class DestroyEntity
     include Packet::Handler
 
-    array_field entities : Entity, count: VarInt
+    field entities : Entity[VarInt]
   end
 
   @[Shatter::Packet::Silent]

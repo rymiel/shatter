@@ -49,7 +49,7 @@ module Shatter::Packet::Play
     field _sect_y : Int64 = (@_val << 44 >> 44).as_signed_bit_width(20)
     field _sect_z : Int64 = (@_val << 22 >> 42).as_signed_bit_width(22)
     field _garbage : Bool
-    array_field blocks : {x: Int64, y: Int64, z: Int64, state: String}, count: VarInt do
+    field blocks : {x: Int64, y: Int64, z: Int64, state: String}[VarInt] do
       block = pkt.read_var_long
       local_x = ((block & 0xF00) >> 8)
       local_z = ((block & 0x0F0) >> 4)

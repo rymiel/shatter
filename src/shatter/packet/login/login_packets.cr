@@ -5,8 +5,8 @@ module Shatter::Packet::Login
     include Packet::Handler
 
     field server_id : String
-    array_field pkey_asn : UInt8, count: VarInt, array_type: Slice
-    array_field nonce : UInt8, count: VarInt, array_type: Slice
+    field pkey_asn : UInt8[VarInt] -> Slice
+    field nonce : UInt8[VarInt] -> Slice
 
     def run
       rsa_pkey = Crypto.key_for @pkey_asn

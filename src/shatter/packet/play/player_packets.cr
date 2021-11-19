@@ -6,7 +6,7 @@ module Shatter::Packet::Play
 
     field window : UInt8
     field state : VarInt
-    array_field slots : Data::Slot?, count: VarInt
+    field slots : Data::Slot?[VarInt]
     field carried : Data::Slot?
   end
 
@@ -22,7 +22,7 @@ module Shatter::Packet::Play
       x = pkt.read_i8.to_i32
       x < 0 ? nil : Data::Player::Gamemode.new(x)
     end
-    array_field worlds : String, count: VarInt
+    field worlds : String[VarInt]
     field codec : NBT
     field dimension : NBT
     field world : String
