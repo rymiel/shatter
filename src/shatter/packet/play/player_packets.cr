@@ -68,4 +68,76 @@ module Shatter::Packet::Play
       end
     end
   end
+
+  @[Shatter::Packet::Silent]
+  @[Shatter::Packet::Describe(transform: {
+    action_id: ["Add", "Gamemode", "Ping", "Display name", "Remove"][@action_id],
+    actions:   @actions.map { |k, v| v.nil? ? con.players[k].name : "#{con.players[k].name} => #{v.to_s k}" }.join ", ",
+  })]
+  class PlayInfo
+    private PLAY_INFO_FIELDS = {
+      "name"  => {String, pkt.read_var_string},
+      "props" => {Hash(String, {String, String?}), begin
+        props = Hash(String, {String, String?}).new
+        (pkt.read_var_int).times do
+          key = pkt.read_var_string
+          value = pkt.read_var_string
+          is_signed = pkt.read_bool
+          signature = is_signed ? pkt.read_var_string : nil
+          props[key] = {value, signature}
+        end
+        props
+      end},
+      "gamemode"     => {Data::Player::Gamemode, Data::Player::Gamemode.new(pkt.read_var_int.to_i8)},
+      "ping"         => {UInt32, pkt.read_var_int},
+      "display_name" => {String?, pkt.read_bool ? Shatter::Chat::AnsiBuilder.new.read(JSON.parse(pkt.read_var_string).as_h) : nil},
+    }
+
+    macro fields(c, f = [] of Nil, r = nil, s = nil)
+      class {{c}}
+        {% for i in f %}
+          @{{i.id}} : {{PLAY_INFO_FIELDS[i.id.stringify][0]}}
+        {% end %}
+        def initialize(uuid, pkt, con)
+          {% for i in f %}
+            @{{i.id}} = {{PLAY_INFO_FIELDS[i.id.stringify][1]}}
+          {% end %}
+          {% unless r.nil? %}{{ r }}{% end %}
+        end
+        {% if s %}
+          def to_s(uuid : UUID)
+            {{ s }}
+          end
+        {% end %}
+      end
+    end
+
+    PlayInfo.fields ActionNew, [:name, :props, :gamemode, :ping, :display_name],
+      con.players[uuid] = Data::Player.new(uuid, @name, @props, @gamemode, @ping, @display_name),
+      "#{uuid}#{@display_name.nil? ? "" : " as #{@display_name}"};#{@gamemode};#{@ping} ms;props[#{@props.keys.join ", "}]"
+    PlayInfo.fields ActionGameMode, [:gamemode],
+      con.players[uuid].gamemode = Data::Player::Gamemode.new(@gamemode), @gamemode
+    PlayInfo.fields ActionDisplayName, [:display_name],
+      con.players[uuid].display_name = @display_name, @display_name
+    PlayInfo.fields ActionPing, [:ping], con.players[uuid].ping = @ping, "#{@ping}ms"
+    PlayInfo.fields ActionRemove, s: "Removed"
+
+    alias Action = ActionNew | ActionGameMode | ActionDisplayName | ActionPing | ActionRemove
+
+    include Packet::Handler
+
+    field action_id : VarInt
+    field actions : {UUID, Play::PlayInfo::Action}[VarInt] do
+      uuid = pkt.read_uuid
+      action = case @action_id
+               when 0 then Play::PlayInfo::ActionNew.new uuid, pkt, con
+               when 1 then Play::PlayInfo::ActionGameMode.new uuid, pkt, con
+               when 2 then Play::PlayInfo::ActionPing.new uuid, pkt, con
+               when 3 then Play::PlayInfo::ActionDisplayName.new uuid, pkt, con
+               when 4 then Play::PlayInfo::ActionRemove.new uuid, pkt, con
+               else        raise "Invalid PlayInfoAction type #{@action_id}"
+               end
+      {uuid, action}
+    end
+  end
 end
