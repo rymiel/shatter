@@ -122,15 +122,15 @@ struct UInt32
 end
 
 class IO
-  def write_var_int(value : Int32)
+  def write_var_int(value : Int32) : Nil
     write Shatter.var_int value
   end
 
-  def write_var_int(value : UInt32)
+  def write_var_int(value : UInt32) : Nil
     write Shatter.var_int value
   end
 
-  def write_var_string(s : String)
+  def write_var_string(s : String) : Nil
     write Shatter.var_int s.bytesize
     print s
   end
@@ -175,7 +175,7 @@ class IO
       read_bytes {{type}}, IO::ByteFormat::BigEndian
     end
 
-    def write_{{name}}(i : {{type}})
+    def write_{{name}}(i : {{type}}) : Nil
       write_bytes i, IO::ByteFormat::BigEndian
     end
   {% end %}
@@ -184,7 +184,7 @@ class IO
     read_u8 != 0_u8
   end
 
-  def write_bool(i : Bool)
+  def write_bool(i : Bool) : Nil
     write_i8(i ? 1i8 : 0i8)
   end
 
