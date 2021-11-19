@@ -47,10 +47,10 @@ module Shatter::Packet::Play
         o.write_var_string "SHATTER"
         o.write_i8 2i8
         o.write_var_int 0u32
-        o.write_i8 1i8
+        o.write_bool true
         o.write_u8 0b01111111u8
-        o.write_i8 1i8
-        o.write_i8 1i8
+        o.write_bool true
+        o.write_bool true
       end
     end
   end

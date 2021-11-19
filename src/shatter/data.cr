@@ -184,6 +184,10 @@ class IO
     read_u8 != 0_u8
   end
 
+  def write_bool(i : Bool)
+    write_i8(i ? 1i8 : 0i8)
+  end
+
   def read_angle : Float64
     read_i8 / 256 * 360
   end
