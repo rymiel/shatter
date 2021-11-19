@@ -30,5 +30,9 @@ module Shatter::Packet::Play
     include Packet::Handler
 
     field message : String
+
+    def run
+      con.sock.try &.close
+    end
   end
 end

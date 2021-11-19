@@ -18,7 +18,7 @@ module Shatter::Packet
     {% if alias_type != return_type %}
       alias {{alias_type}} = {{return_type}}
     {% end %}
-    {% alias_type = alias_type.id.gsub(/::/, "_r_").gsub(/\(/, "_g_").gsub(/, /, "_a_").gsub(/\)/, "_e_") %}
+    {% alias_type = alias_type.id.tr(":,() ", "____") %}
     module TypeReader::A_{{alias_type}}
       {% if block.args.size == 1 %}
         def self.read({{block.args[0]}} : IO, __ignore : ::Shatter::Connection) : {{return_type}}
@@ -86,9 +86,9 @@ module Shatter::Packet
           def self.%read(pkt : ::IO, con : ::Shatter::Connection)
             {{ yield }}
           end
-          @[::Shatter::Packet::Handler::Field(reader: %read, real_type: {{t.type}})]
+          @[::Shatter::Packet::Handler::Field(reader: %read, real_type: {% if t.type.is_a? Union %}::Union({{t.type.types.splat}}){%else%}{{t.type}}{%end%})]
         {% elsif t.type.id != t.type.resolve.id %}
-          @[::Shatter::Packet::Handler::Field(real_type: {{t.type}})]
+          @[::Shatter::Packet::Handler::Field(real_type: {% if t.type.is_a? Union %}::Union({{t.type.types.splat}}){% else %}{{t.type}}{% end %})]
         {% end %}
         @{{t.var.id}} : {{t.type}}
       {% else %}
@@ -109,7 +109,7 @@ module Shatter::Packet
         end
         @[::Shatter::Packet::Handler::Field(reader: %read, real_type: {{t.type}}, quantifier: {{count}}, array_type: {{array_type}})]
       {% else %}
-        @[::Shatter::Packet::Handler::Field(real_type: {{t.type}}, quantifier: {{count}}, array_type: {{array_type}})]
+        @[::Shatter::Packet::Handler::Field(real_type: {% if t.type.is_a? Union %}::Union({{t.type.types.splat}}){% else %}{{t.type}}{% end %}, quantifier: {{count}}, array_type: {{array_type}})]
       {% end %}
       @{{t.var.id}} : {{array_type}}({{t.type}})
 
@@ -166,7 +166,7 @@ module Shatter::Packet
 
       {% for name, value in properties %}
         {% m = value[:real_type] || value[:type] %}
-        {% t = m.id.gsub(/(.*) \| (.*)/, "::Union(\\1, \\2)").gsub(/::/, "_r_").gsub(/\(/, "_g_").gsub(/, /, "_a_").gsub(/\)/, "_e_") %}
+        {% t = m.id.tr(":,() ", "____") %}
         {% if value[:self_def] %}
           @{{name}} = {{ value[:self_def] }}
         {% elsif value[:quantifier] %}
