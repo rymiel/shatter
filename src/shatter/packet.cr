@@ -4,27 +4,34 @@ require "./data/sound"
 require "./packet/handler"
 require "./packet/login/*"
 require "./packet/play/*"
+require "./packet/status_packets"
 require "shatter-chat"
 require "json"
 
 module Shatter::PktId
   enum State
     Handshake
+    Status
     Login
     Play
   end
 
   CB_STATE_MAP = {
-    State::Login => Cb::Login,
-    State::Play  => Cb::Play,
+    State::Login  => Cb::Login,
+    State::Play   => Cb::Play,
+    State::Status => Cb::Status,
   }
 
-  PACKET_HANDLERS = {} of (Cb::Login | Cb::Play) => ((IO, Connection) -> Packet::Handler)
-  SILENT          = {} of (Cb::Login | Cb::Play) => Bool
+  PACKET_HANDLERS = {} of (Cb::Login | Cb::Play | Cb::Status) => ((IO, Connection) -> Packet::Handler)
+  SILENT          = {} of (Cb::Login | Cb::Play | Cb::Status) => Bool
 
   module Sb
     enum Handshake
       Handshake = 0x00
+    end
+
+    enum Status
+      Request = 0x00
     end
 
     enum Login
@@ -46,6 +53,10 @@ module Shatter::PktId
       CryptRequest   = 0x01
       LoginSuccess   = 0x02
       SetCompression = 0x03
+    end
+
+    enum Status
+      Response = 0x00
     end
 
     enum Play

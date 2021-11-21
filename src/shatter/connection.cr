@@ -33,7 +33,7 @@ module Shatter
       @state = s
     end
 
-    def matching_cb(i : UInt32) : (PktId::Cb::Login | PktId::Cb::Play)
+    def matching_cb(i : UInt32) : (PktId::Cb::Login | PktId::Cb::Play | PktId::Cb::Status)
       PktId::CB_STATE_MAP[@state].new i.to_i32
     end
 
@@ -53,7 +53,7 @@ module Shatter
       @io.not_nil!
     end
 
-    private def read_packet
+    private def read_packet : Packet::Handler?
       size = io.read_var_int
       raise IO::EOFError.new if size == 0
       buffer = Bytes.new size
@@ -77,13 +77,16 @@ module Shatter
       is_silent = PktId::SILENT[packet_id]?
       handler = PktId::PACKET_HANDLERS[packet_id]?
       return if is_ignored
+      resolved = nil
       pkt.read_at(pkt_body_start, pkt.size - pkt_body_start) { |b| wide_dump(b, packet_id, unknown: handler.nil?) } unless is_silent
       handler.try { |h|
         p = h.call(pkt, self)
+        resolved = p
         p.describe
         p.run
         @packet_callback.try &.call(p, self)
       }
+      return resolved
     end
 
     private def wide_dump(b : IO, packet_id, out_pkt = false, unknown = false)
@@ -188,6 +191,43 @@ module Shatter
           end
           @startup_channel.send true
           sleep
+        end
+      end
+    end
+
+    def ping
+      spawn name: "conwrapper ping #{@profile.name}" do
+        TCPSocket.open(@ip, @port) do |sock|
+          @sock = sock
+          @io = @sock
+
+          spawn name: "conwrapper ping outbound #{@profile.name}" do
+            loop do
+              x = @outbound.receive?
+              break if x.nil?
+              break if x.is_a? Crypto::CipherStreamIO
+              real_size = x[:body].size + x[:pid].size
+              io.write_var_int real_size
+              io.write x[:pid]
+              io.write x[:body]
+              io.flush
+            end
+          end
+
+          packet PktId::Sb::Handshake::Handshake do |pkt|
+            pkt.write_var_int 756
+            pkt.write_var_string @ip
+            pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
+            pkt.write_var_int 1
+          end
+
+          transition :status
+
+          packet PktId::Sb::Status::Request do
+          end
+
+          read_packet
+          @outbound.close
         end
       end
     end

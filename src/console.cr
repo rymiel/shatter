@@ -13,5 +13,5 @@ mc_token = msa.minecraft xsts
 puts "6/6: Checking profile"
 profile = msa.profile mc_token
 registry, known_blocks = Shatter.local_registry
-Shatter::Connection.new(ARGV[0], ARGV[1].to_i, registry, known_blocks, mc_token.access_token, profile).run
+Shatter::Connection.new(ARGV[0], ARGV[1].to_i, registry, known_blocks, mc_token.access_token, profile).ping
 sleep
