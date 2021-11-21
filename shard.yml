@@ -26,6 +26,9 @@ dependencies:
     github: oprypin/crystal-imgui-sfml
   envy:
     github: GrottoPress/envy
+  clear:
+    github: anykeyh/clear
+    branch: master
 
 crystal: 1.2.1
 

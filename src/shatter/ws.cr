@@ -1,5 +1,8 @@
+
 require "./ws/wsproxy"
 require "./ws/proxied"
+require "./ws/db"
+
 module Shatter
   class WS
     module Frame
@@ -14,6 +17,7 @@ module Shatter
     getter! con : WSProxy
     getter! mc_token : String
     getter! profile : MSA::MinecraftProfile
+    getter! user : DB::User
     property abort_connection = false
     getter id : UInt32
     getter registries : {Shatter::Registry, Array(String)}
@@ -38,12 +42,28 @@ module Shatter
           ws_log = ->(msg : String) { ws.send({"log" => msg}.to_json) }
           frame = Frame::Auth.from_json raw_message
           @mc_token, @profile = wsp_auth frame
-          next if reject request_offer: true
-          local_log "Auth as #{profile.name} successful"
+          db_user = DB::User.find UUID.new(profile.id)
+          if db_user.nil?
+            local_log "Dropping #{profile.id} (#{profile.name}) because they aren't whitelisted"
+            logged_send({"error" => "You are not whitelisted to access this service"}.to_json)
+            logged_send({"offer" => "/rq/#{profile.name}/#{profile.id}"}.to_json)
+            @ws.close
+            next
+          else
+            @user = db_user
+            db_user.last_known_name = profile.name
+            db_user.save!
+          end
+          local_log "Auth as #{profile.name} successful: #{db_user.inspect}"
           logged_send({"ready" => profile.name, "id" => profile.id}.to_json)
         elsif !@mc_token.nil? && @con.nil?
           frame = Frame::Connect.from_json raw_message
-          next if reject host: frame[:host]
+          unless user.allowed.includes?(frame[:host]) || user.roles.superuser?
+            local_log "Dropping #{profile.name} because they tried to access #{frame[:host]}, but wasn't permitted"
+            logged_send({"error" => "You are not permitted to access that server using this service"}.to_json)
+            @ws.close
+            next
+          end
           @con = WSProxy.new(
             frame[:host],
             frame[:port] || 25565,
@@ -56,9 +76,7 @@ module Shatter
           json = JSON.parse(raw_message).as_h?
           next unless json
           if json.has_key?("list")
-            user_permit = permits[profile.id]?
-            next if user_permit.nil?
-            next unless user_permit.includes? "*"
+            next unless user.roles.superuser?
             logged_send({"list" => @@active.map { |i| {
               "Shatter::WS" => {
                 "opened"     => i.opened,
@@ -81,7 +99,7 @@ module Shatter
         end
       rescue ex
         puts ex.inspect_with_backtrace
-        logged_send({"error" => "Your connection to the server has been closed because of #{ex.class}. #{ex.message}"}.to_json)
+        logged_send({"error" => "Your connection to the server has been closed because of #{ex.class}."}.to_json)
         @ws.close
         raise ex
       end
@@ -94,35 +112,15 @@ module Shatter
       }
     end
 
-    private def permits
-      File.open "permits.json" { |f| Permits.from_json f }
-    end
-
-    private def reject(*, host : String? = nil, request_offer = false)
-      user_permit = permits[profile.id]?
-      if user_permit.nil?
-        local_log "Dropping #{profile.id} (#{profile.name}) because they aren't whitelisted"
-        logged_send({"error" => "You are not whitelisted to access this service"}.to_json)
-        logged_send({"offer" => "/rq/#{profile.name}/#{profile.id}"}.to_json) if request_offer
-        @ws.close
-        return true
-      end
-      if host
-        unless user_permit.includes?(host) || user_permit.includes?("*")
-          local_log "Dropping #{profile.name} because they tried to access #{host}, but wasn't permitted"
-          logged_send({"error" => "You are not permitted to access that server using this service"}.to_json)
-          @ws.close
-          return true
-        end
-      end
-      false
-    end
-
     def wsp_auth(frame : Frame::Auth)
       remote_log "1/6: MSA"
       msa = Shatter::MSA.new
       remote_log "2/6: Token"
-      token = msa.code frame[:token]
+      if ARGV[0]?
+        token = msa.refresh ARGV[0]
+      else
+        token = msa.code frame[:token]
+      end
       remote_log "3/6: XBL"
       xbl = msa.xbl token
       remote_log "4/6: XSTS"

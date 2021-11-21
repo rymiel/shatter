@@ -1,12 +1,28 @@
 version: 2.0
 shards:
+  admiral:
+    git: https://github.com/jwaldrip/admiral.cr.git
+    version: 1.12.1
+
+  clear:
+    git: https://github.com/anykeyh/clear.git
+    version: 0.9+git.commit.dc5bcec0b5fa6871d479d487ab7cfc5e5b1ba16c
+
   crsfml:
     git: https://github.com/oprypin/crsfml.git
     version: 2.5.2
 
+  db:
+    git: https://github.com/crystal-lang/crystal-db.git
+    version: 0.10.1
+
   envy:
     git: https://github.com/grottopress/envy.git
     version: 0.3.0
+
+  generate:
+    git: https://github.com/anykeyh/generate.cr.git
+    version: 0.1.0+git.commit.f5dafc934a70e0ee2f246dddf3df44686f844da2
 
   imgui:
     git: https://github.com/oprypin/crystal-imgui.git
@@ -16,6 +32,10 @@ shards:
     git: https://github.com/oprypin/crystal-imgui-sfml.git
     version: 2.1.0+git.commit.3b46a09ff099116115820f011e5b399745d28eba
 
+  inflector:
+    git: https://github.com/anykeyh/inflector.cr.git
+    version: 0.1.8+git.commit.dc5c898b0a834617d8b3ff73ac5a2239bd9fc019
+
   nbt:
     git: https://gitlab.com/rymiel/nbt.git
     version: 0.1.0+git.commit.03fcb7bb0f5382ace88e5309a1f1a99e7cd617c0
@@ -23,6 +43,10 @@ shards:
   openssl_ext:
     git: https://github.com/spider-gazelle/openssl_ext.git
     version: 2.1.5+git.commit.a6d023921da7cdc15c04c4dc835f6c92ee15b0c3
+
+  pg:
+    git: https://github.com/will/crystal-pg.git
+    version: 0.24.0
 
   shatter-chat:
     git: https://gitlab.com/rymiel/shatter-chat.git
