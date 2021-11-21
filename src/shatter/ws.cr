@@ -1,3 +1,5 @@
+require "./ws/wsproxy"
+require "./ws/proxied"
 module Shatter
   class WS
     module Frame

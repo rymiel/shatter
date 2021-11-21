@@ -1,4 +1,5 @@
 require "./shatter"
+require "./shatter/ws"
 
 class RootHandler
   include HTTP::Handler

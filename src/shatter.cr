@@ -19,9 +19,6 @@ require "./shatter/data/*"
 require "./shatter/packet"
 require "./shatter/crypto"
 require "./shatter/msa"
-require "./shatter/ws"
-require "./shatter/ws/wsproxy"
-require "./shatter/ws/proxied"
 
 module Shatter
   VERSION = "0.1.0"
