@@ -33,7 +33,7 @@ export default class App extends React.Component<Record<string, never>, AppState
     window.location.hash = "";
     this.state = {callback: callback, stage: Stage.Loading, errors: [], servers: new Map, chatLines: []};
 
-    if (callback.has("code")) {
+    if (this.canAuth()) {
       let ws;
       if (process.env.HOT_REDIRECT) {
         ws = new WebSocket("ws://" + process.env.HOT_REDIRECT + "/wsp");
@@ -41,12 +41,17 @@ export default class App extends React.Component<Record<string, never>, AppState
         ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
       }
       this.state = {...this.state, ws: ws, stage: Stage.Authenticating};
-      ws.onopen = () => this.send({token: callback.get("code")!});
+      if (callback.has("code")) ws.onopen = () => this.send({token: callback.get("code")!});
+      else ws.onopen = () => this.send({rtoken: localStorage.getItem("r")!});
       ws.onmessage = (ev) => {
         const data = ev.data;
         if (typeof data === 'string') this.decodeFrame(JSON.parse(data));
       }
     }
+  }
+
+  canAuth() {
+    return this.state.callback.has("code") || localStorage.getItem("r")
   }
 
   send(frame: Outgoing.Frame) {
@@ -62,8 +67,10 @@ export default class App extends React.Component<Record<string, never>, AppState
           description: json.error
         })
       });
-      if (this.state.stage === Stage.Authenticating)
+      if (this.state.stage === Stage.Authenticating) {
         this.setState({stage: Stage.Stuck});
+        localStorage.removeItem("r");
+      }
     } else if ("log" in json) {
       const logMsg = json.log as string;
       console.log(logMsg);
@@ -87,6 +94,7 @@ export default class App extends React.Component<Record<string, never>, AppState
       }
     } else if ("ready" in json) {
       let frame = json.ready as Incoming.ReadyFrame;
+      if (frame.r) localStorage.setItem("r", frame.r);
       this.setState({stage: Stage.Joining, profile: frame});
     } else if ("servers" in json) {
       let frame = json.servers as [string, number][];
@@ -124,7 +132,7 @@ export default class App extends React.Component<Record<string, never>, AppState
     return <>
       <h1>Shatter Web</h1>
       {this.state.errors.map((p, i) => <ErrorC key={i} {...p} />)}
-      {!this.state.callback.has("code") && <Auth />}
+      {!this.canAuth() && <Auth />}
       {this.state.stage === Stage.Authenticating && <Spinner text={this.state.loadingState} />}
       {this.state.stage === Stage.Joining && this.state.profile && <Profile profile={this.state.profile} />}
       {this.state.stage === Stage.Joining && <ServerList app={this} servers={this.state.servers}/>}

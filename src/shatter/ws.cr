@@ -2,15 +2,19 @@ require "./ws/wsproxy"
 require "./ws/proxied"
 require "./ws/db"
 require "jwt"
+require "uuid"
+require "cache"
 
 module Shatter
   class WS
     module Frame
+      alias RefreshAuth = {token: String?, rtoken: UUID?}
       alias Auth = {token: String}
       alias Connect = {host: String, port: Int32?, listening: Array(PktId::Cb::Play), proxied: Array(PktId::Cb::Play)}
     end
 
     class_getter active = [] of WS
+    class_getter mc_token_cache = Cache::MemoryStore(UUID, MSA::MinecraftToken).new(expires_in: 12.hours)
 
     getter! con : WSProxy
     getter! mc_token : String
@@ -153,8 +157,10 @@ module Shatter
       mc_token = msa.minecraft xsts
       remote_log "6/7: Checking profile"
       profile = msa.profile mc_token
+      shatter_refresh_token = UUID.random
+      @@mc_token_cache.write(shatter_refresh_token, mc_token)
       remote_log "7/7: Checking permissions"
-      {mc_token.access_token, profile}
+      {mc_token.access_token, profile, shatter_refresh_token}
     end
 
     def remote_log(s : String)

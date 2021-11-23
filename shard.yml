@@ -25,6 +25,8 @@ dependencies:
     branch: master
   jwt:
     github: crystal-community/jwt
+  cache:
+    github: crystal-cache/cache
 
 development_dependencies:
   sentry:

@@ -10,10 +10,18 @@ export namespace Outgoing {
     token: string;
   }
 
+  interface RefreshTokenFrame {
+    rtoken: string;
+  }
+
   interface EmulateChatFrame {
     emulate: "Chat";
     proxy: { chat: string; };
   }
 
-  export type Frame = ConnectFrame | TokenFrame | EmulateChatFrame;
+  interface ConnectionListFrame {
+    list: string;
+  }
+
+  export type Frame = ConnectFrame | TokenFrame | RefreshTokenFrame | EmulateChatFrame | ConnectionListFrame;
 }

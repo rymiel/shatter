@@ -8,6 +8,10 @@ shards:
     git: https://github.com/spider-gazelle/bindata.git
     version: 1.9.1
 
+  cache:
+    git: https://github.com/crystal-cache/cache.git
+    version: 0.13.0
+
   clear:
     git: https://github.com/anykeyh/clear.git
     version: 0.9+git.commit.dc5bcec0b5fa6871d479d487ab7cfc5e5b1ba16c
