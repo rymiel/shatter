@@ -14,6 +14,19 @@ stages: [deps, lint, build, deploy]
     paths:
       - web/node_modules
 
+.crystal: &crystal
+  image: "crystallang/crystal:latest"
+  cache:
+    key:
+      files:
+        - shard.lock
+    paths:
+      - lib
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq libxml2-dev
+    - crystal -v
+    - shards --version
+
 js npm:
   <<: *js
   stage: deps
@@ -44,25 +57,28 @@ js react build:
     paths:
       - public/
 
-crystal:
-  image: "crystallang/crystal:latest"
-  cache:
-    key:
-      files:
-        - shard.lock
-    paths:
-      - lib
+crystal build:
+  <<: *crystal
   stage: build
   needs: []
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq libxml2-dev
-    - crystal -v
-    - shards -v
+  script:
+    - shards build --production shatter-wsp
+  except:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+crystal build release:
+  <<: *crystal
+  stage: build
+  needs: []
   script:
     - shards build --production shatter-wsp --release
   artifacts:
     paths:
       - bin/shatter-wsp
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 deploy:
   image: ubuntu
@@ -84,7 +100,7 @@ deploy:
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
-    - ls -lA
+    - mv bin/shatter-wsp shatter-wsp
 
-    - ssh $SSH_FLAGS $SSH_USER@$SSH_HOSTNAME "wall $CI_RUNNER_DESCRIPTION" # temporary
-
+    - rsync -r $SSH_FLAGS shatter-wsp public $SSH_USER@$SSH_HOSTNAME
+    - ssh $SSH_FLAGS $SSH_USER@$SSH_HOSTNAME "systemctl restart shatter.service"
