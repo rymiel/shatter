@@ -29,6 +29,6 @@ server = HTTP::Server.new [
   RootHandler.new,
   HTTP::StaticFileHandler.new("public", directory_listing: false),
 ]
-address = server.bind_tcp "0.0.0.0", 10110
+address = server.bind_tcp "0.0.0.0", (ENV["WSP_PORT"]? || 10110).to_i
 puts "Listening on http://#{address}"
 server.listen
