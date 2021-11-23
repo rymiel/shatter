@@ -7,7 +7,7 @@ class Shatter::MSA
   CLIENT_SECRET  = ENV["MSA_SECRET"]
   REDIRECT_URI   = ENV["MSA_REDIRECT"]
 
-  record AuthorizationToken, token_type : String, expires_in : Int32, scope : String, access_token : String do
+  record AuthorizationToken, token_type : String, expires_in : Int32, scope : String, access_token : String, id_token : String do
     include JSON::Serializable
   end
   record MinecraftToken, username : String, roles : Array(String), token_type : String, access_token : String, expires_in : Int32 do
@@ -42,12 +42,12 @@ class Shatter::MSA
         "redirect_uri"  => REDIRECT_URI,
         "scope"         => "xboxlive.signin",
       }
-    # pp! r
+    # pp! JSON.parse r.body
     AuthorizationToken.from_json r.body
   end
 
   def refresh(refresh_token : String) : AuthorizationToken
-    HTTP::Client.post "https://login.live.com/oauth20_token.srf",
+    r = HTTP::Client.post "https://login.live.com/oauth20_token.srf",
       headers: HTTP::Headers{"User-Agent" => "ShatterCrystal/#{Shatter::VERSION} MSA"},
       form: {
         "client_id"     => APPLICATION_ID,
@@ -56,9 +56,9 @@ class Shatter::MSA
         "grant_type"    => "refresh_token",
         "redirect_uri"  => REDIRECT_URI,
         "scope"         => "xboxlive.signin",
-      } do |r|
-      AuthorizationToken.from_json r.body_io.gets_to_end
-    end
+      }
+    # pp! JSON.parse r.body
+    AuthorizationToken.from_json r.body
   end
 
   def xbl(t : AuthorizationToken) : XBLToken

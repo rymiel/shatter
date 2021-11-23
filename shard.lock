@@ -4,6 +4,10 @@ shards:
     git: https://github.com/jwaldrip/admiral.cr.git
     version: 1.12.1
 
+  bindata:
+    git: https://github.com/spider-gazelle/bindata.git
+    version: 1.9.1
+
   clear:
     git: https://github.com/anykeyh/clear.git
     version: 0.9+git.commit.dc5bcec0b5fa6871d479d487ab7cfc5e5b1ba16c
@@ -36,6 +40,10 @@ shards:
     git: https://github.com/anykeyh/inflector.cr.git
     version: 0.1.8+git.commit.dc5c898b0a834617d8b3ff73ac5a2239bd9fc019
 
+  jwt:
+    git: https://github.com/crystal-community/jwt.git
+    version: 1.6.0
+
   nbt:
     git: https://gitlab.com/rymiel/nbt.git
     version: 0.1.0+git.commit.03fcb7bb0f5382ace88e5309a1f1a99e7cd617c0
@@ -50,5 +58,5 @@ shards:
 
   shatter-chat:
     git: https://gitlab.com/rymiel/shatter-chat.git
-    version: 0.4.1+git.commit.462c6a251ee311921a5d45c5b9caa2f075ae7990
+    version: 0.5.1+git.commit.2562ac25e6ddbf68692aea210ad756f3de6c967b
 

@@ -1,7 +1,7 @@
-
 require "./ws/wsproxy"
 require "./ws/proxied"
 require "./ws/db"
+require "jwt"
 
 module Shatter
   class WS
@@ -9,8 +9,6 @@ module Shatter
       alias Auth = {token: String}
       alias Connect = {host: String, port: Int32?, listening: Array(PktId::Cb::Play), proxied: Array(PktId::Cb::Play)}
     end
-
-    alias Permits = Hash(String, Array(String))
 
     class_getter active = [] of WS
 
@@ -24,6 +22,7 @@ module Shatter
     getter ws : HTTP::WebSocket
     getter opened : Time
     @authenticating = false
+    @email : String? = nil
 
     private def logged_send(s)
       local_log s, trace: true, passthrough: true
@@ -32,6 +31,13 @@ module Shatter
 
     def initialize(@ws, @id, @registries)
       local_log "New connection"
+      spawn name: "ws keepalive ping #{@id}" do
+        loop do
+          sleep 5
+          break if @ws.closed?
+          @ws.ping
+        end
+      end
       @opened = Time.utc
       @@active << self
       # ws.on_ping { ws.pong ctx.request.path }
@@ -55,11 +61,28 @@ module Shatter
             db_user.save!
           end
           local_log "Auth as #{profile.name} successful: #{db_user.inspect}"
-          logged_send({"ready" => profile.name, "id" => profile.id}.to_json)
+          servers = user.servers.to_a
+          logged_send({"ready" => {
+            "name"  => profile.name,
+            "id"    => profile.id,
+            "roles" => [user.roles.tester?,
+                        user.roles.superuser?,
+                        user.roles.alter_list?],
+          }}.to_json)
+          logged_send({"servers" => servers.map { |s| [s.host, s.port] }}.to_json)
+          servers.each do |s|
+            temp_proxy = WSProxy.new(
+              s.host, s.port, ([] of PktId::Cb::Play), ([] of PktId::Cb::Play), self
+            )
+            temp_proxy.ping
+          end
         elsif !@mc_token.nil? && @con.nil?
           frame = Frame::Connect.from_json raw_message
-          unless user.allowed.includes?(frame[:host]) || user.roles.superuser?
-            local_log "Dropping #{profile.name} because they tried to access #{frame[:host]}, but wasn't permitted"
+          frame_server = "#{frame[:host]}:#{frame[:port]}"
+          allowed = user.servers.map { |i| "#{i.host}:#{i.port}" }
+          allowed += user.allowed if user.roles.alter_list?
+          unless user.roles.superuser? || allowed.includes? frame_server
+            local_log "Dropping #{profile.name} because they tried to access #{frame_server}, but wasn't permitted"
             logged_send({"error" => "You are not permitted to access that server using this service"}.to_json)
             @ws.close
             next
@@ -81,8 +104,12 @@ module Shatter
               "Shatter::WS" => {
                 "opened"     => i.opened,
                 "id"         => i.id,
-                "profile"    => i.profile,
-                "connection" => i.con?.try { |c| {"host" => "#{c.ip}:#{c.port}", "state" => c.state, "listening" => c.listening, "proxying" => c.proxied} } || "[No connection]",
+                "profile"    => i.@profile,
+                "connection" => i.con?.try { |c|
+                  {"host" => "#{c.ip}:#{c.port}",
+                   "state" => c.state, "listening" => c.listening,
+                   "proxying" => c.proxied}
+                } || "[No connection]",
               },
             } }}.to_json)
           elsif json.has_key?("emulate") && json["emulate"].as_s?
@@ -113,22 +140,20 @@ module Shatter
     end
 
     def wsp_auth(frame : Frame::Auth)
-      remote_log "1/6: MSA"
+      remote_log "1/7: MSA"
       msa = Shatter::MSA.new
-      remote_log "2/6: Token"
-      if ARGV[0]?
-        token = msa.refresh ARGV[0]
-      else
-        token = msa.code frame[:token]
-      end
-      remote_log "3/6: XBL"
+      remote_log "2/7: Token"
+      token = msa.code frame[:token]
+      @email = JWT.decode(token.id_token, verify: false, validate: false)[0]["email"].as_s
+      remote_log "3/7: XBL"
       xbl = msa.xbl token
-      remote_log "4/6: XSTS"
+      remote_log "4/7: XSTS"
       xsts = msa.xsts xbl
-      remote_log "5/6: Minecraft"
+      remote_log "5/7: Minecraft"
       mc_token = msa.minecraft xsts
-      remote_log "6/6: Checking profile"
+      remote_log "6/7: Checking profile"
       profile = msa.profile mc_token
+      remote_log "7/7: Checking permissions"
       {mc_token.access_token, profile}
     end
 
@@ -139,7 +164,7 @@ module Shatter
 
     def local_log(s : String, trace = false, passthrough = false)
       STDOUT << id.to_s.rjust(3).colorize.yellow.bold << " "
-      STDOUT << ((@profile.try &.name) || "[unknown]").rjust(16).colorize.light_cyan << " "
+      STDOUT << ((@profile.try &.name) || @email || "[unknown]").rjust(16).colorize.light_cyan << " "
       STDOUT << if trace && passthrough
         "]LOG[".colorize.blue
       elsif trace

@@ -29,6 +29,8 @@ dependencies:
   clear:
     github: anykeyh/clear
     branch: master
+  jwt:
+    github: crystal-community/jwt
 
 crystal: 1.2.1
 
