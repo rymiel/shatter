@@ -26,6 +26,11 @@ dependencies:
   jwt:
     github: crystal-community/jwt
 
+development_dependencies:
+  sentry:
+    github: samueleaton/sentry
+    branch: master
+
 crystal: 1.2.1
 
 license: GPL3

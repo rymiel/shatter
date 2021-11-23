@@ -34,7 +34,12 @@ export default class App extends React.Component<Record<string, never>, AppState
     this.state = {callback: callback, stage: Stage.Loading, errors: [], servers: new Map, chatLines: []};
 
     if (callback.has("code")) {
-      const ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
+      let ws;
+      if (process.env.HOT_REDIRECT) {
+        ws = new WebSocket("ws://" + process.env.HOT_REDIRECT + "/wsp");
+      } else {
+        ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
+      }
       this.state = {...this.state, ws: ws, stage: Stage.Authenticating};
       ws.onopen = () => this.send({token: callback.get("code")!});
       ws.onmessage = (ev) => {

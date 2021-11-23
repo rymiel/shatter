@@ -1,16 +1,11 @@
 /* eslint-disable */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
-module.exports = {
+const config = {
   entry: path.join(__dirname, 'src', 'index.tsx'),
-  // devtool: 'inline-source-map',
   target: 'web',
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    },
-  },
   module: {
     rules: [
       {
@@ -26,11 +21,30 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, '..', 'public', 'dist'),
+    publicPath: '/dist/'
   },
   plugins: [
       new HtmlWebpackPlugin({
           template: path.join(__dirname, 'src', 'index.html'),
           filename: path.join(__dirname, '..', 'public', 'index.html')
-      })
+      }),
+      new webpack.EnvironmentPlugin(['HOT_REDIRECT'])
   ]
 };
+
+module.exports = (env, argv) => {
+  if (argv.mode === "development") {
+    config.devtool = 'inline-source-map';
+    config.devServer = {
+      static: '../public',
+      hot: true,
+    }
+  } else if (argv.mode === "production") {
+    config.optimization = {
+      splitChunks: {
+        chunks: 'all',
+      }
+    }
+  }
+  return config;
+}
