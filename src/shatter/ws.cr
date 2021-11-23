@@ -49,9 +49,29 @@ module Shatter
         local_log raw_message, trace: true
         if @mc_token.nil? && !@authenticating
           @authenticating = true
-          ws_log = ->(msg : String) { ws.send({"log" => msg}.to_json) }
-          frame = Frame::Auth.from_json raw_message
-          @mc_token, @profile = wsp_auth frame
+
+          refreshed = false
+          rframe = Frame::RefreshAuth.from_json raw_message
+          if (rtoken = rframe[:rtoken])
+            cached_token = @@mc_token_cache.read rtoken
+            if cached_token
+              @profile = Shatter::MSA.new.profile cached_token
+              @mc_token = cached_token.access_token
+              refreshed = true
+            end
+          end
+
+          if rframe[:token].nil?
+            if !refreshed
+              logged_send({"error" => "Couldn't refresh"}.to_json)
+              @ws.close
+              next
+            end
+          else
+            frame = {token: rframe[:token].not_nil!}
+            @mc_token, @profile, shatter_token = wsp_auth frame unless refreshed
+          end
+
           db_user = DB::User.find UUID.new(profile.id)
           if db_user.nil?
             local_log "Dropping #{profile.id} (#{profile.name}) because they aren't whitelisted"
@@ -69,6 +89,7 @@ module Shatter
           logged_send({"ready" => {
             "name"  => profile.name,
             "id"    => profile.id,
+            "r"     => shatter_token,
             "roles" => [user.roles.tester?,
                         user.roles.superuser?,
                         user.roles.alter_list?],
@@ -80,26 +101,7 @@ module Shatter
             )
             temp_proxy.ping
           end
-        elsif !@mc_token.nil? && @con.nil?
-          frame = Frame::Connect.from_json raw_message
-          frame_server = "#{frame[:host]}:#{frame[:port]}"
-          allowed = user.servers.map { |i| "#{i.host}:#{i.port}" }
-          allowed += user.allowed if user.roles.alter_list?
-          unless user.roles.superuser? || allowed.includes? frame_server
-            local_log "Dropping #{profile.name} because they tried to access #{frame_server}, but wasn't permitted"
-            logged_send({"error" => "You are not permitted to access that server using this service"}.to_json)
-            @ws.close
-            next
-          end
-          @con = WSProxy.new(
-            frame[:host],
-            frame[:port] || 25565,
-            frame[:listening],
-            frame[:proxied],
-            self
-          )
-          con.run unless abort_connection
-        elsif !@con.nil?
+        else
           json = JSON.parse(raw_message).as_h?
           next unless json
           if json.has_key?("list")
@@ -116,15 +118,36 @@ module Shatter
                 } || "[No connection]",
               },
             } }}.to_json)
-          elsif json.has_key?("emulate") && json["emulate"].as_s?
-            emulate = json["emulate"].as_s
-            local_log "Emulate #{emulate}"
-            case emulate
-            when "Chat"
-              structure = ChatProxy::SbStructure.from_json json["proxy"].to_json
-              local_log "Proxy chat: #{structure}"
-              con.packet(PktId::Sb::Play::Chat) { |pkt| ChatProxy.convert_sb structure, pkt }
-            else raise "Unknown proxy capability"
+          elsif !@mc_token.nil? && @con.nil?
+            frame = Frame::Connect.from_json raw_message
+            frame_server = "#{frame[:host]}:#{frame[:port]}"
+            allowed = user.servers.map { |i| "#{i.host}:#{i.port}" }
+            allowed += user.allowed if user.roles.alter_list?
+            unless user.roles.superuser? || allowed.includes? frame_server
+              local_log "Dropping #{profile.name} because they tried to access #{frame_server}, but wasn't permitted"
+              logged_send({"error" => "You are not permitted to access that server using this service"}.to_json)
+              @ws.close
+              next
+            end
+            @con = WSProxy.new(
+              frame[:host],
+              frame[:port] || 25565,
+              frame[:listening],
+              frame[:proxied],
+              self
+            )
+            con.run unless abort_connection
+          elsif !@con.nil?
+            if json.has_key?("emulate") && json["emulate"].as_s?
+              emulate = json["emulate"].as_s
+              local_log "Emulate #{emulate}"
+              case emulate
+              when "Chat"
+                structure = ChatProxy::SbStructure.from_json json["proxy"].to_json
+                local_log "Proxy chat: #{structure}"
+                con.packet(PktId::Sb::Play::Chat) { |pkt| ChatProxy.convert_sb structure, pkt }
+              else raise "Unknown proxy capability"
+              end
             end
           end
         end

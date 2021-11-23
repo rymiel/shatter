@@ -85,10 +85,11 @@ module Shatter
           packet = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
           packet.describe
           packet.run
-          json_out = case packet_id
-                     when .chat?       then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(packet.as Packet::Play::ChatMessage)}.to_json
-                     when .disconnect? then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(packet.as Packet::Play::Disconnect)}.to_json
-                     else                   raise "Unknown proxy capability"
+          json_out = case packet
+                     when Packet::Play::ChatMessage then {"emulate" => "Chat", "proxy" => WS::ChatProxy.convert_cb(packet)}.to_json
+                     when Packet::Play::Disconnect  then {"emulate" => "Disconnect", "proxy" => WS::DisconnectProxy.convert_cb(packet)}.to_json
+                     when Packet::Play::PlayInfo    then {"emulate" => "PlayInfo", "proxy" => WS::PlayInfoProxy.convert_cb(packet)}.to_json
+                     else                                raise "Unknown proxy capability"
                      end
           @ws.send json_out
         elsif @listening.includes? packet_id

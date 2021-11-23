@@ -92,6 +92,7 @@ module Shatter::Packet::Play
 
     macro fields(c, f = [] of Nil, r = nil, s = nil)
       class {{c}}
+        include JSON::Serializable
         {% for i in f %}
           @{{i.id}} : {{PLAY_INFO_FIELDS[i.id.stringify][0]}}
         {% end %}
