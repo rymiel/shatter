@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "outDir": "../public/dist/",
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "sourceMap": true,
+        "jsx": "react",
+        "module": "es6",
+        "target": "es5",
+        "allowJs": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "plugins": [{ "name": "typescript-plugin-css-modules" }]
+    }
+}
