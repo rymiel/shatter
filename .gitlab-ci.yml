@@ -87,7 +87,7 @@ deploy:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   needs:
-    - crystal
+    - crystal build release
     - js react build
   script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
