@@ -52,7 +52,7 @@ js react build:
   needs:
     - js eslint
   script:
-    - npm run-script build
+    - npm run-script build -- --mode=production
   artifacts:
     paths:
       - public/

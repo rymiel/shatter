@@ -28,7 +28,7 @@ const config = {
           template: path.join(__dirname, 'src', 'index.html'),
           filename: path.join(__dirname, '..', 'public', 'index.html')
       }),
-      new webpack.EnvironmentPlugin(['HOT_REDIRECT'])
+      new webpack.EnvironmentPlugin({'HOT_REDIRECT': null})
   ]
 };
 
