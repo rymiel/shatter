@@ -29,8 +29,8 @@ module Shatter
 
       def self.convert_cb(pkt : Packet::Play::PlayInfo) : CbStructure
         {
-          type: "AGPDR"[pkt.action_id],
-          actions: pkt.actions.map { |k, v| {k.to_s, v} }
+          type:    "AGPDR"[pkt.action_id],
+          actions: pkt.actions.map { |k, v| {k.to_s, v} },
         }
       end
     end

@@ -19,9 +19,9 @@ export namespace Outgoing {
     proxy: { chat: string; };
   }
 
-  interface ConnectionListFrame {
-    list: string;
+  interface SuActionFrame {
+    su: "list" | "knownu";
   }
 
-  export type Frame = ConnectFrame | TokenFrame | RefreshTokenFrame | EmulateChatFrame | ConnectionListFrame;
+  export type Frame = ConnectFrame | TokenFrame | RefreshTokenFrame | EmulateChatFrame | SuActionFrame;
 }

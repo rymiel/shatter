@@ -40,6 +40,12 @@ module Shatter::WS::DB
     column allowed : Array(String)
     column created_at : Time
     column last_known_name : String?
+
+    def role_array : Bool[3]
+      StaticArray[roles.tester?,
+       roles.superuser?,
+       roles.alter_list?]
+    end
   end
 
   class ServerList

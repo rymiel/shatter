@@ -90,9 +90,7 @@ module Shatter
             "name"  => profile.name,
             "id"    => profile.id,
             "r"     => shatter_token,
-            "roles" => [user.roles.tester?,
-                        user.roles.superuser?,
-                        user.roles.alter_list?],
+            "roles" => user.role_array.to_a,
           }}.to_json)
           logged_send({"servers" => servers.map { |s| [s.host, s.port] }}.to_json)
           servers.each do |s|
@@ -104,20 +102,43 @@ module Shatter
         else
           json = JSON.parse(raw_message).as_h?
           next unless json
-          if json.has_key?("list")
+          if json.has_key?("su")
             next unless user.roles.superuser?
-            logged_send({"list" => @@active.map { |i| {
-              "Shatter::WS" => {
-                "opened"     => i.opened,
-                "id"         => i.id,
-                "profile"    => i.@profile,
-                "connection" => i.con?.try { |c|
-                  {"host" => "#{c.ip}:#{c.port}",
-                   "state" => c.state, "listening" => c.listening,
-                   "proxying" => c.proxied}
-                } || "[No connection]",
-              },
-            } }}.to_json)
+            su = json["su"].as_s
+            if su == "list"
+              logged_send({"su" => {
+                "list" => @@active.map do |i|
+                  {
+                    "Shatter::WS" => {
+                      "opened"     => i.opened,
+                      "id"         => i.id,
+                      "profile"    => i.@profile,
+                      "connection" => i.con?.try { |c|
+                        {"host" => "#{c.ip}:#{c.port}",
+                         "state" => c.state, "listening" => c.listening,
+                         "proxying" => c.proxied}
+                      } || "[No connection]",
+                    },
+                  }
+                end,
+              }}.to_json)
+            elsif su == "knownu"
+              logged_send({"su" => {
+                "knownu" => DB::User.query.map do |i|
+                  {
+                    "id"    => i.id,
+                    "name" => i.last_known_name,
+                    "roles" => i.role_array.to_a,
+                    "servers" => i.servers.map do |s|
+                      {
+                        "id" => s.id,
+                        "srv" => {s.host, s.port}
+                      }
+                    end
+                  }
+                end,
+              }}.to_json)
+            end
           elsif !@mc_token.nil? && @con.nil?
             frame = Frame::Connect.from_json raw_message
             frame_server = "#{frame[:host]}:#{frame[:port]}"

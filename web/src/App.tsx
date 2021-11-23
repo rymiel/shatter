@@ -7,9 +7,10 @@ import Profile from './Profile';
 import ServerList, { ListedServerProps, srv } from './ServerList';
 import ConnectForm from './Connect/ConnectForm';
 import ChatBox from './ChatBox';
-import { Incoming, ListedConnection } from './Frame/Incoming';
+import { Incoming, KnownUser, ListedConnection, UserServerList } from './Frame/Incoming';
 import { Outgoing } from './Frame/Outgoing';
 import ConnectionsList from './ConnectionsList';
+import KnownUserList from './KnownUserList';
 
 const enum Stage {
   Loading, Authenticating, Joining, Playing, Stuck
@@ -21,10 +22,17 @@ interface AppState {
   errors: ErrorProps[];
   chatLines: string[];
   connections: ListedConnection[];
+  knownUsers: (KnownUser & UserServerList)[];
   servers: Map<string, ListedServerProps>;
   ws?: WebSocket;
   loadingState?: string;
   profile?: Incoming.ReadyFrame;
+}
+
+const WELCOME_STYLE: React.CSSProperties = {
+  display: "flex",
+  marginBottom: "1em",
+  justifyContent: "center"
 }
 
 export default class App extends React.Component<Record<string, never>, AppState> {
@@ -39,6 +47,7 @@ export default class App extends React.Component<Record<string, never>, AppState
       errors: [],
       chatLines: [],
       connections: [],
+      knownUsers: [],
       servers: new Map,
     };
 
@@ -122,8 +131,16 @@ export default class App extends React.Component<Record<string, never>, AppState
       indexedServer.favicon = favicon;
       indexedServer.description = description;
       this.setState({servers: servers});
-    } else if ("list" in json) {
-      this.setState({connections: (json as Incoming.ConnectionList).list.map(i => i['Shatter::WS'])});
+    } else if ("su" in json) {
+      const su = json.su;
+      if ("list" in su) {
+        this.setState({connections: (json as Incoming.ConnectionList).su.list.map(i => i['Shatter::WS'])});
+      } else if ("knownu" in su) {
+        this.setState({knownUsers: (json as Incoming.KnownUserList).su.knownu});
+      } else {
+        console.log(`Unhandled su action`);
+        console.log(su);
+      }
     } else {
       console.log("Unhandled frame");
       console.log(json);
@@ -134,7 +151,7 @@ export default class App extends React.Component<Record<string, never>, AppState
     this.send({
       host: host, port: port,
       listening: [],
-      proxied: ["Chat", "Disconnect"]
+      proxied: ["Chat", "Disconnect", "PlayInfo"]
     });
     this.setState({stage: Stage.Playing});
   }
@@ -145,11 +162,14 @@ export default class App extends React.Component<Record<string, never>, AppState
       {this.state.errors.map((p, i) => <ErrorC key={i} {...p} />)}
       {!this.canAuth() && <Auth />}
       {this.state.stage === Stage.Authenticating && <Spinner text={this.state.loadingState} />}
-      {this.state.stage === Stage.Joining && this.state.profile && <Profile profile={this.state.profile} />}
+      {this.state.stage === Stage.Joining && this.state.profile && <div style={WELCOME_STYLE}><span>Welcome, </span><Profile profile={this.state.profile} /></div>}
       {this.state.stage === Stage.Joining && <ServerList app={this} servers={this.state.servers}/>}
       {this.state.stage === Stage.Joining && <ConnectForm app={this} />}
       {this.state.stage === Stage.Playing && <ChatBox app={this} chatLines={this.state.chatLines} />}
-      {this.state.profile && this.state.profile.roles[1] && <ConnectionsList app={this} connections={this.state.connections} />}
+      {this.state.profile && this.state.profile.roles[1] && <div style={{position: "absolute", "top": 0, "left": 0}}>
+        <ConnectionsList app={this} connections={this.state.connections} />
+        <KnownUserList app={this} knownUsers={this.state.knownUsers} />
+      </div>}
     </>
   }
 }

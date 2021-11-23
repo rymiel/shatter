@@ -1,5 +1,7 @@
 import { TupleOf } from '../Util/util';
 
+export type Roles = TupleOf<boolean, 3>;
+
 export interface ListedConnection {
   opened: string,
   id: number,
@@ -15,18 +17,36 @@ export interface ListedConnection {
   } | string
 }
 
+export interface KnownUser {
+  id: string,
+  name?: string,
+  roles: Roles;
+}
+
+export interface UserServerList {
+  servers: {
+    id: number,
+    srv: [string, number]
+  }[]
+}
+
 export namespace Incoming {
-  export interface ReadyFrame {
-    name: string;
-    id: string;
+  export interface ReadyFrame extends KnownUser {
     r?: string;
-    roles: TupleOf<boolean, 3>;
   }
 
   export interface ConnectionList {
-    list: {
-      "Shatter::WS": ListedConnection
-    }[]
+    su: {
+      list: {
+        "Shatter::WS": ListedConnection
+      }[]
+    }
+  }
+
+  export interface KnownUserList {
+    su: {
+      knownu: (KnownUser & UserServerList)[]
+    }
   }
 
   export interface EmulateChatBody {

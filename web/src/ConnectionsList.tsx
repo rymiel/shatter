@@ -21,7 +21,7 @@ export default class ConnectionsList extends React.Component<ConnectionsListProp
   }
 
   refreshList() {
-    this.props.app.send({list: "list"});
+    this.props.app.send({su: "list"});
     this.setState({flipflop: !this.state.flipflop});
   }
 
@@ -36,7 +36,7 @@ export default class ConnectionsList extends React.Component<ConnectionsListProp
   }
 
   render() {
-    return <div style={{position: "absolute", "top": 0, "left": 0}}>
+    return <div>
       <input type="button" value="CON" onClick={this.handleClick}></input>
       {this.state.showing && <span style={{backgroundColor: this.state.flipflop ? "red" : "green"}}>...</span>}
       {this.state.showing && <div style={{backgroundColor: "#333"}}>
