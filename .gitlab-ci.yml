@@ -102,5 +102,5 @@ deploy:
 
     - mv bin/shatter-wsp shatter-wsp
 
-    - rsync -r $SSH_FLAGS shatter-wsp public $SSH_USER@$SSH_HOSTNAME
+    - 'rsync -r --progress $RSYNC_FLAGS shatter-wsp public $SSH_USER@$SSH_HOSTNAME:'
     - ssh $SSH_FLAGS $SSH_USER@$SSH_HOSTNAME "systemctl restart shatter.service"
