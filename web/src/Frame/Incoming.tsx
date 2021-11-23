@@ -3,7 +3,7 @@ import { TupleOf } from '../Util/util';
 export interface ListedConnection {
   opened: string,
   id: number,
-  profile: {
+  profile?: {
     id: string,
     name: string
   },
