@@ -78,5 +78,5 @@ deploy:
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
-    - ssh $SSH_FLAGS $SSH_USER@$SSH_HOST "wall $CI_RUNNER_DESCRIPTION" # temporary
+    - ssh $SSH_FLAGS $SSH_USER@$SSH_HOST_NAME "wall $CI_RUNNER_DESCRIPTION" # temporary
 
