@@ -40,6 +40,9 @@ js react build:
     - js eslint
   script:
     - npm run-script build
+  artifacts:
+    paths:
+      - public/
 
 crystal:
   image: "crystallang/crystal:latest"
@@ -54,9 +57,12 @@ crystal:
   before_script:
     - apt-get update -qq && apt-get install -y -qq libxml2-dev
     - crystal -v
-    - shards
+    - shards -v
   script:
-    - shards build shatter-wsp
+    - shards build --production shatter-wsp --release
+  artifacts:
+    paths:
+      - bin/shatter-wsp
 
 deploy:
   image: ubuntu
@@ -78,5 +84,7 @@ deploy:
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
-    - ssh $SSH_FLAGS $SSH_USER@$SSH_HOST_NAME "wall $CI_RUNNER_DESCRIPTION" # temporary
+    - ls -lA
+
+    - ssh $SSH_FLAGS $SSH_USER@$SSH_HOSTNAME "wall $CI_RUNNER_DESCRIPTION" # temporary
 
