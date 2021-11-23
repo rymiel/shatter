@@ -12,7 +12,7 @@ stages: [deps, lint, build]
       files:
         - /web/package-lock.json
     paths:
-      - /web/node_modules/
+      - /web/node_modules
 
 js npm:
   <<: *js
