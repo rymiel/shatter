@@ -1,5 +1,5 @@
 import React from 'react';
-import { Incoming } from './App';
+import { Incoming } from "./Frame/Incoming";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faBomb } from '@fortawesome/free-solid-svg-icons'
 

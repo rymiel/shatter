@@ -1,6 +1,6 @@
 import React from 'react';
 import App from './App';
-import { ConnectButton } from './ConnectButton';
+import { ConnectButton } from './Connect/ConnectButton';
 
 export interface ServerListProps {
   app: App;

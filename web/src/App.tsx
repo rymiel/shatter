@@ -1,15 +1,17 @@
 import React from 'react';
 
 import Auth from './Auth';
-import Spinner from './Spinner';
-import ErrorC, { ErrorProps } from './Error';
+import Spinner from './Util/Spinner';
+import ErrorC, { ErrorProps } from './Util/Error';
 import Profile from './Profile';
 import ServerList, { ListedServerProps, srv } from './ServerList';
-import ConnectForm from './ConnectForm';
+import ConnectForm from './Connect/ConnectForm';
 import ChatBox from './ChatBox';
+import { Incoming } from './Frame/Incoming';
+import { Outgoing } from './Frame/Outgoing';
 
 // https://github.com/microsoft/TypeScript/issues/26223#issuecomment-674500430
-type TupleOf<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
+export type TupleOf<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
 
 const enum Stage {
@@ -25,43 +27,6 @@ interface AppState {
   ws?: WebSocket;
   loadingState?: string;
   profile?: Incoming.ReadyFrame;
-}
-
-namespace Outgoing {
-  interface ConnectFrame {
-    host: string,
-    port: number,
-    listening: string[],
-    proxied: string[]
-  }
-
-  interface TokenFrame {
-    token: string
-  }
-
-  interface EmulateChatFrame {
-    emulate: "Chat",
-    proxy: {chat: string}
-  }
-
-  export type Frame = ConnectFrame | TokenFrame | EmulateChatFrame;
-}
-
-export namespace Incoming {
-  export interface ReadyFrame {
-    name: string,
-    id: string,
-    roles: TupleOf<boolean, 3>
-  }
-
-  export interface EmulateChatBody {
-    html: string;
-    position: number;
-  }
-
-  export interface EmulateDisconnectBody {
-    html: string;
-  }
 }
 
 export default class App extends React.Component<Record<string, never>, AppState> {
