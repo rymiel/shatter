@@ -1,4 +1,4 @@
-import { TupleOf } from '../App';
+import { TupleOf } from '../Util/util';
 
 
 export namespace Incoming {
