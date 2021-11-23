@@ -22,7 +22,7 @@ js npm:
   needs: []
   cache:
     <<: *js_cache
-    policy: push-pull
+    policy: pull-push
 
 js eslint:
   <<: *js
