@@ -150,6 +150,9 @@ module Shatter::Packet
         _describe(io)
         {% end %}
       end
+      def has_describe? : Bool
+        {% if @type.annotation(::Shatter::Packet::Describe) %}true{% else %}false{% end %}
+      end
     end
 
     def initialize(pkt : ::IO, con : ::Shatter::Connection)

@@ -30,13 +30,27 @@ module Shatter::WS::DB
     enum Role
       Tester
       Superuser
+      AlterList
     end
 
     column id : UUID, primary: true
+    has_many servers : ServerList, foreign_key: "user"
 
     column roles : Role
     column allowed : Array(String)
     column created_at : Time
     column last_known_name : String?
+  end
+
+  class ServerList
+    include Clear::Model
+    self.table = "serverlist"
+
+    belongs_to owner : User, foreign_key: "user", foreign_key_type: UUID
+    column id : UInt64, primary: true
+
+    column host : String
+    column port : Int32
+    column created_at : Time
   end
 end

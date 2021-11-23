@@ -5,6 +5,7 @@ module Shatter
         PktId::Cb::Login::CryptRequest,
         PktId::Cb::Login::LoginSuccess,
         PktId::Cb::Login::SetCompression,
+        PktId::Cb::Status::Response,
         PktId::Cb::Play::KeepAlive,
         PktId::Cb::Play::JoinGame,
       }
@@ -68,9 +69,14 @@ module Shatter
           # pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id) }
           @ws.send({"keepalive" => @id}.to_json) if packet_id.is_a? PktId::Cb::Play && packet_id.keep_alive?
           r = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
-          STDERR << connection_name
+          STDERR << connection_name if r.has_describe?
           r.describe
           r.run
+          @ws.send({
+            "ping"        => [@ip, @port],
+            "data"        => r.data,
+            "description" => Shatter::Chat::HtmlBuilder.new.read r.data["description"].as_h,
+          }.to_json) if r.is_a? Packet::Status::Response
         elsif @proxied.includes? packet_id
           raise "Unknown proxy capability" unless packet_id.is_a? PktId::Cb::Play
           is_silent = PktId::SILENT[packet_id]?
