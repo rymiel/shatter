@@ -18,12 +18,6 @@ dependencies:
     gitlab: rymiel/shatter-chat
   nbt:
     gitlab: rymiel/nbt
-  crsfml:
-    github: oprypin/crsfml
-  imgui:
-    github: oprypin/crystal-imgui
-  imgui-sfml:
-    github: oprypin/crystal-imgui-sfml
   envy:
     github: GrottoPress/envy
   clear:

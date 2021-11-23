@@ -16,6 +16,7 @@ src/visual/
 visual.json
 imgui.ini
 iosevka*.ttf
+visual.shard.yml
 
 # personalized, these will be generated in a better way later
 permits.json
