@@ -1,0 +1,60 @@
+stages: [deps, lint, build]
+
+.js: &js
+  image: node:latest
+  before_script:
+    - cd web
+    - npm install
+    - npm -v && node -v
+  cache: &js_cache
+    policy: pull
+    key:
+      files:
+        - /web/package-lock.json
+    paths:
+      - /web/node_modules/
+
+js npm:
+  <<: *js
+  stage: deps
+  script:
+    - echo "Nothing to do."
+  needs: []
+  cache:
+    <<: *js_cache
+    policy: push
+
+js eslint:
+  <<: *js
+  stage: lint
+  needs:
+    - js npm
+  script:
+    - 'node_modules/bin/eslint -v'
+    - 'node_modules/bin/eslint -- src/*.tsx'
+
+js react build:
+  <<: *js
+  stage: build
+  needs:
+    - js eslint
+  script:
+    - npm run-script build
+
+crystal:
+  image: "crystallang/crystal:latest"
+  cache:
+    key:
+      files:
+        - shard.lock
+    paths:
+      - lib
+  stage: build
+  needs: []
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq libxml2-dev
+    - crystal -v
+    - shards
+  script:
+    - shards build shatter-wsp
+
