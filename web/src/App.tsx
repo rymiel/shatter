@@ -7,8 +7,9 @@ import Profile from './Profile';
 import ServerList, { ListedServerProps, srv } from './ServerList';
 import ConnectForm from './Connect/ConnectForm';
 import ChatBox from './ChatBox';
-import { Incoming } from './Frame/Incoming';
+import { Incoming, ListedConnection } from './Frame/Incoming';
 import { Outgoing } from './Frame/Outgoing';
+import ConnectionsList from './ConnectionsList';
 
 const enum Stage {
   Loading, Authenticating, Joining, Playing, Stuck
@@ -19,6 +20,7 @@ interface AppState {
   stage: Stage;
   errors: ErrorProps[];
   chatLines: string[];
+  connections: ListedConnection[];
   servers: Map<string, ListedServerProps>;
   ws?: WebSocket;
   loadingState?: string;
@@ -31,7 +33,14 @@ export default class App extends React.Component<Record<string, never>, AppState
 
     const callback = new URLSearchParams(window.location.hash.substr(1));
     window.location.hash = "";
-    this.state = {callback: callback, stage: Stage.Loading, errors: [], servers: new Map, chatLines: []};
+    this.state = {
+      callback: callback,
+      stage: Stage.Loading,
+      errors: [],
+      chatLines: [],
+      connections: [],
+      servers: new Map,
+    };
 
     if (this.canAuth()) {
       let ws;
@@ -89,7 +98,7 @@ export default class App extends React.Component<Record<string, never>, AppState
         const message = data.html as string
         this.setState({errors: [...this.state.errors, {title: "Forced Disconnect", description: (<span dangerouslySetInnerHTML={{__html: message}}/>)}]})
       } else {
-        console.log("Unhandled proxy");
+        console.log(`Unhandled proxy ${json.emulate}`);
         console.log(data);
       }
     } else if ("ready" in json) {
@@ -113,6 +122,8 @@ export default class App extends React.Component<Record<string, never>, AppState
       indexedServer.favicon = favicon;
       indexedServer.description = description;
       this.setState({servers: servers});
+    } else if ("list" in json) {
+      this.setState({connections: (json as Incoming.ConnectionList).list.map(i => i['Shatter::WS'])});
     } else {
       console.log("Unhandled frame");
       console.log(json);
@@ -138,6 +149,7 @@ export default class App extends React.Component<Record<string, never>, AppState
       {this.state.stage === Stage.Joining && <ServerList app={this} servers={this.state.servers}/>}
       {this.state.stage === Stage.Joining && <ConnectForm app={this} />}
       {this.state.stage === Stage.Playing && <ChatBox app={this} chatLines={this.state.chatLines} />}
+      {this.state.profile && this.state.profile.roles[1] && <ConnectionsList app={this} connections={this.state.connections} />}
     </>
   }
 }
