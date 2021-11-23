@@ -10,9 +10,9 @@ stages: [deps, lint, build]
     policy: pull
     key:
       files:
-        - /web/package-lock.json
+        - web/package-lock.json
     paths:
-      - /web/node_modules
+      - web/node_modules
 
 js npm:
   <<: *js
