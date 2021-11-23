@@ -60,6 +60,7 @@ crystal:
 
 deploy:
   image: ubuntu
+  stage: deploy
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
