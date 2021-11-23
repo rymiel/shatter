@@ -30,8 +30,8 @@ js eslint:
   needs:
     - js npm
   script:
-    - 'node_modules/bin/eslint -v'
-    - 'node_modules/bin/eslint -- src/*.tsx'
+    - 'node_modules/.bin/eslint -v'
+    - 'node_modules/.bin/eslint -- src/*.tsx'
 
 js react build:
   <<: *js
