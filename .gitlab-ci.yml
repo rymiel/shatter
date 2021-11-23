@@ -1,4 +1,4 @@
-stages: [deps, lint, build]
+stages: [deps, lint, build, deploy]
 
 .js: &js
   image: node:latest
@@ -57,4 +57,25 @@ crystal:
     - shards
   script:
     - shards build shatter-wsp
+
+deploy:
+  image: ubuntu
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
+    - crystal
+    - js react build
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+    - ssh $SSH_FLAGS $SSH_USER@$SSH_HOST "wall $CI_RUNNER_DESCRIPTION" # temporary
 
