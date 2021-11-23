@@ -41,14 +41,19 @@ export default class ConnectionsList extends React.Component<ConnectionsListProp
       {this.state.showing && <span style={{backgroundColor: this.state.flipflop ? "red" : "green"}}>...</span>}
       {this.state.showing && <div style={{backgroundColor: "#333"}}>
         {this.props.connections.map((e, i) =>
-          <div key={i}>
-            <span>[{e.id}] </span>
-            <span title={e.profile.id}><b>{e.profile.name}</b> </span>
-            <span>{e.opened} </span>
-            <span>{JSON.stringify(e.connection)}</span>
-          </div>
+          <ListedConnectedUser key={i} connection={e} />
         )}
       </div>}
     </div>
   }
+}
+
+function ListedConnectedUser(p: {connection: ListedConnection}) {
+  const e = p.connection;
+  return <div>
+    <span>[{e.id}] </span>
+    {e.profile ? <span title={e.profile.id}><b>{e.profile.name}</b> </span> : <span>[unknown]</span>}
+    <span>{e.opened} </span>
+    <span>{JSON.stringify(e.connection)}</span>
+  </div>
 }

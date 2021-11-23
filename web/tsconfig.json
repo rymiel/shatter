@@ -3,6 +3,7 @@
         "outDir": "../public/dist/",
         "noImplicitAny": true,
         "strictNullChecks": true,
+        "strict": true,
         "sourceMap": true,
         "jsx": "react",
         "module": "es6",
