@@ -1,6 +1,6 @@
 module Shatter::Packet::Status
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 2)]
+  @[Silent]
+  # @[Describe(level: 2)]
   class Response
     include Packet::Handler
 

@@ -1,6 +1,6 @@
 module Shatter::Packet::Play
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n"})]
+  @[Silent]
+  @[Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n"})]
   class WindowItems
     include Packet::Handler
 
@@ -10,8 +10,8 @@ module Shatter::Packet::Play
     field carried : Data::Slot?
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope", dimension: "#{@dimension.inspect.size} chars of nope"})]
+  @[Silent]
+  @[Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope", dimension: "#{@dimension.inspect.size} chars of nope"})]
   class JoinGame
     include Packet::Handler
 
@@ -55,8 +55,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe]
+  @[Silent]
+  @[Describe]
   class KeepAlive
     include Packet::Handler
 
@@ -69,8 +69,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(transform: {
+  @[Silent]
+  @[Describe(transform: {
     action_id: ["Add", "Gamemode", "Ping", "Display name", "Remove"][@action_id],
     actions:   @actions.map { |k, v| v.nil? ? con.players[k].name : "#{con.players[k].name} => #{v.to_s k}" }.join ", ",
   })]

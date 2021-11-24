@@ -1,6 +1,6 @@
 module Shatter::Packet::Login
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2)]
+  @[Silent]
+  @[Describe(level: 2)]
   class CryptRequest
     include Packet::Handler
 
@@ -53,8 +53,8 @@ module Shatter::Packet::Login
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2)]
+  @[Silent]
+  @[Describe(level: 2)]
   class SetCompression
     include Packet::Handler
 
@@ -65,8 +65,8 @@ module Shatter::Packet::Login
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2)]
+  @[Silent]
+  @[Describe(level: 2)]
   class LoginSuccess
     include Packet::Handler
 

@@ -1,8 +1,8 @@
 require "../../chunk"
 
 module Shatter::Packet::Play
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 0)]
+  @[Silent]
+  # @[Describe(level: 0)]
   class WorldTime
     include Packet::Handler
 
@@ -10,8 +10,8 @@ module Shatter::Packet::Play
     field time_of_day : Int64
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe]
+  @[Silent]
+  # @[Describe]
   class GameState
     include Packet::Handler
 
@@ -19,9 +19,9 @@ module Shatter::Packet::Play
     field value : Float32
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe]
-  @[Shatter::Packet::Alias(Chunk)]
+  @[Silent]
+  # @[Describe]
+  @[Alias(Chunk)]
   class ChunkPacket
     include Packet::Handler
 
@@ -35,9 +35,9 @@ module Shatter::Packet::Play
     field tiles : NBT[VarInt]
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe]
-  @[Shatter::Packet::Alias(Sound)]
+  @[Silent]
+  # @[Describe]
+  @[Alias(Sound)]
   class SoundPacket
     include Packet::Handler
 

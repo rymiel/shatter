@@ -1,6 +1,6 @@
 module Shatter::Packet::Play
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 2)]
+  @[Silent]
+  # @[Describe(level: 2)]
   class BlockChange
     include Packet::Handler
 
@@ -12,8 +12,8 @@ module Shatter::Packet::Play
     field state : BlockState
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2)]
+  @[Silent]
+  @[Describe(level: 2)]
   class BlockAction
     include Packet::Handler
 
@@ -42,8 +42,8 @@ module Shatter::Packet::Play
     field param : String = Play::BlockAction::KNOWN_PARAM.find { |k, _| k === @block }.try &.[1][@_param] || @_param.to_s
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 2, transform: {blocks: @blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", "})]
+  @[Silent]
+  # @[Describe(level: 2, transform: {blocks: @blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", "})]
   class MultiBlocks
     include Packet::Handler
 

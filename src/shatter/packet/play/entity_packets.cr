@@ -1,6 +1,6 @@
 module Shatter::Packet::Play
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 0)]
+  @[Silent]
+  # @[Describe(level: 0)]
   class EntityHeadLook
     include Packet::Handler
 
@@ -12,8 +12,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 0)]
+  @[Silent]
+  # @[Describe(level: 0)]
   class EntityPosition
     include Packet::Handler
 
@@ -30,8 +30,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 0)]
+  @[Silent]
+  # @[Describe(level: 0)]
   class EntityVelocity
     include Packet::Handler
 
@@ -47,8 +47,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 0)]
+  @[Silent]
+  # @[Describe(level: 0)]
   class EntityPosRot
     include Packet::Handler
 
@@ -69,8 +69,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 0)]
+  @[Silent]
+  # @[Describe(level: 0)]
   class EntityTeleport
     include Packet::Handler
 
@@ -91,8 +91,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 0)]
+  @[Silent]
+  # @[Describe(level: 0)]
   class EntityRotation
     include Packet::Handler
 
@@ -107,8 +107,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 4)]
+  @[Silent]
+  @[Describe(level: 4)]
   class EntityStatus
     include Packet::Handler
 
@@ -116,16 +116,16 @@ module Shatter::Packet::Play
     field status : Data::Entity::Status = Data::Entity::Status.new pkt.read_i8
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe(level: 3)]
+  @[Silent]
+  # @[Describe(level: 3)]
   class DestroyEntity
     include Packet::Handler
 
     field entities : Entity[VarInt]
   end
 
-  @[Shatter::Packet::Silent]
-  # @[Shatter::Packet::Describe]
+  @[Silent]
+  # @[Describe]
   class SpawnLiving
     include Packet::Handler
 
@@ -147,8 +147,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe]
+  @[Silent]
+  @[Describe]
   class SpawnEntity
     include Packet::Handler
 
@@ -170,8 +170,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe]
+  @[Silent]
+  @[Describe]
   class SpawnPlayer
     include Packet::Handler
 
@@ -189,8 +189,8 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Shatter::Packet::Silent]
-  @[Shatter::Packet::Describe(level: 2)]
+  @[Silent]
+  @[Describe(level: 2)]
   class Equipment
     include Packet::Handler
 
