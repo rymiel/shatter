@@ -1,16 +1,17 @@
 import React from 'react';
 
+import { H1 } from '@blueprintjs/core';
+
 import Auth from './Auth';
-import Spinner from './Util/Spinner';
-import ErrorC, { ErrorProps } from './Util/Error';
-import Profile from './Profile';
-import ServerList, { ListedServerProps, srv } from './ServerList';
-import ConnectForm from './Connect/ConnectForm';
 import ChatBox from './ChatBox';
+import ConnectForm from './Connect/ConnectForm';
 import { Incoming, KnownUser, ListedConnection, UserServerList } from './Frame/Incoming';
 import { Outgoing } from './Frame/Outgoing';
-import { H1 } from '@blueprintjs/core';
+import Profile from './Profile';
+import ServerList, { ListedServerProps, srv } from './ServerList';
 import DebugBox from './SU/DebugBox';
+import ErrorC, { ErrorProps } from './Util/Error';
+import Spinner from './Util/Spinner';
 
 export const enum Stage {
   Loading, Authenticating, Joining, Connecting, Playing, Stuck
@@ -31,24 +32,24 @@ interface AppState {
 
 const WELCOME_STYLE: React.CSSProperties = {
   display: "flex",
-  marginBottom: "1em",
-  justifyContent: "center"
+  justifyContent: "center",
+  marginBottom: "1em"
 }
 
 export default class App extends React.Component<Record<string, never>, AppState> {
   constructor(props: Record<string, never>) {
     super(props);
 
-    const callback = new URLSearchParams(window.location.hash.substr(1));
+    const callback = new URLSearchParams(window.location.hash.substring(1));
     window.location.hash = "";
     this.state = {
-      callback: callback,
-      stage: Stage.Loading,
-      errors: [],
+      callback,
       chatLines: [],
       connections: [],
+      errors: [],
       knownUsers: [],
-      servers: new Map,
+      servers: new Map(),
+      stage: Stage.Loading,
     };
 
     if (this.canAuth()) {
@@ -58,7 +59,7 @@ export default class App extends React.Component<Record<string, never>, AppState
       } else {
         ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
       }
-      this.state = {...this.state, ws: ws, stage: Stage.Authenticating};
+      this.state = {...this.state, ws, stage: Stage.Authenticating};
       if (callback.has("code")) ws.onopen = () => this.send({token: callback.get("code")!});
       else ws.onopen = () => this.send({rtoken: localStorage.getItem("r")!});
       ws.onmessage = (ev) => {
@@ -71,6 +72,7 @@ export default class App extends React.Component<Record<string, never>, AppState
   canAuth() {
     return this.state.callback.has("code") || localStorage.getItem("r")
   }
+
   isShowingConnect() {
     return this.state.stage === Stage.Joining || this.state.stage === Stage.Connecting
   }
@@ -84,8 +86,8 @@ export default class App extends React.Component<Record<string, never>, AppState
     if ("error" in json) {
       this.setState({
         errors: this.state.errors.concat({
-          title: json.errortype ?? "Denied",
-          description: json.error
+          description: json.error,
+          title: json.errortype ?? "Denied"
         })
       });
       if (this.state.stage === Stage.Authenticating) {
@@ -121,7 +123,7 @@ export default class App extends React.Component<Record<string, never>, AppState
       let frame = json.servers as [string, number][];
       let servers = this.state.servers;
       frame.forEach((e) => servers.set(srv(e), {host: e}));
-      this.setState({servers: servers});
+      this.setState({servers});
     } else if ("joingame" in json) {
       if (this.state.stage === Stage.Connecting) this.setState({stage: Stage.Playing});
     } else if ("ping" in json) {
@@ -135,7 +137,7 @@ export default class App extends React.Component<Record<string, never>, AppState
 
       indexedServer.favicon = favicon;
       indexedServer.description = description;
-      this.setState({servers: servers});
+      this.setState({servers});
     } else if ("su" in json) {
       const su = json.su;
       if ("list" in su) {
@@ -154,8 +156,9 @@ export default class App extends React.Component<Record<string, never>, AppState
 
   connect(host: string, port: number) {
     this.send({
-      host: host, port: port,
+      host,
       listening: [],
+      port,
       proxied: ["Chat", "Disconnect", "PlayInfo"]
     });
     this.setState({stage: Stage.Connecting});

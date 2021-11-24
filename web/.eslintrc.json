@@ -21,7 +21,8 @@
             "jsx": true
         },
         "ecmaVersion": 5,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": ["tsconfig.json"]
     },
     "plugins": [
         "react",
@@ -29,6 +30,14 @@
     ],
     "rules": {
         "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/no-non-null-assertion": "off"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/explicit-member-accessibility": "off",
+        "@typescript-eslint/array-type": "off",
+        "@typescript-eslint/no-redeclare": "off",
+        "react/jsx-no-bind": "off",
+        "header/header": "off",
+        "import/no-default-export": "off",
+        "no-console": "off"
     }
 }

@@ -1,7 +1,8 @@
-import React from 'react';
-import { KnownUser } from "./Frame/Incoming";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck, faBomb } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react';
+
+import { KnownUser } from "./Frame/Incoming";
 
 interface ProfileProps {
   profile: KnownUser

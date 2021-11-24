@@ -1,5 +1,7 @@
-import { Button, Intent } from '@blueprintjs/core';
 import React from 'react';
+
+import { Button, Intent } from '@blueprintjs/core';
+
 import App from './App';
 
 interface ChatBoxProps {
@@ -21,13 +23,14 @@ function ChatMessages(p: {chatLines: string[], scrollRef: React.RefObject<HTMLDi
 
   return <>
     {p.chatLines.map((i, j) =>
-      <p key={j} dangerouslySetInnerHTML={{__html: i}}></p>
+      <p key={j} dangerouslySetInnerHTML={{__html: i}} />
     )}
   </>
 }
 
 export default class ChatBox extends React.Component<ChatBoxProps, ChatBoxState> {
   ref: React.RefObject<HTMLDivElement>;
+
   constructor(props: ChatBoxProps) {
     super(props);
     this.ref = React.createRef();
