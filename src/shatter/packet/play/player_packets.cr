@@ -87,7 +87,7 @@ module Shatter::Packet::Play
       end},
       "gamemode"     => {Data::Player::Gamemode, Data::Player::Gamemode.new(pkt.read_var_int.to_i8)},
       "ping"         => {UInt32, pkt.read_var_int},
-      "display_name" => {String?, pkt.read_bool ? Shatter::Chat::AnsiBuilder.new.read(JSON.parse(pkt.read_var_string).as_h) : nil},
+      "display_name" => {ChatContainer?, pkt.read_bool ? ChatContainer.new(pkt.read_var_string) : nil},
     }
 
     macro fields(c, f = [] of Nil, r = nil, s = nil)
