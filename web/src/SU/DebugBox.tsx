@@ -24,7 +24,7 @@ export default class DebugBox extends Component<DebugBoxProps, DebugBoxState> {
   }
 
   handleClick(idx: number) {
-    this.setState({showing: this.state.showing ? this.state.active !== idx : true, active: idx})
+    this.setState(s => ({showing: s.showing ? s.active !== idx : true, active: idx}));
   }
 
   render() {
@@ -37,6 +37,6 @@ export default class DebugBox extends Component<DebugBoxProps, DebugBoxState> {
         {this.state.active === 0 && <ConnectionsList app={this.props.app} connections={this.props.app.state.connections} />}
         {this.state.active === 1 && <KnownUserList app={this.props.app} knownUsers={this.props.app.state.knownUsers} />}
       </Collapse>
-    </div>
+    </div>;
   }
 }

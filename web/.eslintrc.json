@@ -22,7 +22,8 @@
             "jsx": true
         },
         "ecmaVersion": 5,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": "./web/tsconfig.json"
     },
     "plugins": [
         "react",
@@ -30,8 +31,12 @@
         "@blueprintjs"
     ],
     "rules": {
+        "semi": "warn",
+        "react/no-access-state-in-setstate": "warn",
+        "react/jsx-space-before-closing": "warn",
+        "react/jsx-props-no-multi-spaces": "warn",
         "@typescript-eslint/no-namespace": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
-        "@blueprintjs/html-components": ["error"]
+        "@blueprintjs/html-components": "error"
     }
 }

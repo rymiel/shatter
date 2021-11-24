@@ -28,23 +28,23 @@ const LIST_STYLE: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   marginBottom: "1em"
-}
+};
 const LIST_ITEM_STYLE: CSSProperties = {
   height: "64px"
-}
+};
 const LIST_DESC_STYLE: CSSProperties = {
   ...LIST_ITEM_STYLE,
   display: "flex",
   flexDirection: "column"
-}
+};
 const LIST_CONNECT_STYLE: CSSProperties = {
   ...LIST_ITEM_STYLE,
   marginLeft: "1em",
   verticalAlign: "middle"
-}
+};
 
 export function srv(e: [string, number]): string {
-  return `${e[0]}:${e[1]}`
+  return `${e[0]}:${e[1]}`;
 }
 
 function isDetailed(p: ListedServerProps): boolean {
@@ -59,7 +59,7 @@ export default function ServerList(props: ServerListProps) {
   );
   return <div style={LIST_STYLE}>
     {list}
-  </div>
+  </div>;
 }
 
 function DetailedListedServer(props: DetailedListedServerProps & InherentServerProps) {
@@ -71,18 +71,18 @@ function DetailedListedServer(props: DetailedListedServerProps & InherentServerP
       <div dangerouslySetInnerHTML={{__html: props.description}} />
     </div>
     <ConnectButton style={LIST_CONNECT_STYLE} {...props} />
-  </ServerSection>
+  </ServerSection>;
 }
 
 function SimpleListedServer(props: ListedServerProps & InherentServerProps) {
   return <ServerSection>
     <span>{props.name}</span>
     <ConnectButton style={{marginLeft: "1em"}} {...props} />
-  </ServerSection>
+  </ServerSection>;
 }
 
 function ServerSection(props: {children: React.ReactNode, style?: React.CSSProperties}) {
   return <Section style={{...props.style, backgroundColor: "black"}}>
     {props.children}
-  </Section>
+  </Section>;
 }

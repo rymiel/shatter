@@ -40,9 +40,9 @@ export default class ConnectForm extends Component<ConnectFormProps, ConnectForm
 
   render() {
     return <Section style={{justifyContent: "center", display: "flex", marginBottom: "1em", width: "fitContent"}}>
-      <InputGroup asyncControl={true} onKeyDown={this.handleSubmit} onChange={this.handleHostChange} placeholder="Host" />
+      <InputGroup onKeyDown={this.handleSubmit} onChange={this.handleHostChange} placeholder="Host" />
       <InputGroup type="number" defaultValue="25565" size={5} onKeyDown={this.handleSubmit} onChange={this.handlePortChange} placeholder="Port" />
       <ConnectButton app={this.props.app} host={[this.state.host, this.state.port]} />
-    </Section>
+    </Section>;
   }
 }

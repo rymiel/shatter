@@ -34,7 +34,7 @@ const WELCOME_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
   marginBottom: "1em"
-}
+};
 
 export default class App extends Component<Record<string, never>, AppState> {
   constructor(props: Record<string, never>) {
@@ -55,7 +55,7 @@ export default class App extends Component<Record<string, never>, AppState> {
     if (this.canAuth()) {
       let ws;
       if (process.env.HOT_REDIRECT) {
-        ws = new WebSocket("ws://" + process.env.HOT_REDIRECT + "/wsp");
+        ws = new WebSocket(`ws://${process.env.HOT_REDIRECT}/wsp`);
       } else {
         ws = new WebSocket(`${document.location.hostname === "localhost" ? "ws" : "wss"}://${document.location.host}/wsp`);
       }
@@ -65,16 +65,16 @@ export default class App extends Component<Record<string, never>, AppState> {
       ws.onmessage = (ev) => {
         const data = ev.data;
         if (typeof data === 'string') this.decodeFrame(JSON.parse(data));
-      }
+      };
     }
   }
 
   canAuth() {
-    return this.state.callback.has("code") || localStorage.getItem("r")
+    return this.state.callback.has("code") || localStorage.getItem("r");
   }
 
   isShowingConnect() {
-    return this.state.stage === Stage.Joining || this.state.stage === Stage.Connecting
+    return this.state.stage === Stage.Joining || this.state.stage === Stage.Connecting;
   }
 
   send(frame: Outgoing.Frame) {
@@ -84,12 +84,12 @@ export default class App extends Component<Record<string, never>, AppState> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   decodeFrame(json: any) {
     if ("error" in json) {
-      this.setState({
-        errors: this.state.errors.concat({
+      this.setState(s => ({
+        errors: s.errors.concat({
           description: json.error,
           title: json.errortype ?? "Denied"
         })
-      });
+      }));
       if (this.state.stage === Stage.Authenticating) {
         this.setState({stage: Stage.Stuck});
         localStorage.removeItem("r");
@@ -103,14 +103,19 @@ export default class App extends Component<Record<string, never>, AppState> {
     } else if ("emulate" in json) {
       const data = json.proxy;
       if (json.emulate === "Chat") {
-        const chat = data as Incoming.EmulateChatBody
+        const chat = data as Incoming.EmulateChatBody;
         if (chat.position !== 2) {
-          const chatLine = chat.html.replace(/\n/, "<br/>")
-          this.setState({chatLines: [...this.state.chatLines, chatLine]})
+          const chatLine = chat.html.replace(/\n/, "<br/>");
+          this.setState(s => ({chatLines: [...s.chatLines, chatLine]}));
         }
       } else if (json.emulate === "Disconnect") {
-        const message = data.html as string
-        this.setState({errors: [...this.state.errors, {title: "Forced Disconnect", description: (<span dangerouslySetInnerHTML={{__html: message}}/>)}]})
+        const message = data.html as string;
+        this.setState(s => ({
+          errors: [...s.errors, {
+            title: "Forced Disconnect",
+            description: (<span dangerouslySetInnerHTML={{__html: message}} />)
+          }]
+        }));
       } else {
         console.log(`Unhandled proxy ${json.emulate}`);
         console.log(data);
@@ -121,9 +126,11 @@ export default class App extends Component<Record<string, never>, AppState> {
       this.setState({stage: Stage.Joining, profile: frame});
     } else if ("servers" in json) {
       let frame = json.servers as [string, number][];
-      let servers = this.state.servers;
-      frame.forEach((e) => servers.set(srv(e), {host: e}));
-      this.setState({servers});
+      this.setState(s => {
+        const servers = s.servers;
+        frame.forEach((e) => servers.set(srv(e), {host: e}));
+        return {servers};
+      });
     } else if ("joingame" in json) {
       if (this.state.stage === Stage.Connecting) this.setState({stage: Stage.Playing});
     } else if ("ping" in json) {
@@ -131,13 +138,15 @@ export default class App extends Component<Record<string, never>, AppState> {
       const favicon = json.data.favicon as string;
       const description = (json.description as string).replace("\n", "<br/>");
 
-      let servers = this.state.servers;
-      const indexedServer = servers.get(srv(server));
-      if (indexedServer === undefined) return;
+      this.setState(s => {
+        const servers = s.servers;
+        const indexedServer = servers.get(srv(server));
+        if (indexedServer === undefined) return {servers};
 
-      indexedServer.favicon = favicon;
-      indexedServer.description = description;
-      this.setState({servers});
+        indexedServer.favicon = favicon;
+        indexedServer.description = description;
+        return {servers};
+      });
     } else if ("su" in json) {
       const su = json.su;
       if ("list" in su) {
@@ -171,10 +180,10 @@ export default class App extends Component<Record<string, never>, AppState> {
       {!this.canAuth() && <Auth />}
       {this.state.stage === Stage.Authenticating && <Spinner text={this.state.loadingState} />}
       {this.isShowingConnect() && this.state.profile && <div style={WELCOME_STYLE}><span>Welcome, </span><Profile profile={this.state.profile} /></div>}
-      {this.isShowingConnect() && <ServerList app={this} servers={this.state.servers}/>}
+      {this.isShowingConnect() && <ServerList app={this} servers={this.state.servers} />}
       {this.isShowingConnect() && <ConnectForm app={this} />}
       {this.state.stage === Stage.Playing && <ChatBox app={this} chatLines={this.state.chatLines} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
-    </>
+    </>;
   }
 }

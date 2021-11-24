@@ -20,6 +20,6 @@ export default class KnownUserList extends Component<KnownUserListProps, Record<
         <Profile profile={e} />
         <div style={{marginLeft: "auto"}}><input type="button" value=">" style={{padding: 0, marginLeft: "1em"}} /></div>
       </div>)}
-    </div>
+    </div>;
   }
 }

@@ -16,7 +16,7 @@ export namespace Outgoing {
 
   interface EmulateChatFrame {
     emulate: "Chat";
-    proxy: { chat: string; };
+    proxy: { chat: string };
   }
 
   interface SuActionFrame {

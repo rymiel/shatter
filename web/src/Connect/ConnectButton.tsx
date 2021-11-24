@@ -3,7 +3,7 @@ import App, { Stage } from '../App';
 
 export interface ConnectButtonProps {
   host?: [string?, number?];
-  style?: React.CSSProperties
+  style?: React.CSSProperties;
   app: App;
 }
 

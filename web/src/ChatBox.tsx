@@ -11,7 +11,7 @@ interface ChatBoxProps {
 
 interface ChatBoxState {
   message: string;
-  isScrolledToBottom: boolean
+  isScrolledToBottom: boolean;
 }
 
 function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scrollRef: RefObject<HTMLDivElement>}) {
@@ -19,13 +19,13 @@ function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scro
     const out = p.scrollRef.current;
     if (!out) return;
     if (p.isScrolledToBottom) out.scrollTop = out.scrollHeight;
-  })
+  });
 
   return <>
     {p.chatLines.map((i, j) =>
       <p key={j} dangerouslySetInnerHTML={{__html: i}} />
     )}
-  </>
+  </>;
 }
 
 export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
@@ -78,6 +78,6 @@ export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
         <input id="chatInput" onChange={this.handleChange} onKeyDown={this.handleKey} value={this.state.message} />
         <Button intent={Intent.PRIMARY} text="Chat" onClick={this.sendChat} />
       </div>
-    </div>
+    </div>;
   }
 }

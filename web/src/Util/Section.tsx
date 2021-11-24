@@ -6,5 +6,5 @@ export default function Section(props: {children: ReactNode, style?: CSSProperti
     <Card style={props.style}>
       {props.children}
     </Card>
-  </div>
+  </div>;
 }

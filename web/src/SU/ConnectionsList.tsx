@@ -20,7 +20,7 @@ export default class ConnectionsList extends Component<ConnectionsListProps, Con
 
   refreshList() {
     this.props.app.send({su: "list"});
-    this.setState({flipflop: !this.state.flipflop});
+    this.setState(s => ({flipflop: !s.flipflop}));
   }
 
   componentDidMount() {
@@ -39,7 +39,7 @@ export default class ConnectionsList extends Component<ConnectionsListProps, Con
           <ListedConnectedUser key={i} connection={e} />
         )}
       </div>
-    </div>
+    </div>;
   }
 }
 
@@ -50,5 +50,5 @@ function ListedConnectedUser(p: {connection: ListedConnection}) {
     {e.profile ? <span title={e.profile.id}><b>{e.profile.name}</b> </span> : <span>[unknown]</span>}
     <span>{e.opened} </span>
     <span>{JSON.stringify(e.connection)}</span>
-  </div>
+  </div>;
 }

@@ -3,31 +3,31 @@ import { TupleOf } from '../Util/util';
 export type Roles = TupleOf<boolean, 3>;
 
 export interface ListedConnection {
-  opened: string,
-  id: number,
+  opened: string;
+  id: number;
   profile?: {
-    id: string,
-    name: string
-  },
+    id: string;
+    name: string;
+  };
   connection: {
-    host: string,
-    state: string,
-    listening: string[],
-    proxying: string[]
-  } | string
+    host: string;
+    state: string;
+    listening: string[];
+    proxying: string[];
+  } | string;
 }
 
 export interface KnownUser {
-  id: string,
-  name?: string,
+  id: string;
+  name?: string;
   roles: Roles;
 }
 
 export interface UserServerList {
   servers: {
-    id: number,
-    srv: [string, number]
-  }[]
+    id: number;
+    srv: [string, number];
+  }[];
 }
 
 export namespace Incoming {
@@ -38,15 +38,15 @@ export namespace Incoming {
   export interface ConnectionList {
     su: {
       list: {
-        "Shatter::WS": ListedConnection
-      }[]
-    }
+        "Shatter::WS": ListedConnection;
+      }[];
+    };
   }
 
   export interface KnownUserList {
     su: {
-      knownu: (KnownUser & UserServerList)[]
-    }
+      knownu: (KnownUser & UserServerList)[];
+    };
   }
 
   export interface EmulateChatBody {

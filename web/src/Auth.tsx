@@ -17,6 +17,6 @@ export default function Auth() {
   }
 
   return <div style={{display: "flex"}}>
-    <Button onClick={submitAuth} style={{margin: "auto"}} large={true} icon={<FontAwesomeIcon icon={faMicrosoft} />} text="Authenticate with Microsoft" />
-  </div>
+    <Button onClick={submitAuth} style={{margin: "auto"}} large icon={<FontAwesomeIcon icon={faMicrosoft} />} text="Authenticate with Microsoft" />
+  </div>;
 }
