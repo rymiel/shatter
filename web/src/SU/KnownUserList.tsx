@@ -8,10 +8,9 @@ interface KnownUserListProps {
   knownUsers: (KnownUser & UserServerList)[];
 }
 
-export default class KnownUserList extends React.Component<KnownUserListProps, {}> {
+export default class KnownUserList extends React.Component<KnownUserListProps, Record<string, never>> {
   constructor(props: KnownUserListProps) {
     super(props);
-    this.state = {showing: false};
     this.props.app.send({su: "knownu"});
   }
 

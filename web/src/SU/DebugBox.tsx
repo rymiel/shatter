@@ -30,7 +30,7 @@ export default class DebugBox extends React.Component<DebugBoxProps, DebugBoxSta
   render() {
     return <div style={{position: "absolute", "top": 0, "left": 0}}>
       <ButtonGroup>
-        {LABELS.map((i, j) => <Button key={i} text={i} active={this.state.showing && this.state.active === j} onClick={_ => this.handleClick(j)} />)}
+        {LABELS.map((i, j) => <Button key={i} text={i} active={this.state.showing && this.state.active === j} onClick={() => this.handleClick(j)} />)}
       </ButtonGroup>
 
       <Collapse isOpen={this.state.showing}>

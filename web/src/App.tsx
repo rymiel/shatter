@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { H1 } from '@blueprintjs/core';
+import { H1 } from "@blueprintjs/core";
 
 import Auth from './Auth';
 import ChatBox from './ChatBox';
