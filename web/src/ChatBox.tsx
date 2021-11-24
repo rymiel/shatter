@@ -14,11 +14,11 @@ interface ChatBoxState {
   isScrolledToBottom: boolean
 }
 
-function ChatMessages(p: {chatLines: string[], scrollRef: React.RefObject<HTMLDivElement>}) {
+function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scrollRef: React.RefObject<HTMLDivElement>}) {
   React.useEffect(() => {
     const out = p.scrollRef.current;
     if (!out) return;
-    out.scrollTop = out.scrollHeight;
+    if (p.isScrolledToBottom) out.scrollTop = out.scrollHeight;
   })
 
   return <>
@@ -72,7 +72,7 @@ export default class ChatBox extends React.Component<ChatBoxProps, ChatBoxState>
   render() {
     return <div id="controlBox">
       <div id="chatBox" onScroll={this.handleScroll} ref={this.ref}>
-        <ChatMessages scrollRef={this.ref} chatLines={this.props.chatLines} />
+        <ChatMessages scrollRef={this.ref} isScrolledToBottom={this.state.isScrolledToBottom} chatLines={this.props.chatLines} />
       </div>
       <div id="chatLine">
         <input id="chatInput" onChange={this.handleChange} onKeyDown={this.handleKey} value={this.state.message} />
