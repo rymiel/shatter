@@ -11,6 +11,7 @@ import { Incoming, KnownUser, ListedConnection, UserServerList } from './Frame/I
 import { Outgoing } from './Frame/Outgoing';
 import ConnectionsList from './ConnectionsList';
 import KnownUserList from './KnownUserList';
+import { H1 } from '@blueprintjs/core';
 
 const enum Stage {
   Loading, Authenticating, Joining, Playing, Stuck
@@ -158,7 +159,7 @@ export default class App extends React.Component<Record<string, never>, AppState
 
   render() {
     return <>
-      <h1>Shatter Web</h1>
+      <H1>Shatter Web</H1>
       {this.state.errors.map((p, i) => <ErrorC key={i} {...p} />)}
       {!this.canAuth() && <Auth />}
       {this.state.stage === Stage.Authenticating && <Spinner text={this.state.loadingState} />}

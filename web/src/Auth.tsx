@@ -1,3 +1,6 @@
+import { Button } from '@blueprintjs/core';
+import { faMicrosoft } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { SyntheticEvent } from 'react';
 
 export default function Auth() {
@@ -13,6 +16,6 @@ export default function Auth() {
   }
 
   return <div style={{display: "flex"}}>
-    <input type="button" onClick={submitAuth} style={{margin: "auto"}} value="Authenticate with Microsoft" />
+    <Button onClick={submitAuth} style={{margin: "auto"}} large={true} icon={<FontAwesomeIcon icon={faMicrosoft} />} text="Authenticate with Microsoft" />
   </div>
 }

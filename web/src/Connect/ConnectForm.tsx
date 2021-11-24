@@ -1,5 +1,7 @@
+import { InputGroup } from '@blueprintjs/core';
 import React from 'react';
 import App from '../App';
+import Section from '../Util/Section';
 import { ConnectButton } from './ConnectButton';
 
 interface ConnectFormProps {
@@ -37,10 +39,10 @@ export default class ConnectForm extends React.Component<ConnectFormProps, Conne
   }
 
   render() {
-    return <div style={{justifyContent: "center", display: "flex", marginBottom: "1em"}}>
-      <input placeholder="play.vanillarite.com" onKeyDown={this.handleSubmit} onChange={this.handleHostChange} />
-      <input type="number" defaultValue="25565" size={5} onKeyDown={this.handleSubmit} onChange={this.handlePortChange} />
+    return <Section style={{justifyContent: "center", display: "flex", marginBottom: "1em", width: "fitContent"}}>
+      <InputGroup asyncControl={true} onKeyDown={this.handleSubmit} onChange={this.handleHostChange} placeholder="Host" />
+      <InputGroup type="number" defaultValue="25565" size={5} onKeyDown={this.handleSubmit} onChange={this.handlePortChange} placeholder="Port" />
       <ConnectButton app={this.props.app} host={[this.state.host, this.state.port]} />
-    </div>
+    </Section>
   }
 }

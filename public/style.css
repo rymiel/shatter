@@ -7,7 +7,7 @@
   to { transform: rotate(360deg); }
 }
 body {
-  background-color: black;
+  background-color: #150c29;
   color: white;
   font-family: monospace;
   font-size: 1rem;

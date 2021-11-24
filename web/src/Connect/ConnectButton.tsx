@@ -1,3 +1,4 @@
+import { Button, Intent } from '@blueprintjs/core';
 import React from 'react';
 import App from '../App';
 
@@ -13,5 +14,5 @@ export function ConnectButton(props: ConnectButtonProps) {
     if (host !== undefined && host[0] !== undefined && host[1] !== undefined)
       props.app.connect(...host as [string, number]);
   };
-  return <input type="button" value="Connect!" style={props.style} onClick={onClick} />;
+  return <Button text="Connect!" intent={Intent.SUCCESS} style={props.style} onClick={onClick} />;
 }

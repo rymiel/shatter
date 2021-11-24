@@ -1,6 +1,7 @@
 import React from 'react';
 import App from './App';
 import { ConnectButton } from './Connect/ConnectButton';
+import Section from './Util/Section';
 
 export interface ServerListProps {
   app: App;
@@ -61,7 +62,7 @@ export default function ServerList(props: ServerListProps) {
 }
 
 function DetailedListedServer(props: DetailedListedServerProps & InherentServerProps) {
-  return <div style={{display: "flex"}}>
+  return <ServerSection style={{display: "flex"}}>
     <img style={{...LIST_ITEM_STYLE, marginRight: "1em"}}
       src={props.favicon} />
     <div style={LIST_DESC_STYLE}>
@@ -69,12 +70,18 @@ function DetailedListedServer(props: DetailedListedServerProps & InherentServerP
       <div dangerouslySetInnerHTML={{__html: props.description}} />
     </div>
     <ConnectButton style={LIST_CONNECT_STYLE} {...props} />
-  </div>
+  </ServerSection>
 }
 
 function SimpleListedServer(props: ListedServerProps & InherentServerProps) {
-  return <div>
+  return <ServerSection>
     <span>{props.name}</span>
     <ConnectButton style={{marginLeft: "1em"}} {...props} />
-  </div>
+  </ServerSection>
+}
+
+function ServerSection(props: {children: React.ReactNode, style?: React.CSSProperties}) {
+  return <Section style={{...props.style, backgroundColor: "black"}}>
+    {props.children}
+  </Section>
 }
