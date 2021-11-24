@@ -1,9 +1,8 @@
 import React from 'react';
-import App from './App';
-import { ListedConnection } from './Frame/Incoming';
+import App from '../App';
+import { ListedConnection } from '../Frame/Incoming';
 
 interface ConnectionsListState {
-  showing: boolean;
   flipflop: boolean;
   interval?: number;
 }
@@ -15,8 +14,7 @@ interface ConnectionsListProps {
 export default class ConnectionsList extends React.Component<ConnectionsListProps, ConnectionsListState> {
   constructor(props: ConnectionsListProps) {
     super(props);
-    this.state = {showing: false, flipflop: false};
-    this.handleClick = this.handleClick.bind(this);
+    this.state = {flipflop: false};
     this.refreshList = this.refreshList.bind(this);
   }
 
@@ -25,25 +23,22 @@ export default class ConnectionsList extends React.Component<ConnectionsListProp
     this.setState({flipflop: !this.state.flipflop});
   }
 
-  handleClick() {
-    if (!this.state.showing) {
-      this.refreshList();
-      this.setState({interval: window.setInterval(this.refreshList, 1000)})
-    } else if (this.state.interval) {
-      window.clearInterval(this.state.interval);
-    }
-    this.setState({showing: !this.state.showing})
+  componentDidMount() {
+    this.setState({interval: window.setInterval(this.refreshList, 1000)});
+  }
+
+  componentWillUnmount() {
+    window.clearInterval(this.state.interval);
   }
 
   render() {
     return <div>
-      <input type="button" value="CON" onClick={this.handleClick}></input>
-      {this.state.showing && <span style={{backgroundColor: this.state.flipflop ? "red" : "green"}}>...</span>}
-      {this.state.showing && <div style={{backgroundColor: "#333"}}>
+      <span style={{backgroundColor: this.state.flipflop ? "red" : "green"}}>...</span>
+      <div style={{backgroundColor: "#333"}}>
         {this.props.connections.map((e, i) =>
           <ListedConnectedUser key={i} connection={e} />
         )}
-      </div>}
+      </div>
     </div>
   }
 }

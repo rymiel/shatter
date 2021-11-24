@@ -9,9 +9,8 @@ import ConnectForm from './Connect/ConnectForm';
 import ChatBox from './ChatBox';
 import { Incoming, KnownUser, ListedConnection, UserServerList } from './Frame/Incoming';
 import { Outgoing } from './Frame/Outgoing';
-import ConnectionsList from './ConnectionsList';
-import KnownUserList from './KnownUserList';
 import { H1 } from '@blueprintjs/core';
+import DebugBox from './SU/DebugBox';
 
 const enum Stage {
   Loading, Authenticating, Joining, Playing, Stuck
@@ -167,10 +166,7 @@ export default class App extends React.Component<Record<string, never>, AppState
       {this.state.stage === Stage.Joining && <ServerList app={this} servers={this.state.servers}/>}
       {this.state.stage === Stage.Joining && <ConnectForm app={this} />}
       {this.state.stage === Stage.Playing && <ChatBox app={this} chatLines={this.state.chatLines} />}
-      {this.state.profile && this.state.profile.roles[1] && <div style={{position: "absolute", "top": 0, "left": 0}}>
-        <ConnectionsList app={this} connections={this.state.connections} />
-        <KnownUserList app={this} knownUsers={this.state.knownUsers} />
-      </div>}
+      {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
     </>
   }
 }
