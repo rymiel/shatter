@@ -43,9 +43,7 @@ h1, h2, h3, .err {
   width: 100vw;
   position: absolute;
   border-top: white 1px solid;
-  display: flex;
-  flex-direction: column;
-  white-space: pre;
+  white-space: pre-wrap;
   background-color: black;
 }
 @media (max-width: 800px) {
