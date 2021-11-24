@@ -1,4 +1,4 @@
-import React from 'react';
+import { CSSProperties } from 'react';
 
 import App from './App';
 import { ConnectButton } from './Connect/ConnectButton';
@@ -23,21 +23,21 @@ interface DetailedListedServerProps extends ListedServerProps {
   description: string;
 }
 
-const LIST_STYLE: React.CSSProperties = {
+const LIST_STYLE: CSSProperties = {
   alignItems: "center",
   display: "flex",
   flexDirection: "column",
   marginBottom: "1em"
 }
-const LIST_ITEM_STYLE: React.CSSProperties = {
+const LIST_ITEM_STYLE: CSSProperties = {
   height: "64px"
 }
-const LIST_DESC_STYLE: React.CSSProperties = {
+const LIST_DESC_STYLE: CSSProperties = {
   ...LIST_ITEM_STYLE,
   display: "flex",
   flexDirection: "column"
 }
-const LIST_CONNECT_STYLE: React.CSSProperties = {
+const LIST_CONNECT_STYLE: CSSProperties = {
   ...LIST_ITEM_STYLE,
   marginLeft: "1em",
   verticalAlign: "middle"

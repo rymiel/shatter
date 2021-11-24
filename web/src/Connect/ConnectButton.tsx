@@ -1,5 +1,4 @@
 import { Button, Intent } from '@blueprintjs/core';
-import React from 'react';
 import App, { Stage } from '../App';
 
 export interface ConnectButtonProps {

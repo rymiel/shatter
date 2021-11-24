@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import App from '../App';
 import { KnownUser, UserServerList } from '../Frame/Incoming';
 import Profile from '../Profile';
@@ -8,7 +8,7 @@ interface KnownUserListProps {
   knownUsers: (KnownUser & UserServerList)[];
 }
 
-export default class KnownUserList extends React.Component<KnownUserListProps, Record<string, never>> {
+export default class KnownUserList extends Component<KnownUserListProps, Record<string, never>> {
   constructor(props: KnownUserListProps) {
     super(props);
     this.props.app.send({su: "knownu"});

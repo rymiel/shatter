@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import App from '../App';
 import { ListedConnection } from '../Frame/Incoming';
 
@@ -11,7 +11,7 @@ interface ConnectionsListProps {
   connections: ListedConnection[];
 }
 
-export default class ConnectionsList extends React.Component<ConnectionsListProps, ConnectionsListState> {
+export default class ConnectionsList extends Component<ConnectionsListProps, ConnectionsListState> {
   constructor(props: ConnectionsListProps) {
     super(props);
     this.state = {flipflop: false};

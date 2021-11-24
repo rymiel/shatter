@@ -1,4 +1,4 @@
-import React from 'react';
+import { CSSProperties, Component } from 'react';
 
 import { H1 } from "@blueprintjs/core";
 
@@ -30,13 +30,13 @@ interface AppState {
   profile?: Incoming.ReadyFrame;
 }
 
-const WELCOME_STYLE: React.CSSProperties = {
+const WELCOME_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
   marginBottom: "1em"
 }
 
-export default class App extends React.Component<Record<string, never>, AppState> {
+export default class App extends Component<Record<string, never>, AppState> {
   constructor(props: Record<string, never>) {
     super(props);
 

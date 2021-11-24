@@ -1,4 +1,4 @@
-import React from 'react';
+import { H2 } from "@blueprintjs/core";
 
 export interface ErrorProps {
   title: string
@@ -13,7 +13,7 @@ const ERR_STYLE: React.CSSProperties = {
 
 export default function Error(props: ErrorProps) {
   return <div>
-    <h2 style={ERR_STYLE}>{props.title}</h2>
+    <H2 style={ERR_STYLE}>{props.title}</H2>
     <p style={ERR_STYLE}>{props.description}</p>
   </div>
 }

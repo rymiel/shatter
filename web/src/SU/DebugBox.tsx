@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Collapse } from "@blueprintjs/core";
-import React from "react";
+import { Component } from "react";
 import App from "../App";
 import ConnectionsList from "./ConnectionsList";
 import KnownUserList from "./KnownUserList";
@@ -15,7 +15,7 @@ interface DebugBoxState {
   active: number;
 }
 
-export default class DebugBox extends React.Component<DebugBoxProps, DebugBoxState> {
+export default class DebugBox extends Component<DebugBoxProps, DebugBoxState> {
 
   constructor(props: DebugBoxProps) {
     super(props);

@@ -1,6 +1,6 @@
 import { faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 
 import { Button } from '@blueprintjs/core';
 

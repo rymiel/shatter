@@ -1,5 +1,5 @@
 import { InputGroup } from '@blueprintjs/core';
-import React from 'react';
+import { Component } from 'react';
 import App from '../App';
 import Section from '../Util/Section';
 import { ConnectButton } from './ConnectButton';
@@ -13,7 +13,7 @@ interface ConnectFormState {
   port?: number;
 }
 
-export default class ConnectForm extends React.Component<ConnectFormProps, ConnectFormState> {
+export default class ConnectForm extends Component<ConnectFormProps, ConnectFormState> {
   constructor(props: ConnectFormProps) {
     super(props);
     this.state = {port: 25565};

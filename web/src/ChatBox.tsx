@@ -1,4 +1,4 @@
-import React from 'react';
+import { RefObject, Component, createRef, useEffect } from 'react';
 
 import { Button, Intent } from '@blueprintjs/core';
 
@@ -14,8 +14,8 @@ interface ChatBoxState {
   isScrolledToBottom: boolean
 }
 
-function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scrollRef: React.RefObject<HTMLDivElement>}) {
-  React.useEffect(() => {
+function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scrollRef: RefObject<HTMLDivElement>}) {
+  useEffect(() => {
     const out = p.scrollRef.current;
     if (!out) return;
     if (p.isScrolledToBottom) out.scrollTop = out.scrollHeight;
@@ -28,12 +28,12 @@ function ChatMessages(p: {chatLines: string[], isScrolledToBottom: boolean, scro
   </>
 }
 
-export default class ChatBox extends React.Component<ChatBoxProps, ChatBoxState> {
-  ref: React.RefObject<HTMLDivElement>;
+export default class ChatBox extends Component<ChatBoxProps, ChatBoxState> {
+  ref: RefObject<HTMLDivElement>;
 
   constructor(props: ChatBoxProps) {
     super(props);
-    this.ref = React.createRef();
+    this.ref = createRef();
     this.state = {message: "", isScrolledToBottom: false};
     this.handleChange = this.handleChange.bind(this);
     this.handleKey = this.handleKey.bind(this);
