@@ -77,6 +77,9 @@ module Shatter
             "data"        => r.data,
             "description" => Shatter::Chat::HtmlBuilder.new.read r.data["description"].as_h,
           }.to_json) if r.is_a? Packet::Status::Response
+          @ws.send({
+            "joingame" => r.world
+          }.to_json) if r.is_a? Packet::Play::JoinGame
         elsif @proxied.includes? packet_id
           raise "Unknown proxy capability" unless packet_id.is_a? PktId::Cb::Play
           is_silent = PktId::SILENT[packet_id]?

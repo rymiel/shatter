@@ -12,8 +12,8 @@ import { Outgoing } from './Frame/Outgoing';
 import { H1 } from '@blueprintjs/core';
 import DebugBox from './SU/DebugBox';
 
-const enum Stage {
-  Loading, Authenticating, Joining, Playing, Stuck
+export const enum Stage {
+  Loading, Authenticating, Joining, Connecting, Playing, Stuck
 }
 
 interface AppState {
@@ -71,6 +71,9 @@ export default class App extends React.Component<Record<string, never>, AppState
   canAuth() {
     return this.state.callback.has("code") || localStorage.getItem("r")
   }
+  isShowingConnect() {
+    return this.state.stage === Stage.Joining || this.state.stage === Stage.Connecting
+  }
 
   send(frame: Outgoing.Frame) {
     this.state.ws?.send(JSON.stringify(frame));
@@ -119,6 +122,8 @@ export default class App extends React.Component<Record<string, never>, AppState
       let servers = this.state.servers;
       frame.forEach((e) => servers.set(srv(e), {host: e}));
       this.setState({servers: servers});
+    } else if ("joingame" in json) {
+      if (this.state.stage === Stage.Connecting) this.setState({stage: Stage.Playing});
     } else if ("ping" in json) {
       const server = json.ping as [string, number];
       const favicon = json.data.favicon as string;
@@ -153,7 +158,7 @@ export default class App extends React.Component<Record<string, never>, AppState
       listening: [],
       proxied: ["Chat", "Disconnect", "PlayInfo"]
     });
-    this.setState({stage: Stage.Playing});
+    this.setState({stage: Stage.Connecting});
   }
 
   render() {
@@ -162,9 +167,9 @@ export default class App extends React.Component<Record<string, never>, AppState
       {this.state.errors.map((p, i) => <ErrorC key={i} {...p} />)}
       {!this.canAuth() && <Auth />}
       {this.state.stage === Stage.Authenticating && <Spinner text={this.state.loadingState} />}
-      {this.state.stage === Stage.Joining && this.state.profile && <div style={WELCOME_STYLE}><span>Welcome, </span><Profile profile={this.state.profile} /></div>}
-      {this.state.stage === Stage.Joining && <ServerList app={this} servers={this.state.servers}/>}
-      {this.state.stage === Stage.Joining && <ConnectForm app={this} />}
+      {this.isShowingConnect() && this.state.profile && <div style={WELCOME_STYLE}><span>Welcome, </span><Profile profile={this.state.profile} /></div>}
+      {this.isShowingConnect() && <ServerList app={this} servers={this.state.servers}/>}
+      {this.isShowingConnect() && <ConnectForm app={this} />}
       {this.state.stage === Stage.Playing && <ChatBox app={this} chatLines={this.state.chatLines} />}
       {this.state.profile && this.state.profile.roles[1] && <DebugBox app={this} />}
     </>

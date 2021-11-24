@@ -1,6 +1,6 @@
 import { Button, Intent } from '@blueprintjs/core';
 import React from 'react';
-import App from '../App';
+import App, { Stage } from '../App';
 
 export interface ConnectButtonProps {
   host?: [string?, number?];
@@ -9,10 +9,11 @@ export interface ConnectButtonProps {
 }
 
 export function ConnectButton(props: ConnectButtonProps) {
+  const connecting = props.app.state.stage === Stage.Connecting;
   const onClick = () => {
     const host = props.host;
-    if (host !== undefined && host[0] !== undefined && host[1] !== undefined)
+    if (host !== undefined && host[0] !== undefined && host[1] !== undefined && !connecting)
       props.app.connect(...host as [string, number]);
   };
-  return <Button text="Connect!" intent={Intent.SUCCESS} style={props.style} onClick={onClick} />;
+  return <Button text="Connect!" intent={Intent.SUCCESS} style={props.style} loading={connecting} onClick={onClick} />;
 }
