@@ -46,6 +46,7 @@ h1, h2, h3, .err {
   display: flex;
   flex-direction: column;
   white-space: pre;
+  background-color: black;
 }
 @media (max-width: 800px) {
   #chatBox {

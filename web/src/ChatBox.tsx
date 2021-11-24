@@ -1,3 +1,4 @@
+import { Button, Intent } from '@blueprintjs/core';
 import React from 'react';
 import App from './App';
 
@@ -72,7 +73,7 @@ export default class ChatBox extends React.Component<ChatBoxProps, ChatBoxState>
       </div>
       <div id="chatLine">
         <input id="chatInput" onChange={this.handleChange} onKeyDown={this.handleKey} value={this.state.message} />
-        <input type="button" value="Chat" onClick={this.sendChat} />
+        <Button intent={Intent.PRIMARY} text="Chat" onClick={this.sendChat} />
       </div>
     </div>
   }
