@@ -17,11 +17,14 @@ stages: [deps, lint, build, deploy]
 .crystal: &crystal
   image: "crystallang/crystal:latest"
   cache:
-    key:
-      files:
-        - shard.lock
-    paths:
-      - lib
+    - key:
+        files:
+          - shard.lock
+      paths:
+        - lib
+    - key: crystal-$CI_COMMIT_BRANCH
+      paths:
+        - ~/.cache/crystal/
   before_script:
     - apt-get update -qq && apt-get install -y -qq libxml2-dev
     - crystal -v
