@@ -44,7 +44,7 @@ js eslint:
     - js npm
   script:
     - 'node_modules/.bin/eslint -v'
-    - 'node_modules/.bin/eslint -- src/*.tsx'
+    - 'npm run lint'
 
 js react build:
   <<: *js
