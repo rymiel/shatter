@@ -69,9 +69,9 @@ module Shatter
           # pkt.read_at(pkt.pos, pkt.size - pkt.pos) { |b| wide_dump(b, packet_id) }
           @ws.send({"keepalive" => @id}.to_json) if packet_id.is_a? PktId::Cb::Play && packet_id.keep_alive?
           r = PktId::PACKET_HANDLERS[packet_id].call(pkt, self)
+          r.run
           STDERR << connection_name if r.has_describe?
           r.describe
-          r.run
           @ws.send({
             "ping"        => [@ip, @port],
             "data"        => r.data,

@@ -44,8 +44,9 @@ module Shatter
 
       yield mem
       slice = mem.to_slice
-      wide_dump(mem, packet_id, true)
       @outbound.send({pid: var_p_id, body: slice})
+      sleep 0
+      wide_dump(mem, packet_id, true)
       sleep 0
     end
 
