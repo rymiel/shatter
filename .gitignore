@@ -5,12 +5,6 @@
 *.dwarf
 .vscode/
 
-# web, which will probably become a separate project later
-/web/node_modules
-/public/dist
-# generated automatically
-/public/index.html
-
 # still a wip, not public
 src/visual/
 visual.json
