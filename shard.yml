@@ -20,13 +20,6 @@ dependencies:
     gitlab: rymiel/nbt
   envy:
     github: GrottoPress/envy
-  clear:
-    github: anykeyh/clear
-    branch: master
-  jwt:
-    github: crystal-community/jwt
-  cache:
-    github: crystal-cache/cache
 
 development_dependencies:
   sentry:
