@@ -60,6 +60,7 @@ module Shatter::Packet
 
   struct ChatContainer
     getter raw : Hash(String, JSON::Any)
+
     def initialize(@raw)
     end
 

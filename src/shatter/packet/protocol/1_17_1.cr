@@ -112,6 +112,6 @@ module Shatter::Packet::Protocol::Version1_17_1
       :potion_effect     => 0x64,
       :recipes           => 0x65,
       :tags              => 0x66,
-    } of PktId::Cb::Play => Int32
+    } of PktId::Cb::Play => Int32,
   }
 end
