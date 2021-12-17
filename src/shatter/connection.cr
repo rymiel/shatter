@@ -14,6 +14,7 @@ module Shatter
     getter players
 
     getter state = PktId::State::Handshake
+    getter protocol : UInt32
     getter ip : String
     getter port : Int32
     getter registry : Registry
@@ -26,7 +27,7 @@ module Shatter
     getter outbound = Channel(OutboundContainer | Crypto::CipherStreamIO).new
     @startup_channel = Channel(Bool).new
 
-    def initialize(@ip, @port, @registry, @block_states, @minecraft_token, @profile, @packet_callback = nil)
+    def initialize(@protocol, @ip, @port, @registry, @block_states, @minecraft_token, @profile, @packet_callback = nil)
     end
 
     def transition(s : PktId::State)
@@ -179,7 +180,7 @@ module Shatter
           end
 
           packet PktId::Sb::Handshake::Handshake do |pkt|
-            pkt.write_var_int 756
+            pkt.write_var_int @protocol
             pkt.write_var_string @ip
             pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
             pkt.write_var_int 2

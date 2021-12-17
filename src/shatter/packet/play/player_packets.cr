@@ -51,6 +51,7 @@ module Shatter::Packet::Play
         o.write_u8 0b01111111u8
         o.write_bool true
         o.write_bool true
+        o.write_bool true if con.protocol >= Protocol::Version1_18_1::PROTOCOL_VERSION
       end
     end
   end

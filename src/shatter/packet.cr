@@ -1,6 +1,7 @@
 require "./data/entity"
 require "./data/player"
 require "./data/sound"
+require "./packet/protocol"
 require "./packet/handler"
 require "./packet/login/*"
 require "./packet/play/*"
