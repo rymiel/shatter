@@ -7,7 +7,7 @@ module Shatter::Packet::Protocol::Version1_17_1
       :client_settings => 0x05,
       :plugin_message  => 0x0A,
       :keep_alive      => 0x0F,
-    } of PktId::Sb::Play => Int32,
+    } of Sb::Play => Int32,
     cb: {
       :spawn_entity      => 0x00,
       :spawn_xp_orb      => 0x01,
@@ -112,6 +112,6 @@ module Shatter::Packet::Protocol::Version1_17_1
       :potion_effect     => 0x64,
       :recipes           => 0x65,
       :tags              => 0x66,
-    } of PktId::Cb::Play => Int32,
+    } of Cb::Play => Int32,
   }
 end

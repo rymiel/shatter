@@ -2,7 +2,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 0)]
   class EntityHeadLook
-    include Packet::Handler
+    include Handler
 
     field ent : Entity
     field head : Angle
@@ -15,7 +15,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 0)]
   class EntityPosition
-    include Packet::Handler
+    include Handler
 
     field ent : Entity
     field dx : Float64 = pkt.read_i16 / (128 * 32)
@@ -33,7 +33,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 0)]
   class EntityVelocity
-    include Packet::Handler
+    include Handler
 
     field ent : Entity
     field vx : Velocity
@@ -50,7 +50,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 0)]
   class EntityPosRot
-    include Packet::Handler
+    include Handler
 
     field ent : Entity
     field dx : Float64 = pkt.read_i16 / (128 * 32)
@@ -72,7 +72,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 0)]
   class EntityTeleport
-    include Packet::Handler
+    include Handler
 
     field ent : Entity
     field x : Float64
@@ -94,7 +94,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 0)]
   class EntityRotation
-    include Packet::Handler
+    include Handler
 
     field ent : Entity
     field yaw : Angle
@@ -110,7 +110,7 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe(level: 4)]
   class EntityStatus
-    include Packet::Handler
+    include Handler
 
     field ent : Entity = con.entities[pkt.read_u32]
     field status : Data::Entity::Status = Data::Entity::Status.new pkt.read_i8
@@ -119,7 +119,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 3)]
   class DestroyEntity
-    include Packet::Handler
+    include Handler
 
     field entities : Entity[VarInt]
   end
@@ -127,7 +127,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe]
   class SpawnLiving
-    include Packet::Handler
+    include Handler
 
     field eid : VarInt
     field uuid : UUID
@@ -150,7 +150,7 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe]
   class SpawnEntity
-    include Packet::Handler
+    include Handler
 
     field eid : VarInt
     field uuid : UUID
@@ -173,7 +173,7 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe]
   class SpawnPlayer
-    include Packet::Handler
+    include Handler
 
     field eid : VarInt
     field uuid : UUID
@@ -192,7 +192,7 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe(level: 2)]
   class Equipment
-    include Packet::Handler
+    include Handler
 
     enum InSlot
       MainHand

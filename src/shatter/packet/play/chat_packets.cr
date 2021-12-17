@@ -9,7 +9,7 @@ module Shatter::Packet::Play
     })]
   @[Alias(Chat)]
   class ChatMessage
-    include Packet::Handler
+    include Handler
 
     field message : String
     field position : UInt8
@@ -18,7 +18,7 @@ module Shatter::Packet::Play
 
   @[Describe(level: 3)]
   class PluginMessage
-    include Packet::Handler
+    include Handler
 
     field identifier : String
     field data : Bytes = pkt.gets_to_end.to_slice
@@ -27,7 +27,7 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe(level: 5, transform: {message: Shatter::Chat::AnsiBuilder.new.read(JSON.parse(@message).as_h)})]
   class Disconnect
-    include Packet::Handler
+    include Handler
 
     field message : String
 

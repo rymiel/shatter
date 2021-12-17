@@ -2,7 +2,7 @@ module Shatter::Packet::Login
   @[Silent]
   @[Describe(level: 2)]
   class CryptRequest
-    include Packet::Handler
+    include Handler
 
     field server_id : String
     field pkey_asn : UInt8[VarInt] -> Slice
@@ -42,7 +42,7 @@ module Shatter::Packet::Login
       encoded_secret = rsa_pkey.public_encrypt shared_secret
       encoded_nonce = rsa_pkey.public_encrypt nonce
 
-      con.packet PktId::Sb::Login::CryptResponse do |pkt|
+      con.packet Sb::Login::CryptResponse do |pkt|
         pkt.write_var_int encoded_secret.size
         pkt.write encoded_secret
         pkt.write_var_int encoded_nonce.size
@@ -56,7 +56,7 @@ module Shatter::Packet::Login
   @[Silent]
   @[Describe(level: 2)]
   class SetCompression
-    include Packet::Handler
+    include Handler
 
     field threshold : VarInt
 
@@ -68,7 +68,7 @@ module Shatter::Packet::Login
   @[Silent]
   @[Describe(level: 2)]
   class LoginSuccess
-    include Packet::Handler
+    include Handler
 
     def run
       con.transition :play

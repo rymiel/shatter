@@ -9,7 +9,7 @@ require "./packet/status_packets"
 require "shatter-chat"
 require "json"
 
-module Shatter::PktId
+module Shatter::Packet
   enum State
     Handshake
     Status
@@ -23,7 +23,7 @@ module Shatter::PktId
     State::Status => Cb::Status,
   }
 
-  PACKET_HANDLERS = {} of (Cb::Login | Cb::Play | Cb::Status) => ((IO, Connection) -> Packet::Handler)
+  PACKET_HANDLERS = {} of (Cb::Login | Cb::Play | Cb::Status) => ((IO, Connection) -> Handler)
   SILENT          = {} of (Cb::Login | Cb::Play | Cb::Status) => Bool
 
   module Sb

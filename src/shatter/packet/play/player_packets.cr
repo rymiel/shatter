@@ -2,7 +2,7 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n"})]
   class WindowItems
-    include Packet::Handler
+    include Handler
 
     field window : UInt8
     field state : VarInt
@@ -13,7 +13,7 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope", dimension: "#{@dimension.inspect.size} chars of nope"})]
   class JoinGame
-    include Packet::Handler
+    include Handler
 
     field my_eid : UInt32
     field hardcore : Bool
@@ -38,12 +38,12 @@ module Shatter::Packet::Play
       my_uuid = UUID.new(con.profile.id)
       con.entities[my_eid] = Data::Entity.new my_eid, UUID.new(con.profile.id), "minecraft:player"
       con.players[my_uuid].name = con.profile.name
-      con.packet PktId::Sb::Play::PluginMessage do |o|
+      con.packet Sb::Play::PluginMessage do |o|
         o.write_var_string "minecraft:brand"
         o.write "Shatter/#{Shatter::VERSION}".to_slice
       end
 
-      con.packet PktId::Sb::Play::ClientSettings do |o|
+      con.packet Sb::Play::ClientSettings do |o|
         o.write_var_string "SHATTER"
         o.write_i8 2i8
         o.write_var_int 0u32
@@ -59,12 +59,12 @@ module Shatter::Packet::Play
   @[Silent]
   @[Describe]
   class KeepAlive
-    include Packet::Handler
+    include Handler
 
     field ping_id : Int64
 
     def run
-      con.packet PktId::Sb::Play::KeepAlive do |o|
+      con.packet Sb::Play::KeepAlive do |o|
         o.write_i64 @ping_id
       end
     end
@@ -123,7 +123,7 @@ module Shatter::Packet::Play
 
     alias Action = ActionNew | ActionGameMode | ActionDisplayName | ActionPing | ActionRemove
 
-    include Packet::Handler
+    include Handler
 
     field action_id : VarInt
     field actions : {UUID, Play::PlayInfo::Action}[VarInt] do

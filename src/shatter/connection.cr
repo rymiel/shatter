@@ -13,7 +13,7 @@ module Shatter
     getter entities
     getter players
 
-    getter state = PktId::State::Handshake
+    getter state = Packet::State::Handshake
     getter protocol : UInt32
     getter ip : String
     getter port : Int32
@@ -30,12 +30,12 @@ module Shatter
     def initialize(@protocol, @ip, @port, @registry, @block_states, @minecraft_token, @profile, @packet_callback = nil)
     end
 
-    def transition(s : PktId::State)
+    def transition(s : Packet::State)
       @state = s
     end
 
-    def matching_cb(i : UInt32) : (PktId::Cb::Login | PktId::Cb::Play | PktId::Cb::Status)
-      PktId::CB_STATE_MAP[@state].new i.to_i32
+    def matching_cb(i : UInt32) : (Packet::Cb::Login | Packet::Cb::Play | Packet::Cb::Status)
+      Packet::CB_STATE_MAP[@state].new i.to_i32
     end
 
     def packet(packet_id : Enum, &block : IO ->)
@@ -75,9 +75,9 @@ module Shatter
       packet_id = matching_cb raw_packet_id
       # puts "Incoming packet: #{@state}/#{packet_id} #{size} -> #{real_size}"
       pkt_body_start = pkt.pos
-      is_ignored = PktId::Cb::IGNORE.includes? packet_id
-      is_silent = PktId::SILENT[packet_id]?
-      handler = PktId::PACKET_HANDLERS[packet_id]?
+      is_ignored = Packet::Cb::IGNORE.includes? packet_id
+      is_silent = Packet::SILENT[packet_id]?
+      handler = Packet::PACKET_HANDLERS[packet_id]?
       return if is_ignored
       resolved = nil
       pkt.read_at(pkt_body_start, pkt.size - pkt_body_start) { |b| wide_dump(b, packet_id, unknown: handler.nil?) } unless is_silent
@@ -179,7 +179,7 @@ module Shatter
             end
           end
 
-          packet PktId::Sb::Handshake::Handshake do |pkt|
+          packet Packet::Sb::Handshake::Handshake do |pkt|
             pkt.write_var_int @protocol
             pkt.write_var_string @ip
             pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
@@ -188,7 +188,7 @@ module Shatter
 
           transition :login
 
-          packet PktId::Sb::Login::LoginStart do |pkt|
+          packet Packet::Sb::Login::LoginStart do |pkt|
             pkt.write_var_string @profile.try &.name || "Steve"
           end
           @startup_channel.send true
@@ -216,7 +216,7 @@ module Shatter
             end
           end
 
-          packet PktId::Sb::Handshake::Handshake do |pkt|
+          packet Packet::Sb::Handshake::Handshake do |pkt|
             pkt.write_var_int 756
             pkt.write_var_string @ip
             pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
@@ -225,7 +225,7 @@ module Shatter
 
           transition :status
 
-          packet PktId::Sb::Status::Request do
+          packet Packet::Sb::Status::Request do
           end
 
           read_packet

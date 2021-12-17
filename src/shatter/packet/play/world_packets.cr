@@ -4,7 +4,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe(level: 0)]
   class WorldTime
-    include Packet::Handler
+    include Handler
 
     field age : Int64
     field time_of_day : Int64
@@ -13,7 +13,7 @@ module Shatter::Packet::Play
   @[Silent]
   # @[Describe]
   class GameState
-    include Packet::Handler
+    include Handler
 
     field reason : UInt8
     field value : Float32
@@ -23,7 +23,7 @@ module Shatter::Packet::Play
   # @[Describe]
   @[Alias(Chunk)]
   class ChunkPacket
-    include Packet::Handler
+    include Handler
 
     field chunk_x : Int32
     field chunk_z : Int32
@@ -39,7 +39,7 @@ module Shatter::Packet::Play
   # @[Describe]
   @[Alias(Sound)]
   class SoundPacket
-    include Packet::Handler
+    include Handler
 
     field id : Sound
     field category : Data::Sound::Category = Data::Sound::Category.new pkt.read_var_int

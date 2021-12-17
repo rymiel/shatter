@@ -157,11 +157,11 @@ module Shatter::Packet
       {% if alias_ann %}
         {% name = alias_ann[0].id %}
       {% end %}
-      {% e = "::Shatter::PktId::Cb::#{qualifier}::#{name}".id %}
+      {% e = "::Shatter::Packet::Cb::#{qualifier}::#{name}".id %}
       {% if @type.annotation(::Shatter::Packet::Silent) %}
-        ::Shatter::PktId::SILENT[{{e}}] = true
+        ::Shatter::Packet::SILENT[{{e}}] = true
       {% end %}
-      ::Shatter::PktId::PACKET_HANDLERS[{{e}}] = ->(pkt : ::IO, con : ::Shatter::Connection) {
+      ::Shatter::Packet::PACKET_HANDLERS[{{e}}] = ->(pkt : ::IO, con : ::Shatter::Connection) {
         self.new(pkt, con).as Packet::Handler
       }
       @__con : ::Shatter::Connection
