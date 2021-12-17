@@ -40,7 +40,7 @@ module Shatter
 
     def packet(packet_id : Packet::Sb::Play | Packet::Sb::Status | Packet::Sb::Login | Packet::Sb::Handshake, &block : IO ->)
       mem = IO::Memory.new
-      raw_packet_id = Packet::Protocol::PROTOCOLS[@protocol][:sb][packet_id]? || packet_id.to_i32
+      raw_packet_id = Packet::Protocol::PROTOCOLS[@protocol]?.try &.[:sb][packet_id]? || packet_id.to_i32
       var_p_id = Shatter.var_int raw_packet_id
 
       yield mem
