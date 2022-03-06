@@ -231,6 +231,8 @@ module Shatter
           read_packet
           @outbound.close
         end
+      rescue ex : Socket::ConnectError
+        # Swallow
       end
     end
   end

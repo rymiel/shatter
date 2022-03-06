@@ -18,6 +18,9 @@ class Shatter::MSA
   end
 
   class MojangAuthError < Exception
+    class GameNotOwnedError < MojangAuthError
+      @message = "This account doesn't own the game!"
+    end
   end
 
   class XBLToken
@@ -74,7 +77,7 @@ class Shatter::MSA
     # c = HTTP::Client.new(URI.parse("https://user.auth.xboxlive.com"))
     # c.compress = false
     # c.post("/user/authenticate",
-    #   headers: headers,
+    #   headers: HTTP::Headers{"User-Agent" => "ShatterCrystal/#{Shatter::VERSION} MSA", "Content-Type" => "application/json", "Accept" => "application/json"},
     #   body: body
     # ) do |r|
     #   pp! r
@@ -82,6 +85,8 @@ class Shatter::MSA
     #   pp! b
     #   XBLToken.from_json b
     # end
+    # TODO: figure out why this ONE SPECIFIC REQUEST doesn't work with HTTP::Client
+    # HACK: just launch a curl instance for now since it magically works
     Process.run("curl", ["-XPOST", "https://user.auth.xboxlive.com/user/authenticate", "-H", "Content-Type: application/json", "-H", "Accept: application/json", "-d", body]) do |p|
       XBLToken.from_json p.output.gets_to_end
     end
@@ -126,6 +131,7 @@ class Shatter::MSA
         "Authorization" => "Bearer #{t.access_token}",
       }
     ) do |r|
+      raise MojangAuthError::GameNotOwnedError.new if r.status.not_found?
       MinecraftProfile.from_json r.body_io.gets_to_end
     end
   end
