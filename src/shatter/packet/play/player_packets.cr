@@ -1,3 +1,5 @@
+require "../handler"
+
 module Shatter::Packet::Play
   @[Silent]
   @[Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n"})]

@@ -1,3 +1,6 @@
+require "uuid"
+require "../packet/handler"
+
 module Shatter::Data
   class Player
     enum Gamemode : Int8

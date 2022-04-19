@@ -1,3 +1,5 @@
+require "./handler"
+
 module Shatter::Packet::Status
   @[Silent]
   # @[Describe(level: 2)]

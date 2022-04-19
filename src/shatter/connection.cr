@@ -1,3 +1,9 @@
+require "socket"
+require "./registry"
+require "./msa"
+require "./packet"
+require "./crypto"
+
 module Shatter
   class Connection
     property io : IO? = nil

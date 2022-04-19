@@ -1,3 +1,5 @@
+require "../handler"
+
 module Shatter::Packet::Play
   @[Silent]
   @[Describe(

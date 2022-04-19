@@ -1,3 +1,4 @@
+require "../handler"
 require "../../chunk"
 
 module Shatter::Packet::Play

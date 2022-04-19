@@ -1,3 +1,5 @@
+require "../handler"
+
 module Shatter::Packet::Login
   @[Silent]
   @[Describe(level: 2)]

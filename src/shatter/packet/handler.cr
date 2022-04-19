@@ -1,5 +1,7 @@
 require "../data"
-require "shatter-chat/../spec/spec_builder"
+require "../data/entity"
+require "../packet"
+require "../connection"
 
 module Shatter::Packet
   annotation Silent
