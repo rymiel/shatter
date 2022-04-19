@@ -1,7 +1,9 @@
 require "uuid"
+require "json"
 
 module Shatter::Data
   class Entity
+    include JSON::Serializable
     property eid : UInt32
     property uuid : UUID
     property type : String

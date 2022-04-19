@@ -1,5 +1,9 @@
+require "json"
+
 class Shatter::Chunk
+  include JSON::Serializable
   class Section
+    include JSON::Serializable
     getter block_count : UInt16
     getter bits_per_block : UInt8
     getter palette : Array(String)?

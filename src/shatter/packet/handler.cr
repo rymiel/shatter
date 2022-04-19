@@ -2,6 +2,7 @@ require "../data"
 require "../data/entity"
 require "../packet"
 require "../connection"
+require "json"
 
 module Shatter::Packet
   annotation Silent
@@ -145,6 +146,9 @@ module Shatter::Packet
       {% else %}
         @[::Shatter::Packet::Handler::Field(self_defining: {{ val }})]
       {% end %}
+      {% if t.var.id.starts_with?("_") %}
+        @[::JSON::Field(ignore: true)]
+      {% end %}
       @{{t.var.id}} : {{return_type}}
 
       def {{t.var.id}} : {{return_type}}
@@ -153,6 +157,7 @@ module Shatter::Packet
     end
 
     macro included
+      include JSON::Serializable
       {% qualifier = @type.id.split("::")[-2].id %}
       {% name = @type.id.split("::")[-1].id %}
       {% alias_ann = @type.annotation(::Shatter::Packet::Alias) %}
@@ -166,6 +171,16 @@ module Shatter::Packet
       ::Shatter::Packet::PACKET_HANDLERS[{{e}}] = ->(pkt : ::IO, con : ::Shatter::Connection) {
         self.new(pkt, con).as Packet::Handler
       }
+
+      @@packet_name = {{ name.stringify }}
+      def packet_name : String
+        @@packet_name
+      end
+
+      @[JSON::Field(ignore: true)]
+      @__pkt : ::IO
+
+      @[JSON::Field(ignore: true)]
       @__con : ::Shatter::Connection
       def con : ::Shatter::Connection
         @__con
@@ -177,6 +192,13 @@ module Shatter::Packet
       end
       def has_describe? : Bool
         {% if @type.annotation(::Shatter::Packet::Describe) %}true{% else %}false{% end %}
+      end
+
+      def self.new(pkt : ::IO, con : ::Shatter::Connection)
+        instance = allocate
+        instance.initialize(pkt, con)
+        GC.add_finalizer(instance) if instance.responds_to?(:finalize)
+        instance
       end
     end
 

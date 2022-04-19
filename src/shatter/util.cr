@@ -1,3 +1,5 @@
+require "json"
+
 module Shatter
   def self.hex(int : Int) : String
     (int.to_s 16).rjust 2, '0'
@@ -15,5 +17,11 @@ module Shatter
     output[pad_block_len + 2] = 0_u8
     message.copy_to output[pad_block_len + 3, message.size]
     output
+  end
+end
+
+struct Enum
+  def to_json_object_key : String
+    to_s
   end
 end
