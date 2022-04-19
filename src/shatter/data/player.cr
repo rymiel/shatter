@@ -14,7 +14,7 @@ module Shatter::Data
     property props : Hash(String, {String, String?})
     property gamemode : Gamemode
     property ping : UInt32
-    property display_name : Packet::ChatContainer?
+    property display_name : String?
 
     def initialize(@uuid, @name, @props, @gamemode, @ping, @display_name)
     end

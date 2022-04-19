@@ -61,37 +61,8 @@ module Shatter::Packet
     ::NBT::Reader.new(pkt).read_named[:tag]
   end
 
-  struct ChatContainer
-    getter raw : Hash(String, JSON::Any)
-
-    def initialize(@raw)
-    end
-
-    def initialize(string)
-      @raw = JSON.parse(string).as_h
-    end
-
-    def ansi
-      Shatter::Chat::AnsiBuilder.new.read @raw
-    end
-
-    def html
-      Shatter::Chat::HtmlBuilder.new.read @raw
-    end
-
-    def to_json(json)
-      json.string self.html
-    end
-
-    def to_s(io : IO)
-      io << self.ansi
-    end
-  end
-
-  type_reader Chat, ChatContainer do |pkt|
-    raw_message = pkt.read_var_string
-    message_json = JSON.parse(raw_message).as_h
-    ChatContainer.new Shatter::Packet::ChatBuilder.new.read message_json
+  type_reader Chat, String do |pkt|
+    pkt.read_var_string
   end
 
   type_reader UUID, UUID, &.read_uuid
@@ -287,8 +258,6 @@ module Shatter::Packet
             io << %field.format(decimal_places: 2, only_significant: true)
           {% elsif ivar.type == Bytes %}
             io << "Bytes(" << %field.size << ")[" << %field.hexstring << "]"
-          {% elsif ivar.type == ChatContainer %}
-            io << %field.ansi
           {% else %}
             %field.to_s io
           {% end %}
