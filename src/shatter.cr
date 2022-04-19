@@ -19,6 +19,7 @@ require "./shatter/data/*"
 require "./shatter/packet"
 require "./shatter/crypto"
 require "./shatter/msa"
+require "./shatter/packet/packets"
 
 module Shatter
   VERSION = "0.1.0"

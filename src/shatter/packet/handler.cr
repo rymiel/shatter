@@ -259,7 +259,7 @@ module Shatter::Packet
         {% unless ivar.id.starts_with? "_" %}
           io << "{{ ivar.id }}=".colorize.dark_gray
           %field = @{{ivar.id}}
-          {% if transform && transform[ivar.id.symbolize] %}
+          {% if !flag?("SHATTER_IGNORE_FIELD_TRANSFORM") && transform && transform[ivar.id.symbolize] %}
             io << {{ transform[ivar.id.symbolize] }}
           {% elsif ivar.type < Float %}
             io << %field.format(decimal_places: 2, only_significant: true)
