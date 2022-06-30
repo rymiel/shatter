@@ -26,6 +26,6 @@ development_dependencies:
     github: samueleaton/sentry
     branch: master
 
-crystal: 1.2.1
+crystal: 1.4.1
 
 license: GPL3

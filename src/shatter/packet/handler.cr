@@ -17,18 +17,23 @@ module Shatter::Packet
   module TypeReader
   end
 
+  module TypeAlias
+  end
+
   macro type_reader(alias_type, return_type, &block)
     {% if alias_type != return_type %}
       alias {{alias_type}} = {{return_type}}
+      record TypeAlias::{{alias_type}}
+      {% alias_type = "TypeAlias::#{alias_type}".id %}
     {% end %}
-    {% alias_type = alias_type.id.tr(":,() ", "____") %}
-    module TypeReader::A_{{alias_type}}
+
+    module TypeReader
       {% if block.args.size == 1 %}
-        def self.read({{block.args[0]}} : IO, __ignore : ::Shatter::Connection) : {{return_type}}
+        def self.read(type : {{alias_type}}.class, {{block.args[0]}} : IO, __ignore : ::Shatter::Connection) : {{return_type}}
           {{yield}}
         end
       {% elsif block.args.size == 2 %}
-        def self.read({{block.args[0]}} : IO, {{block.args[1]}} : ::Shatter::Connection) : {{return_type}}
+        def self.read(type : {{alias_type}}.class, {{block.args[0]}} : IO, {{block.args[1]}} : ::Shatter::Connection) : {{return_type}}
           {{yield}}
         end
       {% end %}
@@ -173,6 +178,14 @@ module Shatter::Packet
       end
     end
 
+    macro type_or_alias(type)
+      {% if ::Shatter::Packet::TypeAlias.has_constant?(type.id) %}
+        ::Shatter::Packet::TypeAlias::{{type.id}}
+      {% else %}
+        {{type.id}}
+      {% end %}
+    end
+
     def initialize(pkt : ::IO, con : ::Shatter::Connection)
       @__pkt = pkt
       @__con = con
@@ -195,22 +208,21 @@ module Shatter::Packet
       {% end %}
 
       {% for name, value in properties %}
-        {% m = value[:real_type] || value[:type] %}
-        {% t = m.id.tr(":,() ", "____") %}
+        {% target_type = value[:real_type] || value[:type] %}
         {% if value[:self_def] %}
           @{{name}} = {{ value[:self_def] }}
         {% elsif value[:quantifier] %}
           {% if value[:quantifier].is_a?(InstanceVar) %}
             %quantifier = {{ value[:quantifier] }}
           {% elsif value[:quantifier].is_a?(Path) %}
-            %quantifier = ::Shatter::Packet::TypeReader::A_{{value[:quantifier]}}.read(pkt, con)
+            %quantifier = ::Shatter::Packet::TypeReader.read(type_or_alias({{value[:quantifier]}}), pkt, con)
           {% end %}
-          @{{name}} = {{ value[:array_type].id }}({{m}}).new(%quantifier.to_i32) do
+          @{{name}} = {{ value[:array_type].id }}({{target_type}}).new(%quantifier.to_i32) do
             {% if value[:reader] %}
               {% reader = @type.class.methods.find &.name.==(value[:reader].id) %}
               {{ reader.body }}
             {% else %}
-              ::Shatter::Packet::TypeReader::A_{{t}}.read(pkt, con)
+              ::Shatter::Packet::TypeReader.read(type_or_alias({{target_type}}), pkt, con)
             {% end %}
           end
         {% else %}
@@ -218,7 +230,7 @@ module Shatter::Packet
             {% reader = @type.class.methods.find &.name.==(value[:reader].id) %}
             @{{name}} = {{ reader.body }}
           {% else %}
-            @{{name}} = ::Shatter::Packet::TypeReader::A_{{t}}.read(pkt, con)
+            @{{name}} = ::Shatter::Packet::TypeReader.read(type_or_alias({{target_type}}), pkt, con)
           {% end %}
         {% end %}
       {% end %}
