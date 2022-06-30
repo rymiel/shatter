@@ -47,6 +47,7 @@ module Shatter::Packet::Login
       con.packet Sb::Login::CryptResponse do |pkt|
         pkt.write_var_int encoded_secret.size
         pkt.write encoded_secret
+        pkt.write_bool true if con.protocol >= Protocol::Version1_19::PROTOCOL_VERSION
         pkt.write_var_int encoded_nonce.size
         pkt.write encoded_nonce
       end

@@ -206,6 +206,7 @@ module Shatter
 
         packet Packet::Sb::Login::LoginStart do |pkt|
           pkt.write_var_string @profile.try &.name || "Steve"
+          pkt.write_bool false if protocol >= Packet::Protocol::Version1_19::PROTOCOL_VERSION
         end
 
         sleep

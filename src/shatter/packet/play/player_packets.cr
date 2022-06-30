@@ -13,7 +13,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  @[Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope", dimension: "#{@dimension.inspect.size} chars of nope"})]
+  @[Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope"})]
   class JoinGame
     include Handler
 
@@ -26,7 +26,7 @@ module Shatter::Packet::Play
     end
     field worlds : String[VarInt]
     field codec : NBT
-    field dimension : NBT
+    field dimension : String # NBT
     field world : String
     field hash_seed : UInt64
     field max_players : VarInt
@@ -52,7 +52,7 @@ module Shatter::Packet::Play
         o.write_bool true
         o.write_u8 0b01111111u8
         o.write_bool true
-        o.write_bool true
+        o.write_bool false
         o.write_bool true if con.protocol >= Protocol::Version1_18_1::PROTOCOL_VERSION
       end
     end

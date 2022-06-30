@@ -162,6 +162,12 @@ module Shatter::Packet
       Recipes
       Tags
       SimulationDistance
+
+      ServerData
+      SystemChat
+      PlayerChat
+      ChatPreview
+      ToggleChatPreview
     end
 
     IGNORE = [
