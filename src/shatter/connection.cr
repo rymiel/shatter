@@ -41,6 +41,9 @@ module Shatter
     end
 
     def matching_cb(i : UInt32) : (Packet::Cb::Login | Packet::Cb::Play | Packet::Cb::Status)
+      if @state.play?
+        i = Packet::Protocol::PROTOCOLS[@protocol][:cb][i]
+      end
       Packet::CB_STATE_MAP[@state].new i.to_i32
     end
 
