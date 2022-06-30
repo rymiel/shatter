@@ -88,22 +88,29 @@ module Shatter
       pkt_body_start = pkt.pos
       is_ignored = Packet::Cb::IGNORE.includes? packet_id
       is_silent = Packet::SILENT[packet_id]?
-      handler = Packet::PACKET_HANDLERS[packet_id]?
+      handlers = Packet::PACKET_HANDLERS[packet_id]
       return if is_ignored
 
       unless is_silent
         pkt.read_at(pkt_body_start, pkt.size - pkt_body_start) do |b|
-          wide_dump(b, packet_id.to_s, raw_packet_id, unknown: handler.nil?)
+          wide_dump(b, packet_id.to_s, raw_packet_id, unknown: handlers.empty?)
         end
       end
 
       resolved = nil
-      if handler
-        resolved = handler.call(pkt, self)
-        resolved.describe
-        resolved.run
-        @packet_callback.try &.call(resolved, self)
+      unless handlers.empty?
+        handlers.each do |h|
+          resolved = h.call(pkt, self)
+          break unless resolved.nil?
+        end
+
+        if resolved
+          resolved.describe
+          resolved.run
+          @packet_callback.try &.call(resolved, self)
+        end
       end
+
       return resolved
     end
 

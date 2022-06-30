@@ -14,6 +14,9 @@ module Shatter::Packet
   annotation Alias
   end
 
+  annotation Version
+  end
+
   module TypeReader
   end
 
@@ -144,8 +147,11 @@ module Shatter::Packet
       {% if @type.annotation(::Shatter::Packet::Silent) %}
         ::Shatter::Packet::SILENT[{{e}}] = true
       {% end %}
-      ::Shatter::Packet::PACKET_HANDLERS[{{e}}] = ->(pkt : ::IO, con : ::Shatter::Connection) {
-        self.new(pkt, con).as Packet::Handler
+      ::Shatter::Packet::PACKET_HANDLERS[{{e}}] << ->(pkt : ::IO, con : ::Shatter::Connection) {
+        {% if v_ann = @type.annotation(::Shatter::Packet::Version) %}
+          return nil unless con.protocol {{ v_ann[0].id }} {{ v_ann[1].id }}
+        {% end %}
+        self.new(pkt, con).as Packet::Handler?
       }
 
       @@packet_name = {{ name.stringify }}

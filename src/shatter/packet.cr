@@ -20,8 +20,10 @@ module Shatter::Packet
     State::Status => Cb::Status,
   }
 
-  PACKET_HANDLERS = {} of (Cb::Login | Cb::Play | Cb::Status) => ((IO, Connection) -> Handler)
-  SILENT          = {} of (Cb::Login | Cb::Play | Cb::Status) => Bool
+  alias HandlerProc = (IO, Connection) -> Handler?
+
+  PACKET_HANDLERS = Hash(Cb::Any, Array(HandlerProc)).new { |h, k| h[k] = [] of HandlerProc }
+  SILENT          = Hash(Cb::Any, Bool).new
 
   module Sb
     enum Handshake
@@ -169,6 +171,8 @@ module Shatter::Packet
       ChatPreview
       ToggleChatPreview
     end
+
+    alias Any = Login | Status | Play
 
     IGNORE = [
       Play::Light, Play::Commands, Play::Recipes, Play::Map, Play::Advancements, Play::Tags, Play::UnlockRecipes, Play::HeaderFooter,
