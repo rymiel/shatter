@@ -28,12 +28,12 @@ module Shatter::Packet::Play
 
     field chunk_x : Int32
     field chunk_z : Int32
-    field p_bitmask : UInt64[VarInt]
+    # field p_bitmask : UInt64[VarInt]
     field heightmap : NBT
-    field biomes : VarInt[VarInt]
+    # field biomes : VarInt[VarInt]
     field _data : UInt8[VarInt] -> Slice
-    field data : Chunk = Chunk.new(con, @p_bitmask, @_data)
-    field tiles : NBT[VarInt]
+    # field data : Chunk = Chunk.new(con, @p_bitmask, @_data)
+    # field tiles : NBT[VarInt]
   end
 
   @[Silent]
