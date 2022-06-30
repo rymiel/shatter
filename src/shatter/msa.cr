@@ -7,7 +7,7 @@ class Shatter::MSA
   CLIENT_SECRET  = ENV["MSA_SECRET"]
   REDIRECT_URI   = ENV["MSA_REDIRECT"]
 
-  record AuthorizationToken, token_type : String, expires_in : Int32, scope : String, access_token : String, id_token : String do
+  record AuthorizationToken, token_type : String, expires_in : Int32, scope : String, access_token : String, id_token : String? do
     include JSON::Serializable
   end
   record MinecraftToken, username : String, roles : Array(String), token_type : String, access_token : String, expires_in : Int32 do
