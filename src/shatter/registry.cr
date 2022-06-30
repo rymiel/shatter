@@ -7,16 +7,11 @@ module Shatter
     getter entries : Hash(String, {protocol_id: UInt32})
 
     @[JSON::Field(ignore: true)]
-    @reverse_memo : Hash(UInt32, String)? = nil
+    getter! reverse : Hash(UInt32, String)
 
-    def reverse
-      if @reverse_memo.nil?
-        r = @entries.map { |k, v| {v[:protocol_id], k} }.to_h
-        @reverse_memo = r
-        r
-      else
-        @reverse_memo.not_nil!
-      end
+    def after_initialize
+      @reverse = r = Hash(UInt32, String).new { |k| "Unknown registry entry #{k}" }
+      @entries.each { |k, v| r[v[:protocol_id]] = k }
     end
   end
 
