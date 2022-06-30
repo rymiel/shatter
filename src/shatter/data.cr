@@ -74,6 +74,7 @@ module Shatter
     end
     record Slot, name : String, count : UInt8, nbt : Hash(String, NBT::Tag)? do
       include JSON::Serializable
+
       def inspect(io : IO)
         io << count << "x " if count != 1
         io << name.lchop "minecraft:"

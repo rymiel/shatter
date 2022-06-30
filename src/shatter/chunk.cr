@@ -2,6 +2,7 @@ require "json"
 
 class Shatter::Chunk
   include JSON::Serializable
+
   class Section
     include JSON::Serializable
     getter block_count : UInt16

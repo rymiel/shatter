@@ -136,108 +136,106 @@ module Shatter
       io << ')'
     end
 
-    def run
-      spawn name: "conwrapper main #{@profile.name}" do
-        TCPSocket.open(@ip, @port) do |sock|
-          @sock = sock
-          @io = @sock
-
-          spawn name: "conwrapper inbound #{@profile.name}" do
-            loop do
-              read_packet
-            rescue ex : Exception
-              close_from ex
-              ex.inspect_with_backtrace STDERR
-              break
-            end
-          end
-
-          spawn name: "conwrapper outbound #{@profile.name}" do
-            loop do
-              x = @outbound.receive
-              break if x.nil?
-              var_p_id = x[:pid]
-              mem = x[:body]
-              real_size = mem.size + var_p_id.size
-              if @using_compression > 0
-                if real_size > @using_compression
-                  compressed_body = IO::Memory.new
-                  Compress::Zlib::Writer.open compressed_body do |w|
-                    w.write var_p_id
-                    w.write mem
-                  end
-                  io.write_var_int compressed_body.size
-                  io.write_var_int real_size
-                  io.write compressed_body.to_slice
-                else
-                  io.write_var_int real_size + 1
-                  io.write_var_int 0
-                  io.write var_p_id
-                  io.write mem
-                end
-              else
-                io.write_var_int real_size
-                io.write var_p_id
-                io.write mem
+    def start_outbound_handler
+      spawn name: "conwrapper outbound #{@profile.name}" do
+        loop do
+          x = @outbound.receive
+          break if x.nil?
+          var_p_id = x[:pid]
+          mem = x[:body]
+          real_size = mem.size + var_p_id.size
+          if @using_compression > 0
+            if real_size > @using_compression
+              compressed_body = IO::Memory.new
+              Compress::Zlib::Writer.open compressed_body do |w|
+                w.write var_p_id
+                w.write mem
               end
-              io.flush
+              io.write_var_int compressed_body.size
+              io.write_var_int real_size
+              io.write compressed_body.to_slice
+            else
+              io.write_var_int real_size + 1
+              io.write_var_int 0
+              io.write var_p_id
+              io.write mem
             end
+          else
+            io.write_var_int real_size
+            io.write var_p_id
+            io.write mem
           end
-
-          packet Packet::Sb::Handshake::Handshake do |pkt|
-            pkt.write_var_int @protocol
-            pkt.write_var_string @ip
-            pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
-            pkt.write_var_int 2
-          end
-
-          transition :login
-
-          packet Packet::Sb::Login::LoginStart do |pkt|
-            pkt.write_var_string @profile.try &.name || "Steve"
-          end
-
-          sleep
+          io.flush
         end
       end
     end
 
-    def ping
-      spawn name: "conwrapper ping #{@profile.name}" do
+    private def with_socket(&block : TCPSocket ->)
+      spawn name: "conwrapper main #{@profile.name}" do
         TCPSocket.open(@ip, @port) do |sock|
-          @sock = sock
-          @io = @sock
-
-          spawn name: "conwrapper ping outbound #{@profile.name}" do
-            loop do
-              x = @outbound.receive?
-              break if x.nil?
-              real_size = x[:body].size + x[:pid].size
-              io.write_var_int real_size
-              io.write x[:pid]
-              io.write x[:body]
-              io.flush
-            end
-          end
-
-          packet Packet::Sb::Handshake::Handshake do |pkt|
-            pkt.write_var_int 756
-            pkt.write_var_string @ip
-            pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
-            pkt.write_var_int 1
-          end
-
-          transition :status
-
-          packet Packet::Sb::Status::Request do
-          end
-
-          read_packet
-          @outbound.close
+          block.call sock
         end
-      rescue ex : Socket::ConnectError
-        # Swallow
       end
+    end
+
+    def run
+      with_socket do |sock|
+        @sock = sock
+        @io = @sock
+
+        spawn name: "conwrapper inbound #{@profile.name}" do
+          loop do
+            read_packet
+          rescue ex : Exception
+            close_from ex
+            ex.inspect_with_backtrace STDERR
+            break
+          end
+        end
+
+        start_outbound_handler
+
+        packet Packet::Sb::Handshake::Handshake do |pkt|
+          pkt.write_var_int @protocol
+          pkt.write_var_string @ip
+          pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
+          pkt.write_var_int 2
+        end
+
+        transition :login
+
+        packet Packet::Sb::Login::LoginStart do |pkt|
+          pkt.write_var_string @profile.try &.name || "Steve"
+        end
+
+        sleep
+      end
+    end
+
+    def ping
+      with_socket do |sock|
+        @sock = sock
+        @io = @sock
+
+        start_outbound_handler
+
+        packet Packet::Sb::Handshake::Handshake do |pkt|
+          pkt.write_var_int 756
+          pkt.write_var_string @ip
+          pkt.write_bytes(@port.to_u16, IO::ByteFormat::BigEndian)
+          pkt.write_var_int 1
+        end
+
+        transition :status
+
+        packet Packet::Sb::Status::Request do
+        end
+
+        read_packet
+        @outbound.close
+      end
+    rescue ex : Socket::ConnectError
+      # Swallow
     end
   end
 end
