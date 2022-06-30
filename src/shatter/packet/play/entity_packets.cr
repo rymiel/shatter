@@ -119,6 +119,21 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
+  @[Describe(level: 3)]
+  class EntityProp
+    include Handler
+
+    field ent : Entity = con.entities[pkt.read_var_int]
+    field properties : Array(Data::Entity::Property) = Array(Data::Entity::Property).new(pkt.read_var_int) { Data::Entity::Property.from_io pkt }
+
+    def run
+      properties.each do |prop|
+        ent.properties[prop.key] = prop
+      end
+    end
+  end
+
+  @[Silent]
   @[Describe(level: 2)]
   class DestroyEntity
     include Handler

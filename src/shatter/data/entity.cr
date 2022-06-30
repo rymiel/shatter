@@ -18,6 +18,7 @@ module Shatter::Data
     property vy : Float64
     property vz : Float64
     property player_name : String? = nil
+    property properties : Hash(String, Property) = {} of String => Property
 
     def initialize(@eid, @uuid, @type, @x = 0.0, @y = 0.0, @z = 0.0, @yaw = 0.0, @pitch = 0.0, @head = 0.0, @vx = 0.0, @vy = 0.0, @vz = 0.0)
       # Entity.new(eid, uuid, type, x, y, z, yaw, pitch, head, vx, vy, vz)

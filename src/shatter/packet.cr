@@ -177,15 +177,5 @@ module Shatter::Packet
     IGNORE = [
       Play::Light, Play::Commands, Play::Recipes, Play::Map, Play::Advancements, Play::Tags, Play::UnlockRecipes, Play::HeaderFooter,
     ]
-
-    # silent_packet_handler Play::EntityProp do |pkt, con|
-    #   entity = con.entities[pkt.read_var_int]
-    #   properties = [] of Data::Entity::Property
-    #   property_count = pkt.read_var_int
-    #   property_count.times do
-    #     properties << Data::Entity::Property.from_io pkt
-    #   end
-    #   # describe_packet EntityProp, entity, properties
-    # end
   end
 end
