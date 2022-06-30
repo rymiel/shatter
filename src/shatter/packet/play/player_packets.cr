@@ -36,7 +36,7 @@ module Shatter::Packet::Play
     field is_debug : Bool
     field is_flat : Bool
 
-    def run
+    def run(con)
       my_uuid = UUID.new(con.profile.id)
       con.entities[my_eid] = Data::Entity.new my_eid, UUID.new(con.profile.id), "minecraft:player"
       con.players[my_uuid].name = con.profile.name
@@ -65,7 +65,7 @@ module Shatter::Packet::Play
 
     field ping_id : Int64
 
-    def run
+    def run(con)
       con.packet Sb::Play::KeepAlive do |o|
         o.write_i64 @ping_id
       end

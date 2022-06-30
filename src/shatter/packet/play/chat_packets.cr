@@ -33,7 +33,7 @@ module Shatter::Packet::Play
 
     field message : String
 
-    def run
+    def run(con)
       con.sock.try &.close
     end
   end

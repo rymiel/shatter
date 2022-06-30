@@ -9,7 +9,7 @@ module Shatter::Packet::Play
     field ent : Entity
     field head : Angle
 
-    def run
+    def run(con)
       @ent.head = @head
     end
   end
@@ -25,7 +25,7 @@ module Shatter::Packet::Play
     field dz : Float64 = pkt.read_i16 / (128 * 32)
     field on_ground : Bool
 
-    def run
+    def run(con)
       @ent.x += @dx
       @ent.y += @dy
       @ent.z += @dz
@@ -42,7 +42,7 @@ module Shatter::Packet::Play
     field vy : Velocity
     field vz : Velocity
 
-    def run
+    def run(con)
       @ent.vx = @vx
       @ent.vy = @vy
       @ent.vz = @vz
@@ -62,7 +62,7 @@ module Shatter::Packet::Play
     field pitch : Angle
     field on_ground : Bool
 
-    def run
+    def run(con)
       @ent.x += @dx
       @ent.y += @dy
       @ent.z += @dz
@@ -84,7 +84,7 @@ module Shatter::Packet::Play
     field pitch : Angle
     field on_ground : Bool
 
-    def run
+    def run(con)
       @ent.x = @x
       @ent.y = @y
       @ent.z = @z
@@ -103,7 +103,7 @@ module Shatter::Packet::Play
     field pitch : Angle
     field on_ground : Bool
 
-    def run
+    def run(con)
       @ent.yaw = @yaw
       @ent.pitch = @pitch
     end
@@ -126,7 +126,7 @@ module Shatter::Packet::Play
     field ent : Entity = con.entities[pkt.read_var_int]
     field properties : Array(Data::Entity::Property) = Array(Data::Entity::Property).new(pkt.read_var_int) { Data::Entity::Property.from_io pkt }
 
-    def run
+    def run(con)
       properties.each do |prop|
         ent.properties[prop.key] = prop
       end
@@ -159,7 +159,7 @@ module Shatter::Packet::Play
     field vy : Velocity
     field vz : Velocity
 
-    def run
+    def run(con)
       con.entities[@eid] = Data::Entity.new @eid, @uuid, @type, @x, @y, @z, @yaw, @pitch, @head, @vx, @vy, @vz
     end
   end
@@ -182,7 +182,7 @@ module Shatter::Packet::Play
     field vy : Velocity
     field vz : Velocity
 
-    def run
+    def run(con)
       con.entities[@eid] = Data::Entity.new @eid, @uuid, @type, @data, @x, @y, @z, @yaw, @pitch, @vx, @vy, @vz
     end
   end
@@ -200,7 +200,7 @@ module Shatter::Packet::Play
     field yaw : Angle
     field pitch : Angle
 
-    def run
+    def run(con)
       con.entities[@eid] = Data::Entity.new @eid, @uuid, "minecraft:player", @x, @y, @z, @yaw, @pitch
       con.entities[@eid].player_name = con.players[@uuid].name
     end

@@ -105,8 +105,8 @@ module Shatter
         end
 
         if resolved
-          resolved.describe
-          resolved.run
+          resolved.describe self
+          resolved.run self
           @packet_callback.try &.call(resolved, self)
         end
       end

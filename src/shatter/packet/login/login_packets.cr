@@ -10,7 +10,7 @@ module Shatter::Packet::Login
     field pkey_asn : UInt8[VarInt] -> Slice
     field nonce : UInt8[VarInt] -> Slice
 
-    def run
+    def run(con)
       rsa_pkey = Crypto.key_for @pkey_asn
       shared_secret = Random::Secure.random_bytes(16)
 
@@ -63,7 +63,7 @@ module Shatter::Packet::Login
 
     field threshold : VarInt
 
-    def run
+    def run(con)
       con.using_compression = @threshold
     end
   end
@@ -73,7 +73,7 @@ module Shatter::Packet::Login
   class LoginSuccess
     include Handler
 
-    def run
+    def run(con)
       con.transition :play
     end
   end

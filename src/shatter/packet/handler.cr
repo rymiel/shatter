@@ -162,17 +162,9 @@ module Shatter::Packet
         @@packet_name
       end
 
-      @[JSON::Field(ignore: true)]
-      @__pkt : ::IO
-
-      @[JSON::Field(ignore: true)]
-      @__con : ::Shatter::Connection
-      def con : ::Shatter::Connection
-        @__con
-      end
-      def describe(io : IO = STDERR)
+      def describe(con : ::Shatter::Connection, io : IO = STDERR)
         {% if @type.annotation(::Shatter::Packet::Describe) %}
-        _describe(io)
+        _describe(con, io)
         {% end %}
       end
       def has_describe? : Bool
@@ -196,24 +188,20 @@ module Shatter::Packet
     end
 
     def initialize(pkt : ::IO, con : ::Shatter::Connection)
-      @__pkt = pkt
-      @__con = con
       {% begin %}
       {% properties = {} of Nil => Nil %}
       {% for ivar in @type.instance_vars %}
-        {% unless ivar.id.starts_with?("__") %}
-          {% ann = ivar.annotation(::Shatter::Packet::Handler::Field) %}
-          {%
-            properties[ivar.id] = {
-              type:       ivar.type,
-              real_type:  ann && ann[:real_type],
-              self_def:   ann && ann[:self_defining],
-              quantifier: ann && ann[:quantifier],
-              reader:     ann && ann[:reader],
-              array_type: (ann && ann[:array_type]) || "Array",
-            }
-          %}
-        {% end %}
+        {% ann = ivar.annotation(::Shatter::Packet::Handler::Field) %}
+        {%
+          properties[ivar.id] = {
+            type:       ivar.type,
+            real_type:  ann && ann[:real_type],
+            self_def:   ann && ann[:self_defining],
+            quantifier: ann && ann[:quantifier],
+            reader:     ann && ann[:reader],
+            array_type: (ann && ann[:array_type]) || "Array",
+          }
+        %}
       {% end %}
 
       {% for name, value in properties %}
@@ -246,10 +234,10 @@ module Shatter::Packet
       {% end %}
     end
 
-    protected def run
+    protected def run(con : ::Shatter::Connection)
     end
 
-    private def _describe(io : IO)
+    private def _describe(con : ::Shatter::Connection, io : IO)
       {% begin %}
       {% ann = @type.annotation(::Shatter::Packet::Describe) %}
       {% if ann[:tag] %}
