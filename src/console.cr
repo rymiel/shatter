@@ -1,5 +1,13 @@
 require "./shatter"
 
+# Get the translation keys ready while doing the rest of authentication
+tl_key = Channel(Bool).new
+spawn do
+  Shatter::Chat::Reader::MojangAssetLangReader.new.keys
+  tl_key.send true
+end
+sleep 0
+
 puts "1/8: MSA"
 msa = Shatter::MSA.new
 puts "2/8: Token"
@@ -16,8 +24,9 @@ profile = msa.profile mc_token
 puts "7/8: Priming registry"
 registry, known_blocks = Shatter.local_registry
 puts "8/8: Priming translation keys"
-Shatter::Chat::Reader::MojangAssetLangReader.new.keys
+tl_key.receive
 
 puts "Done! Connecting..."
 Shatter::Connection.new(Shatter::Packet::Protocol::PROTOCOL_NAMES[ARGV[0]], ARGV[1], ARGV[2].to_i, registry, known_blocks, mc_token.access_token, profile).run
 sleep
+
