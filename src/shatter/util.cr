@@ -1,4 +1,5 @@
 require "json"
+require "uuid/json"
 
 module Shatter
   def self.hex(int : Int) : String
@@ -23,5 +24,15 @@ end
 struct Enum
   def to_json_object_key : String
     to_s
+  end
+end
+
+struct Slice
+  def to_json(json : JSON::Builder) : Nil
+    {% if T != UInt8 %}
+      {% raise "Can only serialize Slice(UInt8), not #{@type}}" %}
+    {% end %}
+
+    json.scalar Base64.encode(self)
   end
 end

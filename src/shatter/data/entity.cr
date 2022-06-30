@@ -136,6 +136,8 @@ class Shatter::Data::Entity
   end
 
   record Modifier, uuid : UUID, amount : Float64, operation : ModifierOperation do
+    include JSON::Serializable
+
     def self.from_io(io : IO) : Modifier
       uuid = io.read_uuid
       amount = io.read_f64
@@ -156,6 +158,8 @@ class Shatter::Data::Entity
   end
 
   record Property, key : String, value : Float64, modifiers : Array(Modifier) do
+    include JSON::Serializable
+
     def self.from_io(io : IO) : Property
       key = io.read_var_string
       value = io.read_f64
