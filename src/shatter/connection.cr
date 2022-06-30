@@ -56,7 +56,7 @@ module Shatter
       yield mem
       slice = mem.to_slice
       @outbound.send({pid: var_p_id, body: slice})
-      wide_dump(mem, packet_id, true)
+      wide_dump(mem, packet_id.to_s, raw_packet_id, true)
       sleep 0
     end
 
@@ -90,8 +90,14 @@ module Shatter
       is_silent = Packet::SILENT[packet_id]?
       handler = Packet::PACKET_HANDLERS[packet_id]?
       return if is_ignored
+
+      unless is_silent
+        pkt.read_at(pkt_body_start, pkt.size - pkt_body_start) do |b|
+          wide_dump(b, packet_id.to_s, raw_packet_id, unknown: handler.nil?)
+        end
+      end
+
       resolved = nil
-      pkt.read_at(pkt_body_start, pkt.size - pkt_body_start) { |b| wide_dump(b, packet_id, unknown: handler.nil?) } unless is_silent
       if handler
         resolved = handler.call(pkt, self)
         resolved.describe
@@ -101,9 +107,9 @@ module Shatter
       return resolved
     end
 
-    private def wide_dump(b : IO, packet_id, out_pkt = false, unknown = false)
+    private def wide_dump(b : IO, packet_name : String, packet_id, out_pkt = false, unknown = false)
       marker = out_pkt ? "OUT-PKT>".colorize.green : " IN-PKT<".colorize.red
-      packet_name = packet_id.to_s.rjust(16).colorize(out_pkt ? :light_green : :red)
+      packet_name = packet_name.rjust(16).colorize(out_pkt ? :light_green : :red)
       marker = marker.bold if unknown
       packet_name = packet_name.bold if unknown
       STDERR.puts((b.as IO::Memory).to_slice.wide_hexdump(
