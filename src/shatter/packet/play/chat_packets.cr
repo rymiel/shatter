@@ -18,7 +18,7 @@ module Shatter::Packet::Play
     field sender : UUID
   end
 
-  @[Describe(level: 3)]
+  @[Describe(level: 3, transform: {data: String.new(@data).inspect})]
   class PluginMessage
     include Handler
 
