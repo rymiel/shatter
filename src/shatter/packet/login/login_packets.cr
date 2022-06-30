@@ -51,7 +51,7 @@ module Shatter::Packet::Login
         pkt.write encoded_nonce
       end
 
-      con.outbound.send Crypto::CipherStreamIO.new con.io, "aes-128-cfb8", shared_secret, shared_secret
+      con.use_crypto_io Crypto::CipherStreamIO.new con.io, "aes-128-cfb8", shared_secret, shared_secret
     end
   end
 
