@@ -10,7 +10,7 @@ module Shatter
     getter! reverse : Hash(UInt32, String)
 
     def after_initialize
-      @reverse = r = Hash(UInt32, String).new { |k| "Unknown registry entry #{k}" }
+      @reverse = r = Hash(UInt32, String).new { |_, k| "Unknown registry entry #{k}" }
       @entries.each { |k, v| r[v[:protocol_id]] = k }
     end
   end
