@@ -2,7 +2,7 @@ require "../handler"
 
 module Shatter::Packet::Play
   @[Silent]
-  # @[Describe(level: 2)]
+  @[Describe(level: 2, tag: :blocks)]
   class BlockChange
     include Handler
 
@@ -45,7 +45,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe(level: 2, transform: {blocks: @blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", "})]
+  @[Describe(level: 2, tag: :blocks, transform: {blocks: @blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", "})]
   class MultiBlocks
     include Handler
 

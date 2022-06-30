@@ -252,6 +252,9 @@ module Shatter::Packet
     private def _describe(io : IO)
       {% begin %}
       {% ann = @type.annotation(::Shatter::Packet::Describe) %}
+      {% if ann[:tag] %}
+      return unless (ENV["SHATTER_DESCRIBE_TAGS"]? || "").split(",").includes?({{ ann[:tag].id.stringify }})
+      {% end %}
       {% transform = ann && ann[:transform] %}
       {% level = (ann && ann[:level]) || 1 %}
       %color = {% if level == 0 %} :dark_gray

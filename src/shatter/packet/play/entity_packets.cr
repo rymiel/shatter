@@ -2,7 +2,7 @@ require "../handler"
 
 module Shatter::Packet::Play
   @[Silent]
-  # @[Describe(level: 0)]
+  @[Describe(level: 0, tag: :movement)]
   class EntityHeadLook
     include Handler
 
@@ -15,7 +15,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe(level: 0)]
+  @[Describe(level: 0, tag: :movement)]
   class EntityPosition
     include Handler
 
@@ -33,7 +33,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe(level: 0)]
+  @[Describe(level: 0, tag: :movement)]
   class EntityVelocity
     include Handler
 
@@ -50,7 +50,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe(level: 0)]
+  @[Describe(level: 0, tag: :movement)]
   class EntityPosRot
     include Handler
 
@@ -72,7 +72,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe(level: 0)]
+  @[Describe(level: 0, tag: :movement)]
   class EntityTeleport
     include Handler
 
@@ -94,7 +94,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe(level: 0)]
+  @[Describe(level: 0, tag: :movement)]
   class EntityRotation
     include Handler
 
@@ -110,7 +110,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  @[Describe(level: 4)]
+  @[Describe(level: 3)]
   class EntityStatus
     include Handler
 
@@ -119,7 +119,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe(level: 3)]
+  @[Describe(level: 2)]
   class DestroyEntity
     include Handler
 
@@ -127,7 +127,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe]
+  @[Describe]
   class SpawnLiving
     include Handler
 
@@ -173,7 +173,7 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  @[Describe]
+  @[Describe(level: 4)]
   class SpawnPlayer
     include Handler
 

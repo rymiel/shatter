@@ -3,7 +3,6 @@ require "../../chunk"
 
 module Shatter::Packet::Play
   @[Silent]
-  # @[Describe(level: 0)]
   class WorldTime
     include Handler
 
@@ -12,7 +11,6 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe]
   class GameState
     include Handler
 
@@ -53,7 +51,6 @@ module Shatter::Packet::Play
   end
 
   @[Silent]
-  # @[Describe]
   @[Alias(Sound)]
   class SoundPacket
     include Handler
