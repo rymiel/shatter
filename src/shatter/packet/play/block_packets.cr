@@ -42,7 +42,7 @@ module Shatter::Packet::Play
     field param : String = Play::BlockAction::KNOWN_PARAM.find { |k, _| k === @block }.try &.[1][@_param] || @_param.to_s
   end
 
-  @[Describe(level: 2, tag: :blocks, transform: {blocks: @blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", "})]
+  @[Describe(level: 2, tag: :blocks)]
   class MultiBlocks
     include Handler
 
@@ -51,6 +51,8 @@ module Shatter::Packet::Play
     field _sect_y : Int64 = (@_val << 44 >> 44).as_signed_bit_width(20)
     field _sect_z : Int64 = (@_val << 22 >> 42).as_signed_bit_width(22)
     field _garbage : Bool
+
+    @[Transform(@blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", ")]
     field blocks : {x: Int64, y: Int64, z: Int64, state: String}[VarInt] do
       block = pkt.read_var_long
       local_x = ((block & 0xF00) >> 8)

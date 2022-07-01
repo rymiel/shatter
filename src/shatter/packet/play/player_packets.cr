@@ -1,17 +1,18 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n"})]
+  @[Describe(level: 2)]
   class WindowItems
     include Handler
 
     field window : UInt8
     field state : VarInt
+    @[Transform("\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n")]
     field slots : Data::Slot?[VarInt]
     field carried : Data::Slot?
   end
 
-  @[Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope"})]
+  @[Describe(level: 2)]
   class JoinGame
     include Handler
 
@@ -23,6 +24,7 @@ module Shatter::Packet::Play
       x < 0 ? nil : Data::Player::Gamemode.new(x)
     end
     field worlds : String[VarInt]
+    @[Transform("#{@codec.inspect.size} chars of nope")]
     field codec : NBT
     field dimension : String # NBT
     field world : String
@@ -69,10 +71,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(transform: {
-    action_id: ["Add", "Gamemode", "Ping", "Display name", "Remove"][@action_id],
-    actions:   @actions.map { |k, v| v.nil? ? con.players[k].name : "#{con.players[k].name} => #{v.to_s k}" }.join ", ",
-  })]
+  @[Describe]
   class PlayInfo
     private PLAY_INFO_FIELDS = {
       "name"  => {String, pkt.read_var_string},
@@ -123,7 +122,9 @@ module Shatter::Packet::Play
 
     include Handler
 
+    @[Transform(["Add", "Gamemode", "Ping", "Display name", "Remove"][@action_id])]
     field action_id : VarInt
+    @[Transform(@actions.map { |k, v| v.nil? ? con.players[k].name : "#{con.players[k].name} => #{v.to_s k}" }.join ", ")]
     field actions : {UUID, Play::PlayInfo::Action}[VarInt] do
       uuid = pkt.read_uuid
       action = case @action_id

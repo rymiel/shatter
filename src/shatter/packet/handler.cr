@@ -11,6 +11,9 @@ module Shatter::Packet
   annotation Describe
   end
 
+  annotation Transform
+  end
+
   annotation Alias
   end
 
@@ -264,8 +267,9 @@ module Shatter::Packet
         {% unless ivar.id.starts_with? "_" %}
           io << "{{ ivar.id }}=".colorize.dark_gray
           %field = @{{ivar.id}}
-          {% if !flag?("SHATTER_IGNORE_FIELD_TRANSFORM") && transform && transform[ivar.id.symbolize] %}
-            io << {{ transform[ivar.id.symbolize] }}
+          {% transform = ivar.annotation(::Shatter::Packet::Transform) %}
+          {% if !flag?("SHATTER_IGNORE_FIELD_TRANSFORM") && transform %}
+            io << {{ transform[0] }}
           {% elsif ivar.type < Float %}
             io << %field.format(decimal_places: 2, only_significant: true)
           {% elsif ivar.type == Bytes %}
