@@ -240,14 +240,24 @@ module Shatter::Packet
     protected def run(con : ::Shatter::Connection)
     end
 
+    TAG_OPTIONS = (ENV["SHATTER_DESCRIBE_TAGS"]? || "").split(",")
+    ENABLED_TAGS = TAG_OPTIONS.reject &.starts_with? "-"
+    DISABLED_TAGS = TAG_OPTIONS.select(&.starts_with? "-").map(&.[1..])
+
     private def _describe(con : ::Shatter::Connection, io : IO)
       {% begin %}
       {% ann = @type.annotation(::Shatter::Packet::Describe) %}
-      {% if ann[:tag] %}
-      return unless (ENV["SHATTER_DESCRIBE_TAGS"]? || "").split(",").includes?({{ ann[:tag].id.stringify }})
+      {% level = (ann && (ann[0] || ann[:level])) || 1 %}
+      {% tag = ann && (ann[1] || ann[:tag]) %}
+      {% default_state = ann && ann[:default] %}
+      {% default_state = default_state.nil? ? true : false %}
+
+      {% if tag && default_state %}
+        return if DISABLED_TAGS.includes? {{ tag.id.stringify }}
+      {% elsif tag && !default_state %}
+        return unless ENABLED_TAGS.includes? {{ tag.id.stringify }}
       {% end %}
-      {% transform = ann && ann[:transform] %}
-      {% level = (ann && ann[:level]) || 1 %}
+
       %color = {% if level == 0 %} :dark_gray
                {% elsif level == 1 %} :red
                {% elsif level == 2 %} :yellow

@@ -1,7 +1,7 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Describe(level: 2)]
+  @[Describe(2 inventory)]
   class WindowItems
     include Handler
 

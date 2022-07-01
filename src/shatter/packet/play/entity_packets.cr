@@ -1,7 +1,7 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Describe(level: 0, tag: :movement)]
+  @[Describe(0 movement, default: false)]
   class EntityHeadLook
     include Handler
 
@@ -13,7 +13,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 0, tag: :movement)]
+  @[Describe(0 movement, default: false)]
   class EntityPosition
     include Handler
 
@@ -30,7 +30,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 0, tag: :movement)]
+  @[Describe(0 movement, default: false)]
   class EntityVelocity
     include Handler
 
@@ -46,7 +46,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 0, tag: :movement)]
+  @[Describe(0 movement, default: false)]
   class EntityPosRot
     include Handler
 
@@ -67,7 +67,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 0, tag: :movement)]
+  @[Describe(0 movement, default: false)]
   class EntityTeleport
     include Handler
 
@@ -88,7 +88,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 0, tag: :movement)]
+  @[Describe(0 movement, default: false)]
   class EntityRotation
     include Handler
 
@@ -103,7 +103,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 3)]
+  @[Describe(3 entity_meta)]
   class EntityStatus
     include Handler
 
@@ -111,7 +111,7 @@ module Shatter::Packet::Play
     field status : Data::Entity::Status = Data::Entity::Status.new pkt.read_i8
   end
 
-  @[Describe(level: 3)]
+  @[Describe(3 entity_meta)]
   class EntityProp
     include Handler
 
@@ -125,14 +125,14 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 2)]
+  @[Describe(2 lifetime)]
   class DestroyEntity
     include Handler
 
     field entities : Entity[VarInt]
   end
 
-  @[Describe]
+  @[Describe(2 lifetime)]
   class SpawnLiving
     include Handler
 
@@ -154,7 +154,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe]
+  @[Describe(2 lifetime)]
   class SpawnEntity
     include Handler
 
@@ -176,7 +176,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 4)]
+  @[Describe(4 player)]
   class SpawnPlayer
     include Handler
 
@@ -194,7 +194,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(level: 2)]
+  @[Describe(2 inventory)]
   class Equipment
     include Handler
 

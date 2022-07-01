@@ -1,8 +1,7 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Describe(
-    level: 3,
+  @[Describe(3 chat,
     order: {position, sender, message})]
   @[Alias(Chat)]
   class ChatMessage
@@ -16,7 +15,7 @@ module Shatter::Packet::Play
   end
 
   @[AlwaysHexdump]
-  @[Describe(level: 3)]
+  @[Describe(3)]
   class PluginMessage
     include Handler
 
@@ -25,7 +24,7 @@ module Shatter::Packet::Play
     field data : Bytes = pkt.gets_to_end.to_slice
   end
 
-  @[Describe(level: 5)]
+  @[Describe(5)]
   class Disconnect
     include Handler
 
