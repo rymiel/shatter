@@ -243,9 +243,11 @@ module Shatter::Packet
     protected def run(con : ::Shatter::Connection)
     end
 
-    TAG_OPTIONS   = (ENV["SHATTER_DESCRIBE_TAGS"]? || "").split(",")
-    ENABLED_TAGS  = TAG_OPTIONS.reject &.starts_with? "-"
-    DISABLED_TAGS = TAG_OPTIONS.select(&.starts_with? "-").map(&.[1..])
+    TAG_OPTIONS       = (ENV["SHATTER_DESCRIBE_TAGS"]? || "").split(",")
+    ALL_TAGS_ENABLED  = TAG_OPTIONS.includes? "*"
+    ALL_TAGS_DISABLED = TAG_OPTIONS.includes? "-*"
+    ENABLED_TAGS      = TAG_OPTIONS.reject &.starts_with? "-"
+    DISABLED_TAGS     = TAG_OPTIONS.select(&.starts_with? "-").map(&.[1..])
 
     private def _describe(con : ::Shatter::Connection, io : IO)
       {% begin %}
@@ -256,9 +258,9 @@ module Shatter::Packet
       {% default_state = default_state.nil? ? true : false %}
 
       {% if tag && default_state %}
-        return if DISABLED_TAGS.includes? {{ tag.id.stringify }}
+        return if ALL_TAGS_DISABLED || DISABLED_TAGS.includes? {{ tag.id.stringify }}
       {% elsif tag && !default_state %}
-        return unless ENABLED_TAGS.includes? {{ tag.id.stringify }}
+        return unless ALL_TAGS_ENABLED || ENABLED_TAGS.includes? {{ tag.id.stringify }}
       {% end %}
 
       %color = {% if level == 0 %} :dark_gray
