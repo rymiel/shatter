@@ -121,15 +121,8 @@ module Shatter::Packet
           end
         %}
 
-        {% if block %}
-          {% has_reader = true %}
-          def self.%read(pkt : ::IO, con : ::Shatter::Connection)
-            {{ yield }}
-          end
-        {% end %}
-
         {% if is_array || t.type.id != t.type.resolve.id %}
-          @[::Shatter::Packet::Handler::Field({% if has_reader %}reader: %read, {% end %}{% if is_array %}quantifier: {{quantifier}}, array_type: {{array_type}}, {% end %} real_type: {{real_type}})]
+          @[::Shatter::Packet::Handler::Field({% if block %}reader: %read, {% end %}{% if is_array %}quantifier: {{quantifier}}, array_type: {{array_type}}, {% end %} real_type: {{real_type}})]
         {% end %}
       {% else %}
         @[::Shatter::Packet::Handler::Field(self_defining: {{ val }})]
@@ -142,6 +135,12 @@ module Shatter::Packet
       def {{t.var.id}} : {{return_type}}
         @{{t.var.id}}
       end
+
+      {% if block %}
+        def self.%read(pkt : ::IO, con : ::Shatter::Connection)
+          {{ yield }}
+        end
+      {% end %}
     end
 
     macro included
