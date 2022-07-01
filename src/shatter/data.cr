@@ -100,6 +100,18 @@ module Shatter
         end
       end
     end
+
+    record Position, x : Int32, y : Int32, z : Int32 do
+      include JSON::Serializable
+
+      def self.from_io(io : IO) : Position
+        val = io.read_u64
+        x = (val >> 38).as_signed_bit_width 26
+        y = (val & 0xFFF).as_signed_bit_width 12
+        z = (val << 26 >> 38).as_signed_bit_width 26
+        Position.new x.to_i32, y.to_i32, z.to_i32
+      end
+    end
   end
 end
 

@@ -49,6 +49,9 @@ module Shatter::Packet
   type_reader VarInt, UInt32, &.read_var_int
   type_reader Angle, Float64, &.read_angle
   type_reader Velocity, Float64, &.read_i16./(400)
+  type_reader Position, Data::Position do |pkt|
+    Data::Position.from_io pkt
+  end
   type_reader Entity, ::Shatter::Data::Entity do |pkt, con|
     con.entities[pkt.read_var_int]
   end
@@ -240,8 +243,8 @@ module Shatter::Packet
     protected def run(con : ::Shatter::Connection)
     end
 
-    TAG_OPTIONS = (ENV["SHATTER_DESCRIBE_TAGS"]? || "").split(",")
-    ENABLED_TAGS = TAG_OPTIONS.reject &.starts_with? "-"
+    TAG_OPTIONS   = (ENV["SHATTER_DESCRIBE_TAGS"]? || "").split(",")
+    ENABLED_TAGS  = TAG_OPTIONS.reject &.starts_with? "-"
     DISABLED_TAGS = TAG_OPTIONS.select(&.starts_with? "-").map(&.[1..])
 
     private def _describe(con : ::Shatter::Connection, io : IO)

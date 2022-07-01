@@ -1,7 +1,7 @@
 require "../handler"
 
 module Shatter::Packet::Login
-  @[Describe(2 crypt, default: false)]
+  @[Describe(2, crypt, default: false)]
   class CryptRequest
     include Handler
 

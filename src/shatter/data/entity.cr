@@ -1,5 +1,6 @@
 require "uuid"
 require "json"
+require "../data"
 
 module Shatter::Data
   class Entity
@@ -178,6 +179,114 @@ class Shatter::Data::Entity
       io << @value.format(decimal_places: 2, only_significant: true)
       @modifiers.to_s io
       io << ">"
+    end
+  end
+
+  module Meta
+    enum Type : UInt32
+      Byte
+      VarInt
+      Float
+      String
+      Chat
+      OptChat
+      Slot
+      Boolean
+      Rotation
+      Position
+      OptPosition
+      Direction
+      OptUUID
+      OptBlockID
+      NBT
+      Particle
+      Villager
+      OptVarInt
+      Pose
+      Cat
+      Frog
+      Painting
+    end
+
+    enum Direction : UInt32
+      Down
+      Up
+      North
+      South
+      West
+      East
+    end
+
+    enum Pose : UInt32
+      Standing
+      FallFlying
+      Sleeping
+      Swimming
+      SpinAttack
+      Sneaking
+      LongJumping
+      Dying
+      Croaking
+      UsingTongue
+      Roaring
+      Sniffing
+      Emerging
+      Digging
+    end
+
+    @[Flags]
+    enum State : UInt8
+      OnFire
+      Crouching
+      Riding
+      Sprinting
+      Swimming
+      Invisible
+      Glowing
+      Elytra
+    end
+
+    record Rotation, x : Float32, y : Float32, z : Float32
+
+    record VillagerData, type : UInt32, profession : UInt32, level : UInt32
+
+    alias Any = UInt8 | UInt32 | Float32 | String | Slot | Bool | Rotation | Position | Direction | UUID | NBT::Tag | VillagerData | Pose | State | Nil
+
+    def self.from_io(idx : UInt8, io : IO, type : Type, con : Shatter::Connection) : Any
+      val = raw_val_from_io io, type, con
+
+      if idx == 0 && val.is_a? UInt8
+        val = State.new val
+      end
+
+      val
+    end
+
+    def self.raw_val_from_io(io : IO, type : Type, con : Shatter::Connection) : Any
+      case type
+      in .byte?         then io.read_u8
+      in .var_int?      then io.read_var_int
+      in .float?        then io.read_f32
+      in .string?       then io.read_var_string
+      in .chat?         then io.read_var_string
+      in .opt_chat?     then io.read_bool ? io.read_var_string : nil
+      in .slot?         then Slot.from_io io, con
+      in .boolean?      then io.read_bool
+      in .rotation?     then Rotation.new io.read_f32, io.read_f32, io.read_f32
+      in .position?     then Position.from_io io
+      in .opt_position? then io.read_bool ? Position.from_io(io) : nil
+      in .direction?    then Direction.new io.read_var_int
+      in .opt_uuid?     then io.read_bool ? io.read_uuid : nil
+      in .opt_block_id? then con.registry.block_id.reverse[io.read_var_int]
+      in .nbt?          then ::NBT::Reader.new(io).read_named[:tag]
+      in .particle?     then nil # TODO
+      in .villager?     then VillagerData.new io.read_var_int, io.read_var_int, io.read_var_int
+      in .opt_var_int?  then (i = io.read_var_int) == 0 ? nil : i - 1
+      in .pose?         then Pose.new io.read_var_int
+      in .cat?          then io.read_var_int
+      in .frog?         then io.read_var_int
+      in .painting?     then io.read_var_int
+      end
     end
   end
 end

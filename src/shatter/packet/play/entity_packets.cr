@@ -1,7 +1,7 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Describe(0 movement, default: false)]
+  @[Describe(0, movement, default: false)]
   class EntityHeadLook
     include Handler
 
@@ -13,7 +13,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(0 movement, default: false)]
+  @[Describe(0, movement, default: false)]
   class EntityPosition
     include Handler
 
@@ -30,7 +30,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(0 movement, default: false)]
+  @[Describe(0, movement, default: false)]
   class EntityVelocity
     include Handler
 
@@ -46,7 +46,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(0 movement, default: false)]
+  @[Describe(0, movement, default: false)]
   class EntityPosRot
     include Handler
 
@@ -67,7 +67,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(0 movement, default: false)]
+  @[Describe(0, movement, default: false)]
   class EntityTeleport
     include Handler
 
@@ -88,7 +88,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(0 movement, default: false)]
+  @[Describe(0, movement, default: false)]
   class EntityRotation
     include Handler
 
@@ -103,7 +103,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(3 entity_meta)]
+  @[Describe(3, entity_meta)]
   class EntityStatus
     include Handler
 
@@ -111,12 +111,29 @@ module Shatter::Packet::Play
     field status : Data::Entity::Status = Data::Entity::Status.new pkt.read_i8
   end
 
-  @[Describe(3 entity_meta)]
+  @[Describe(3, entity_metaa)]
+  class EntityMeta
+    include Handler
+
+    field ent : Entity = con.entities[pkt.read_var_int]
+    field meta : Array({UInt8, Entity::Meta::Type, Entity::Meta::Any}) do
+      arr = Array({UInt8, Entity::Meta::Type, Entity::Meta::Any}).new
+      index = pkt.read_u8
+      unless index == 0xFF
+        type = Entity::Meta::Type.new pkt.read_var_int
+        data = Entity::Meta.from_io index, pkt, type, con
+        arr << {index, type, data}
+      end
+      arr
+    end
+  end
+
+  @[Describe(3, entity_meta)]
   class EntityProp
     include Handler
 
     field ent : Entity = con.entities[pkt.read_var_int]
-    field properties : Array(Data::Entity::Property) = Array(Data::Entity::Property).new(pkt.read_var_int) { Data::Entity::Property.from_io pkt }
+    field properties : Data::Entity::Property[VarInt] { Data::Entity::Property.from_io pkt }
 
     def run(con)
       properties.each do |prop|
@@ -125,14 +142,14 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(2 lifetime)]
+  @[Describe(2, lifetime)]
   class DestroyEntity
     include Handler
 
     field entities : Entity[VarInt]
   end
 
-  @[Describe(2 lifetime)]
+  @[Describe(2, lifetime)]
   class SpawnLiving
     include Handler
 
@@ -154,7 +171,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(2 lifetime)]
+  @[Describe(2, lifetime)]
   class SpawnEntity
     include Handler
 
@@ -176,7 +193,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(4 player)]
+  @[Describe(4, player)]
   class SpawnPlayer
     include Handler
 
@@ -194,7 +211,7 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Describe(2 inventory)]
+  @[Describe(2, inventory)]
   class Equipment
     include Handler
 

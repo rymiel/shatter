@@ -2,7 +2,7 @@ require "../handler"
 require "../../chunk"
 
 module Shatter::Packet::Play
-  @[Describe(0 time, default: false)]
+  @[Describe(0, time, default: false)]
   class WorldTime
     include Handler
 
@@ -10,7 +10,7 @@ module Shatter::Packet::Play
     field time_of_day : Int64
   end
 
-  @[Describe(0 state, default: false)]
+  @[Describe(0, state, default: false)]
   class GameState
     include Handler
 
@@ -19,8 +19,8 @@ module Shatter::Packet::Play
   end
 
   @[Alias(Chunk)]
-  @[Version(:== Protocol::Version1_17_1::PROTOCOL_VERSION)]
-  @[Describe(0 chunk, default: false)]
+  @[Version(:==, Protocol::Version1_17_1::PROTOCOL_VERSION)]
+  @[Describe(0, chunk, default: false)]
   class ChunkPacket1171
     include Handler
 
@@ -35,8 +35,8 @@ module Shatter::Packet::Play
   end
 
   @[Alias(Chunk)]
-  @[Version(:== Protocol::Version1_19::PROTOCOL_VERSION)]
-  @[Describe(0 chunk, default: false)]
+  @[Version(:==, Protocol::Version1_19::PROTOCOL_VERSION)]
+  @[Describe(0, chunk, default: false)]
   class ChunkPacket119
     include Handler
 
@@ -51,7 +51,7 @@ module Shatter::Packet::Play
   end
 
   @[Alias(Sound)]
-  @[Describe(0 sound)]
+  @[Describe(0, sound)]
   class SoundPacket
     include Handler
 

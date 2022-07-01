@@ -1,19 +1,16 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Describe(2 blocks, default: false)]
+  @[Describe(2, blocks, default: false)]
   class BlockChange
     include Handler
 
-    field _val : UInt64
-    field x : Int64 = (@_val >> 38).as_signed_bit_width 26
-    field y : Int64 = (@_val & 0xFFF).as_signed_bit_width 12
-    field z : Int64 = (@_val << 26 >> 38).as_signed_bit_width 26
+    field pos : Position
 
     field state : BlockState
   end
 
-  @[Describe(2 blocks)]
+  @[Describe(2, blocks)]
   class BlockAction
     include Handler
 
@@ -31,10 +28,7 @@ module Shatter::Packet::Play
       /minecraft:(\w*piston|bell)/ => ["Down", "Up", "South", "West", "North", "East"],
     }
 
-    field _val : UInt64
-    field x : Int64 = (@_val >> 38).as_signed_bit_width 26
-    field y : Int64 = (@_val & 0xFFF).as_signed_bit_width 12
-    field z : Int64 = (@_val << 26 >> 38).as_signed_bit_width 26
+    field pos : Position
     field _action : UInt8
     field _param : UInt8
     field block : BlockID
@@ -42,7 +36,7 @@ module Shatter::Packet::Play
     field param : String = Play::BlockAction::KNOWN_PARAM.find { |k, _| k === @block }.try &.[1][@_param] || @_param.to_s
   end
 
-  @[Describe(2 blocks, default: false)]
+  @[Describe(2, blocks, default: false)]
   class MultiBlocks
     include Handler
 

@@ -1,7 +1,7 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Describe(3 chat,
+  @[Describe(3, chat,
     order: {position, sender, message})]
   @[Alias(Chat)]
   class ChatMessage
