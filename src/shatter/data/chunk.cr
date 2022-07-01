@@ -1,7 +1,7 @@
 require "json"
 require "nbt"
 
-class Shatter::Chunk
+class Shatter::Data::Chunk
   include JSON::Serializable
 
   class Tile

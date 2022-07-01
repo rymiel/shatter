@@ -70,8 +70,8 @@ module Shatter::Packet
   type_reader Data::Slot?, Data::Slot? do |pkt, con|
     ::Shatter::Data::Slot.from_io pkt, con
   end
-  type_reader Chunk::Tile, Chunk::Tile do |pkt, con|
-    ::Shatter::Chunk::Tile.new pkt
+  type_reader Data::Chunk::Tile, Data::Chunk::Tile do |pkt, con|
+    ::Shatter::Data::Chunk::Tile.new pkt
   end
 
   type_reader NBT, ::NBT::Tag do |pkt|
