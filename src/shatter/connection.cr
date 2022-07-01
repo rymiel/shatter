@@ -24,6 +24,7 @@ module Shatter
     getter ip : String
     getter port : Int32
     getter registry : Registry
+    property! codec : Codec
     getter block_states : Array(String)
     getter profile : MSA::MinecraftProfile
     getter minecraft_token : String

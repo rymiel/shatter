@@ -1,40 +1,8 @@
 version: 2.0
 shards:
-  admiral:
-    git: https://github.com/jwaldrip/admiral.cr.git
-    version: 1.12.1
-
-  bindata:
-    git: https://github.com/spider-gazelle/bindata.git
-    version: 1.9.1
-
-  cache:
-    git: https://github.com/crystal-cache/cache.git
-    version: 0.13.0
-
-  clear:
-    git: https://github.com/anykeyh/clear.git
-    version: 0.9+git.commit.dc5bcec0b5fa6871d479d487ab7cfc5e5b1ba16c
-
-  db:
-    git: https://github.com/crystal-lang/crystal-db.git
-    version: 0.10.1
-
   envy:
     git: https://github.com/grottopress/envy.git
     version: 0.3.0
-
-  generate:
-    git: https://github.com/anykeyh/generate.cr.git
-    version: 0.1.0+git.commit.f5dafc934a70e0ee2f246dddf3df44686f844da2
-
-  inflector:
-    git: https://github.com/anykeyh/inflector.cr.git
-    version: 0.1.8+git.commit.dc5c898b0a834617d8b3ff73ac5a2239bd9fc019
-
-  jwt:
-    git: https://github.com/crystal-community/jwt.git
-    version: 1.6.0
 
   nbt:
     git: https://gitlab.com/rymiel/nbt.git
@@ -43,10 +11,6 @@ shards:
   openssl_ext:
     git: https://github.com/spider-gazelle/openssl_ext.git
     version: 2.1.5+git.commit.a6d023921da7cdc15c04c4dc835f6c92ee15b0c3
-
-  pg:
-    git: https://github.com/will/crystal-pg.git
-    version: 0.24.0
 
   sentry:
     git: https://github.com/samueleaton/sentry.git

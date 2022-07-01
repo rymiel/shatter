@@ -67,15 +67,17 @@ class Shatter::Data::Chunk
       getter palette : Array(String)?
       getter data : Array(UInt64)
 
+      private macro read_item
+        is_biome ? con.codec.biomes!.name_for!(source.read_var_int) : con.block_states[source.read_var_int]
+      end
+
       def initialize(is_biome, con : Shatter::Connection, source : IO::Memory)
         @bits_per_block = source.read_u8
         if @bits_per_block == 0
-          @palette = [is_biome ? "Biome #{source.read_var_int}" : con.block_states[source.read_var_int]]
+          @palette = [read_item]
         elsif @bits_per_block < (is_biome ? 4 : 9)
           @bits_per_block = 4 if @bits_per_block <= 4 && !is_biome
-          @palette = Array(String).new(source.read_var_int) do
-            is_biome ? "Biome #{source.read_var_int}" : con.block_states[source.read_var_int]
-          end
+          @palette = Array(String).new(source.read_var_int) { read_item }
         else
           @palette = nil # "Direct" palette, not encountered in vanilla so not implemented here
         end

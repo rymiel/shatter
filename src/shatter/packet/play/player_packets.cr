@@ -24,8 +24,7 @@ module Shatter::Packet::Play
       x < 0 ? nil : Data::Player::Gamemode.new(x)
     end
     field worlds : String[VarInt]
-    @[Transform("#{@codec.inspect.size} chars of nope")]
-    field codec : NBT
+    field codec : Codec
     field dimension : String # NBT
     field world : String
     field hash_seed : UInt64
@@ -38,6 +37,7 @@ module Shatter::Packet::Play
 
     def run(con)
       my_uuid = UUID.new(con.profile.id)
+      con.codec = @codec
       con.entities[my_eid] = Data::Entity.new my_eid, UUID.new(con.profile.id), "minecraft:player"
       con.players[my_uuid].name = con.profile.name
       con.packet Sb::Play::PluginMessage do |o|

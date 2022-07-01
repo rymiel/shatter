@@ -2,6 +2,7 @@ require "../data"
 require "../data/entity"
 require "../packet"
 require "../connection"
+require "../codec"
 require "json"
 
 module Shatter::Packet
@@ -76,6 +77,9 @@ module Shatter::Packet
 
   type_reader NBT, ::NBT::Tag do |pkt|
     ::NBT::Reader.new(pkt).read_named[:tag]
+  end
+  type_reader Codec, Codec do |pkt, con|
+    Codec.from_json ::NBT::Reader.new(pkt).read_named[:tag].to_json
   end
 
   type_reader Chat, String do |pkt|
