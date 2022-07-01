@@ -36,3 +36,13 @@ struct Slice
     json.scalar Base64.encode(self)
   end
 end
+
+struct UInt64
+  def as_signed_bit_width(power : Int) : Int64
+    if self >= (2 ** (power - 1))
+      self.to_i64 - (2 ** power)
+    else
+      self.to_i64
+    end
+  end
+end
