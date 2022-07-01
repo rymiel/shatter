@@ -1,7 +1,7 @@
 require "./data/entity"
 require "./data/player"
 require "./data/sound"
-require "./packet/protocol"
+require "./protocol"
 require "./packet/handler"
 require "shatter-chat"
 require "json"

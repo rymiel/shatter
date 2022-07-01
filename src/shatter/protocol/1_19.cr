@@ -1,6 +1,6 @@
 require "../protocol"
 
-module Shatter::Packet::Protocol::Version1_19
+module Shatter::Protocol::Version1_19
   PROTOCOL_VERSION = 759u32
   PROTOCOL_NAMES["1.19"] = PROTOCOL_VERSION
   PROTOCOLS[PROTOCOL_VERSION] = {

@@ -1,8 +1,8 @@
 require "../protocol"
 
-module Shatter::Packet::Protocol::Version1_17_1
-  PROTOCOL_VERSION = 756u32
-  PROTOCOL_NAMES["1.17.1"] = PROTOCOL_VERSION
+module Shatter::Protocol::Version1_18_1
+  PROTOCOL_VERSION = 757u32
+  PROTOCOL_NAMES["1.18.1"] = PROTOCOL_VERSION
   PROTOCOLS[PROTOCOL_VERSION] = {
     sb: {
       :chat            => 0x03,
@@ -98,22 +98,23 @@ module Shatter::Packet::Protocol::Version1_17_1
       0x54 => :passengers,
       0x55 => :team,
       0x56 => :score,
-      0x57 => :subtitle,
-      0x58 => :world_time,
-      0x59 => :title,
-      0x5A => :title_times,
-      0x5B => :entity_sound,
-      0x5C => :sound,
-      0x5D => :stop_sound,
-      0x5E => :header_footer,
-      0x5F => :nbt_query,
-      0x60 => :collect_item,
-      0x61 => :entity_teleport,
-      0x62 => :advancements,
-      0x63 => :entity_prop,
-      0x64 => :potion_effect,
-      0x65 => :recipes,
-      0x66 => :tags,
+      0x57 => :simulation_distance,
+      0x58 => :subtitle,
+      0x59 => :world_time,
+      0x5A => :title,
+      0x5B => :title_times,
+      0x5C => :entity_sound,
+      0x5D => :sound,
+      0x5E => :stop_sound,
+      0x5F => :header_footer,
+      0x60 => :nbt_query,
+      0x61 => :collect_item,
+      0x62 => :entity_teleport,
+      0x63 => :advancements,
+      0x64 => :entity_prop,
+      0x65 => :potion_effect,
+      0x66 => :recipes,
+      0x67 => :tags,
     } of Int32 => Cb::Play,
   }
 end

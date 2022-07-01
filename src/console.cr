@@ -27,6 +27,6 @@ puts "8/8: Priming translation keys"
 tl_key.receive
 
 puts "Done! Connecting..."
-Shatter::Connection.new(Shatter::Packet::Protocol::PROTOCOL_NAMES[ARGV[0]], ARGV[1], ARGV[2].to_i, registry, known_blocks, mc_token.access_token, profile).run
+Shatter::Connection.new(Shatter::Protocol::PROTOCOL_NAMES[ARGV[0]], ARGV[1], ARGV[2].to_i, registry, known_blocks, mc_token.access_token, profile).run
 sleep
 

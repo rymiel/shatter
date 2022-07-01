@@ -43,14 +43,14 @@ module Shatter
 
     def matching_cb(i : UInt32) : (Packet::Cb::Login | Packet::Cb::Play | Packet::Cb::Status)
       if @state.play?
-        i = Packet::Protocol::PROTOCOLS[@protocol][:cb][i]
+        i = Protocol::PROTOCOLS[@protocol][:cb][i]
       end
       Packet::CB_STATE_MAP[@state].new i.to_i32
     end
 
     def packet(packet_id : Packet::Sb::Play | Packet::Sb::Status | Packet::Sb::Login | Packet::Sb::Handshake, &block : IO ->)
       mem = IO::Memory.new
-      raw_packet_id = Packet::Protocol::PROTOCOLS[@protocol]?.try &.[:sb][packet_id]? || packet_id.to_i32
+      raw_packet_id = Protocol::PROTOCOLS[@protocol]?.try &.[:sb][packet_id]? || packet_id.to_i32
       var_p_id = Shatter.var_int raw_packet_id
 
       yield mem
@@ -219,7 +219,7 @@ module Shatter
 
         packet Packet::Sb::Login::LoginStart do |pkt|
           pkt.write_var_string @profile.try &.name || "Steve"
-          pkt.write_bool false if protocol >= Packet::Protocol::Version1_19::PROTOCOL_VERSION
+          pkt.write_bool false if protocol >= Protocol::Version1_19::PROTOCOL_VERSION
         end
 
         sleep
