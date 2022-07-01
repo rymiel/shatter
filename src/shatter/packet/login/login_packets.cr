@@ -1,7 +1,6 @@
 require "../handler"
 
 module Shatter::Packet::Login
-  @[Silent]
   @[Describe(level: 2)]
   class CryptRequest
     include Handler
@@ -56,7 +55,6 @@ module Shatter::Packet::Login
     end
   end
 
-  @[Silent]
   @[Describe(level: 2)]
   class SetCompression
     include Handler
@@ -68,7 +66,6 @@ module Shatter::Packet::Login
     end
   end
 
-  @[Silent]
   @[Describe(level: 2)]
   class LoginSuccess
     include Handler

@@ -1,7 +1,6 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Silent]
   @[Describe(level: 2, transform: {slots: "\n" + @slots.map_with_index { |i, j| {Data::InvIdx.new(j), i} }.to_h.compact.pretty_inspect + "\n"})]
   class WindowItems
     include Handler
@@ -12,7 +11,6 @@ module Shatter::Packet::Play
     field carried : Data::Slot?
   end
 
-  @[Silent]
   @[Describe(level: 2, transform: {codec: "#{@codec.inspect.size} chars of nope"})]
   class JoinGame
     include Handler
@@ -58,7 +56,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe]
   class KeepAlive
     include Handler
@@ -72,7 +69,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(transform: {
     action_id: ["Add", "Gamemode", "Ping", "Display name", "Remove"][@action_id],
     actions:   @actions.map { |k, v| v.nil? ? con.players[k].name : "#{con.players[k].name} => #{v.to_s k}" }.join ", ",

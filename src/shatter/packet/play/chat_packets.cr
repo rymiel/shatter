@@ -1,7 +1,6 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Silent]
   @[Describe(
     level: 3,
     order: {position, sender, message},
@@ -18,6 +17,7 @@ module Shatter::Packet::Play
     field sender : UUID
   end
 
+  @[AlwaysHexdump]
   @[Describe(level: 3, transform: {data: String.new(@data).inspect})]
   class PluginMessage
     include Handler
@@ -26,7 +26,6 @@ module Shatter::Packet::Play
     field data : Bytes = pkt.gets_to_end.to_slice
   end
 
-  @[Silent]
   @[Describe(level: 5, transform: {message: Shatter::Chat::AnsiBuilder.new.read(JSON.parse(@message).as_h)})]
   class Disconnect
     include Handler

@@ -1,7 +1,6 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Silent]
   @[Describe(level: 2, tag: :blocks)]
   class BlockChange
     include Handler
@@ -14,7 +13,6 @@ module Shatter::Packet::Play
     field state : BlockState
   end
 
-  @[Silent]
   @[Describe(level: 2)]
   class BlockAction
     include Handler
@@ -44,7 +42,6 @@ module Shatter::Packet::Play
     field param : String = Play::BlockAction::KNOWN_PARAM.find { |k, _| k === @block }.try &.[1][@_param] || @_param.to_s
   end
 
-  @[Silent]
   @[Describe(level: 2, tag: :blocks, transform: {blocks: @blocks.map { |i| "<x#{i[:x]},y#{i[:y]},z#{i[:z]}: #{i[:state]}>" }.join ", "})]
   class MultiBlocks
     include Handler

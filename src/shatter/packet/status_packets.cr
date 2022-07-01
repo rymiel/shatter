@@ -1,8 +1,7 @@
 require "./handler"
 
 module Shatter::Packet::Status
-  @[Silent]
-  # @[Describe(level: 2)]
+  @[Describe(level: 2)]
   class Response
     include Handler
 

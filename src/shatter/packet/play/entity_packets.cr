@@ -1,7 +1,6 @@
 require "../handler"
 
 module Shatter::Packet::Play
-  @[Silent]
   @[Describe(level: 0, tag: :movement)]
   class EntityHeadLook
     include Handler
@@ -14,7 +13,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 0, tag: :movement)]
   class EntityPosition
     include Handler
@@ -32,7 +30,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 0, tag: :movement)]
   class EntityVelocity
     include Handler
@@ -49,7 +46,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 0, tag: :movement)]
   class EntityPosRot
     include Handler
@@ -71,7 +67,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 0, tag: :movement)]
   class EntityTeleport
     include Handler
@@ -93,7 +88,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 0, tag: :movement)]
   class EntityRotation
     include Handler
@@ -109,7 +103,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 3)]
   class EntityStatus
     include Handler
@@ -118,7 +111,6 @@ module Shatter::Packet::Play
     field status : Data::Entity::Status = Data::Entity::Status.new pkt.read_i8
   end
 
-  @[Silent]
   @[Describe(level: 3)]
   class EntityProp
     include Handler
@@ -133,7 +125,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 2)]
   class DestroyEntity
     include Handler
@@ -141,7 +132,6 @@ module Shatter::Packet::Play
     field entities : Entity[VarInt]
   end
 
-  @[Silent]
   @[Describe]
   class SpawnLiving
     include Handler
@@ -164,7 +154,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe]
   class SpawnEntity
     include Handler
@@ -187,7 +176,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 4)]
   class SpawnPlayer
     include Handler
@@ -206,7 +194,6 @@ module Shatter::Packet::Play
     end
   end
 
-  @[Silent]
   @[Describe(level: 2)]
   class Equipment
     include Handler

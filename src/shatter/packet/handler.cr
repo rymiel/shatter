@@ -5,7 +5,7 @@ require "../connection"
 require "json"
 
 module Shatter::Packet
-  annotation Silent
+  annotation AlwaysHexdump
   end
 
   annotation Describe
@@ -147,7 +147,7 @@ module Shatter::Packet
         {% name = alias_ann[0].id %}
       {% end %}
       {% e = "::Shatter::Packet::Cb::#{qualifier}::#{name}".id %}
-      {% if @type.annotation(::Shatter::Packet::Silent) %}
+      {% if @type.annotation(::Shatter::Packet::Describe) && !@type.annotation(::Shatter::Packet::AlwaysHexdump) %}
         ::Shatter::Packet::SILENT[{{e}}] = true
       {% end %}
       ::Shatter::Packet::PACKET_HANDLERS[{{e}}] << ->(pkt : ::IO, con : ::Shatter::Connection) {
